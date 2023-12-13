@@ -1,0 +1,52 @@
+#path{
+    
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    >label{
+        width: 0px;
+        flex: 5;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        text-align: center;
+        border-radius: 0;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        color: #fff;
+    }
+    >label::before{
+        position: absolute;
+        content: '';
+        left: 0;
+        top: 0;
+        width: 100%;
+        opacity: 0;
+        -webkit-transition: all .1s;
+        transition: all .1s ease-in-out;
+    }
+    >label:hover::before{
+        content: 'Click to copy path';
+        width: 100%;
+        opacity: 1;
+        background-color: #242424;
+    }
+    >label:active::before{
+        content: 'Copied!';
+    }
+    >button{
+        flex: 2;
+        height: 30px;
+        background-color: #323232;
+        color: #fff;
+        border: 1px #323232 solid;
+        transition: all .2s;
+    }
+    >button:hover{
+        background-color: #2b2b2b;
+        border: 1px #fff solid;
+
+    }
+}

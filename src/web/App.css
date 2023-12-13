@@ -1,0 +1,197 @@
+*{
+  padding: 0;
+  margin: 0;
+}
+*:focus{
+  outline: none
+}
+html{
+  height: 100%;
+  width: 100%;
+  font-family: system-ui, sans-serif;
+}
+#video{
+  position: absolute;
+  filter: brightness(0.3);
+}
+#root{
+  background-color: #000000;
+}
+#main{
+  height: 100vh;
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: row;
+  overflow: hidden;
+}
+#menu{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #2b2b2b;
+  >*{
+    flex: 1;
+  }
+  >h2{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  >button{
+    border: 0px;
+    border-radius: 0;
+    background: initial;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    overflow: hidden;
+  }
+  >button::before{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0px;
+    height: 100%;
+    content: "";
+    -webkit-transition: all .2s;
+    transition: all .2s;
+    background: #fff;
+  }
+  >button:hover{
+    color: #000;
+  }
+  >button:hover::before{
+    color: #000;
+    width: 100%;
+    z-index: -1;
+  }
+}
+.options{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  >*{
+    flex: 1;
+  }
+}
+.checkbox{
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  font-size: 15px;
+  align-items: center;
+  justify-content: center;
+  >div{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+  >label:not(.togglebutton){
+    flex: 2;
+  }
+}
+#inputbox{
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  background-color: #242424;
+  >h1{
+    flex: 2;
+  }
+  >.options{
+    flex: 10;
+  }
+  >#back{
+    flex: 1;
+  }
+}
+
+.togglebutton {
+  box-sizing: border-box;
+  width: 50px;
+  display: inline-block;
+  position: relative;
+  height: 25px;
+  background-color: #dddddd;
+  cursor: pointer;
+  transition: background-color .4s;
+  border-radius: 50px;
+}
+
+.togglebutton:has(:checked) {
+  background-color: #4bd865;
+}
+
+.togglebutton::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgb(0 0 0 / 20%);
+  background-color: #fff;
+  content: '';
+  transition: left .4s;
+}
+
+.togglebutton:has(:checked)::after {
+  left: 50%;
+}
+
+.togglebutton input {
+  display: none;
+}
+
+.combbox{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  >label{
+    flex: 1;
+  }
+  >select{
+    flex: 3;
+    border: 1px #232323;
+    height: 25px;
+    border-radius: 2px;
+    background-color: #242424;
+    border-bottom: 2px #cccccc solid;
+  }
+  >div{
+    flex: 3;
+    >select{
+      border: 1px #232323;
+      height: 25px;
+      border-radius: 2px;
+      background-color: #242424;
+      border-bottom: 2px #cccccc solid;
+    }
+  }
+}
+label{
+  color: #fff;
+}
+select{
+  color: #fff;
+}
+@font-face{
+  font-family: "GLT";
+  src: url("./GLT-GonunneStrokeSemiR-080ExtraLight.otf");
+}
+a{
+  color: chartreuse;
+}
+h2{
+  color: #fff;
+}
+button{
+  color: #fff;
+}

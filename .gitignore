@@ -1,0 +1,9 @@
+.DS_Store
+dist
+release
+node_modules
+yarn-error.log
+config.json
+yt-dlp.exe
+ffmpeg.exe
+output.mp4
