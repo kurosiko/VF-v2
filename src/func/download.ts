@@ -1,3 +1,4 @@
+/*
 import YTDlpWrap from "yt-dlp-wrap";
 import { JSONType } from "../JsonType";
 import path from "path";
@@ -15,6 +16,8 @@ else{
     if (config.general.uploader){
         SAVE_PATH = path.join(SAVE_PATH,"%(uploader)s")
     }
+}else{
+    console.log("T")
 }
 SAVE_PATH = path.join(SAVE_PATH,"%(title)s.%(ext)s")
 console.log(SAVE_PATH)
@@ -36,3 +39,4 @@ export const get_thumbnail = async (url:string)=>{
     const result= await waitForThumbnail(url);
     return result
 }
+*/

@@ -1,49 +1,52 @@
-import React, { useCallback, useEffect, useRef } from "react"
-import { JSONType } from "../../JsonType"
-import { CONFIG} from "../Atoms/Atoms"
-import { selector, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
-import { useBeforeUnload } from "react-router-dom"
-export const General = ()=>{
-    console.log("General")
-    let config = useRecoilValue(CONFIG)
-    const setConfig = useSetRecoilState(CONFIG)
-    const DL = useRef<HTMLInputElement>(null)
-    const Uploader = useRef<HTMLInputElement>(null)
-    const Playlist = useRef<HTMLInputElement>(null)
-    const Path = useRef<HTMLLabelElement>(null)
-    window.api.ReqConfig()
-    window.api.ResConfig((res)=>{
-        if(!res == config){
-            setConfig(res)
-        }
-    })
-    if (!DL || !Uploader || !Playlist || !Path){
-        return
+import React, { useCallback, useEffect, useRef } from "react";
+import { JSONType } from "../../JsonType";
+import { useRecoilState } from "recoil";
+import { CONFIG } from "../Atoms/Atoms";
+export const General = () => {
+    const [config, SetConfig] = useRecoilState(CONFIG);
+    const pre_config = config;
+    const DL = useRef<HTMLInputElement>(null);
+    const Uploader = useRef<HTMLInputElement>(null);
+    const Playlist = useRef<HTMLInputElement>(null);
+    const Path = useRef<HTMLLabelElement>(null);
+    if (!DL || !Uploader || !Playlist || !Path) {
+        return;
+    } else {
     }
-    return(
+    return (
         <>
-        <h1 className="header">General</h1>
+            <h1 className="header">General</h1>
             <div className="options">
                 <div className="checkbox">
                     <label className="togglebutton">
-                        <input type="checkbox" ref={DL} onChange={(event)=>{
-                            config.general.dl = event.currentTarget.checked
-                        }}/>
+                        <input
+                            type="checkbox"
+                            onChange={(event) => {
+                                if (pre_config.general) {
+                                    pre_config.general.a;
+                                }
+                            }}
+                        />
                     </label>
                     <label>DL Folder</label>
                 </div>
                 <div id="path">
-                    <label onClick={(event)=>{
-                        navigator.clipboard.writeText(event.currentTarget.innerHTML)
-                        console.log("Path Copied")
-                    }} ref={Path}>PATH</label>
-                    <button onClick={()=>{
-                        window.api.getpath()
-                    }}>Browse</button>
+                    <label
+                        onClick={(event) => {
+                            navigator.clipboard.writeText(
+                                event.currentTarget.innerHTML
+                            );
+                            console.log("Path Copied");
+                        }}
+                        ref={Path}
+                    >
+                        PATH
+                    </label>
+                    <button onClick={() => {}}>Browse</button>
                 </div>
             </div>
         </>
-    )
+    );
     /*
     window.api.sendpath((path:string)=>{
         console.log(path)
@@ -111,4 +114,4 @@ export const General = ()=>{
         </>
     )
     */
-}
+};

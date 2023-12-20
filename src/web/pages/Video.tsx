@@ -1,11 +1,11 @@
-import React, { createElement, useEffect, useRef, useState } from "react"
-import { JSONType ,Str_Dict} from "../../JsonType"
-export const Video = ()=>{
-    return(
+import React, { createElement, useEffect, useRef, useState } from "react";
+import { JSONType, Str_Dict } from "../../JsonType";
+export const Video = () => {
+    return (
         <>
-        <h1>This page is stopped</h1>
+            <h1>This page is stopped</h1>
         </>
-    )
+    );
     /*
     let _config:JSONType
     let codec_list:Array<string>
@@ -54,4 +54,4 @@ export const Video = ()=>{
         </>
     )
     */
-}
+};

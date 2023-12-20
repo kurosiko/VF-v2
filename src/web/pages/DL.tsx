@@ -1,29 +1,21 @@
-import React, { useRef, useState } from "react"
-import "../css/DL.css"
-import "../css/ProgressBar.css"
-import { Str_Dict } from "../../JsonType"
-import { CONFIG } from "../Atoms/Atoms"
-import { useRecoilState, useSetRecoilState } from "recoil"
-export const DL = ()=>{
-    window.api.ResConfig(res=>{
-        const defaultSet = useSetRecoilState(CONFIG)
-            defaultSet(res)
-    })
-    window.api.ReqConfig()
-    return(
+import React, { useRef, useState } from "react";
+import "../css/DL.css";
+import "../css/ProgressBar.css";
+import { useRecoilState } from "recoil";
+import { CONFIG } from "../Atoms/Atoms";
+export const DL = () => {
+    return (
         <>
-            <div id="url_input" onLoad={()=>{
-                
-            }}>
+            <div id="url_input" onClick={() => {}}>
                 <form>
-                    <input type="text" placeholder="Enter URL"/>
+                    <input type="text" placeholder="Enter URL" />
                 </form>
             </div>
             <div id="space">
                 <div id="show_progress">
-                <label>Drop URL Here!</label>
+                    <label>Drop URL Here!</label>
                 </div>
             </div>
         </>
-    )
-}
+    );
+};

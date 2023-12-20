@@ -1,17 +1,17 @@
-.progress{
+.progress {
     display: flex;
     flex-direction: row;
     border: 0px;
     height: 60px;
     border: 0.5px #0421a5 solid;
 }
-.thumbnail{
+.thumbnail {
     flex: 1;
     width: auto;
     max-height: 100%;
     object-fit: cover;
 }
-.progress_main{
+.progress_main {
     height: 60px;
     flex: 4;
     position: relative;
@@ -19,26 +19,26 @@
     flex-direction: column;
     z-index: 5;
     display: flex;
-    >.progress_data{
+    > .progress_data {
         flex: 2;
         display: flex;
         flex-direction: row;
-        >.percent{
+        > .percent {
             flex: 1;
         }
-        >.title{
-            flex:2;
+        > .title {
+            flex: 2;
             width: 0px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
     }
-    >.progressbar{
+    > .progressbar {
         flex: 1;
     }
 }
-.bar{
+.bar {
     width: 20px;
     height: 100%;
     background-color: rgb(58, 92, 164);

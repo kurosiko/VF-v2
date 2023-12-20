@@ -1,15 +1,15 @@
-#back{
+#back {
     flex: 1;
     border: 0px;
     background-color: #2f2f2f;
     color: #fff;
-    transition: background-color .2s;
+    transition: background-color 0.2s;
 }
-#back:hover{
+#back:hover {
     color: #fff;
     background-color: #4f4f4f;
 }
-.header{
+.header {
     color: #fff;
     text-align: center;
     flex: 10;
