@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { JSONType } from "../../JsonType";
 import { useRecoilState } from "recoil";
-import { CONFIG } from "../Atoms/Atoms";
+import { CONFIG, opts } from "../Atoms/Atoms";
 export const General = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
-    const pre_config = config;
     const DL = useRef<HTMLInputElement>(null);
     const Uploader = useRef<HTMLInputElement>(null);
     const Playlist = useRef<HTMLInputElement>(null);
@@ -22,9 +21,9 @@ export const General = () => {
                         <input
                             type="checkbox"
                             onChange={(event) => {
-                                if (pre_config.general) {
-                                    pre_config.general.a;
-                                }
+                                const cfg = opts(config);
+                                cfg.general.dl = true
+                                console.log(cfg)
                             }}
                         />
                     </label>

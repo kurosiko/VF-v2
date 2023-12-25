@@ -23,3 +23,10 @@ export const CONFIG = atom<JSONType>({
         ytdlp_v: "",
     },
 });
+export const opts = (
+    config:object
+) => {
+    const pp = Object();
+    const preConfig = Object.assign(pp, config);
+    return preConfig
+};
