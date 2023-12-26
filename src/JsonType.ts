@@ -1,10 +1,10 @@
 export interface JSONType {
-    ytdlp_v?: string;
-    dir?: string;
-    general?: Boolen_Dict;
-    video?: Media;
-    audio?: Media;
-    other?: Boolen_Dict;
+    ytdlp_v: string;
+    dir: string;
+    general: Boolen_Dict;
+    video: Media;
+    audio: Media;
+    other: Boolen_Dict;
 }
 interface Media {
     thumbnail: boolean;

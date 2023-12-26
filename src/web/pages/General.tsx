@@ -1,13 +1,21 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { JSONType } from "../../JsonType";
 import { useRecoilState } from "recoil";
-import { CONFIG, opts } from "../Atoms/Atoms";
+import { CONFIG } from "../Atoms/Atoms";
 export const General = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const DL = useRef<HTMLInputElement>(null);
     const Uploader = useRef<HTMLInputElement>(null);
     const Playlist = useRef<HTMLInputElement>(null);
     const Path = useRef<HTMLLabelElement>(null);
+    const Gen_pre = () => {
+        return JSON.parse(JSON.stringify(config));
+    }
+    function Reload(event: React.ChangeEvent<HTMLInputElement>,option:string) {
+        const pre = Gen_pre();
+        pre.general[`${option}`] = event.target.checked;
+        SetConfig(pre);
+    }
     if (!DL || !Uploader || !Playlist || !Path) {
         return;
     } else {
@@ -20,10 +28,8 @@ export const General = () => {
                     <label className="togglebutton">
                         <input
                             type="checkbox"
-                            onChange={(event) => {
-                                const cfg = opts(config);
-                                cfg.general.dl = true
-                                console.log(cfg)
+                            onChange={(e) => {
+                                Reload(e,"dl")
                             }}
                         />
                     </label>
