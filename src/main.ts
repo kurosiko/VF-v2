@@ -1,5 +1,5 @@
 import path from "path";
-import { BrowserWindow, Notification, app, dialog, ipcMain } from "electron";
+import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import { load, save } from "./func/config";
 import { JSONType } from "./JsonType";
 const config: JSONType = load();
@@ -47,10 +47,19 @@ function createWindow() {
     )
     */
     mainWindow.loadFile("dist/index.html").then(() => {
-        mainWindow.webContents.send("ResConfig", config);
+      mainWindow.webContents.send("ResConfig", config);
     });
     ipcMain.handle("ReqConfig", (_, args) => {});
-    mainWindow.focus();
+    ipcMain.handle("ReqPath", () => {
+        const path = dialog.showOpenDialogSync({
+            title: "Select Path",
+            defaultPath: __dirname,
+            properties: ["openDirectory"],
+        });
+        console.log(path);
+        mainWindow.webContents.send("ResPath", path);
+    });
+    //mainWindow.focus();
 }
 
 app.whenReady().then(() => {

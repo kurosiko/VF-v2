@@ -6,8 +6,8 @@ declare global {
 }
 export interface AppAPI {
     download: (url: string) => void;
-    getpath: () => void;
-    sendPath: (listener: (path: string) => void) => void;
+    ReqPath: () => void;
+    ResPath: (listener: (path: string) => void) => void;
     ReqConfig: () => void;
     ResConfig: (func: (config: JSONType) => void) => void;
     SaveConfig: (config: JSONType) => void;

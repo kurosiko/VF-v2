@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import "./css/Back.css";
@@ -9,7 +9,6 @@ import { Option } from "./Option";
 import { JSONType } from "../JsonType";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "./Atoms/Atoms";
-import { config } from "process";
 export const App = () => {
     const navigate = useNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);

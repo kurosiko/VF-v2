@@ -10,13 +10,13 @@ contextBridge.exposeInMainWorld("api", {
         });
     },
     ReqPath: () => {
-        ipcRenderer.invoke("getpath").catch((error) => {
+        ipcRenderer.invoke("ReqPath").catch((error) => {
             console.log(error);
         });
     },
     ResPath: (listener: Function) => {
         ipcRenderer.on("ResPath", (_, args) => {
-            listener(args);
+            listener(args[0]);
         });
     },
     ReqConfig: () => {
@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld("api", {
         });
     },
     ResConfig: (config: Function) => {
+        ipcRenderer.removeAllListeners("ResConfig")
         ipcRenderer.on("ResConfig", (_, args) => {
             config(args);
         });
