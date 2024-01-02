@@ -47,4 +47,10 @@
         background-color: #2b2b2b;
         border: 1px #fff solid;
     }
+    > button:disabled{
+        background-color: red;
+    }
+    > button:enabled{
+        background-color: #323232;
+    }
 }

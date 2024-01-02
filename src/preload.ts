@@ -16,7 +16,9 @@ contextBridge.exposeInMainWorld("api", {
     },
     ResPath: (listener: Function) => {
         ipcRenderer.on("ResPath", (_, args) => {
-            listener(args[0]);
+            if (args) {
+                listener(args[0]);
+            }
         });
     },
     ReqConfig: () => {
@@ -26,7 +28,7 @@ contextBridge.exposeInMainWorld("api", {
     },
     ResConfig: (config: Function) => {
         ipcRenderer.removeAllListeners("ResConfig")
-        ipcRenderer.on("ResConfig", (_, args) => {
+        ipcRenderer.once("ResConfig", (_, args) => {
             config(args);
         });
     },

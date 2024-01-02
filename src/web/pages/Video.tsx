@@ -1,57 +1,90 @@
-import React, { createElement, useEffect, useRef, useState } from "react";
-import { JSONType, Str_Dict } from "../../JsonType";
+import React, { useRef } from "react";
+import { JSONType } from "../../JsonType";
+import { useRecoilState } from "recoil";
+import { CONFIG } from "../Atoms/Atoms";
+
 export const Video = () => {
-    return (
-        <>
-            <h1>This page is stopped</h1>
-        </>
-    );
-    /*
-    let _config:JSONType
-    let codec_list:Array<string>
-    const v_codec = useRef<HTMLSelectElement>(null)
-    if (!v_codec){
-        return
+    const [config, SetConfig] = useRecoilState(CONFIG);
+    const Gen_pre = () => {
+        const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
+        return gened_pre;
+    };
+    function Reload(
+        event: React.ChangeEvent<HTMLInputElement>,
+        option: string
+    ) {
+        const pre = Gen_pre();
+        pre.video.boolean[`${option}`] = event.target.checked;
+        SetConfig(pre);
     }
-    window.api.getconfig()
-    window.api.sendconfig((config:JSONType)=>{
-        console.log(config)
-        _config = config
-        codec_list = Object.keys(_config.video.codec)
-        console.log(codec_list)
-        
+    function SL_Reload(
+        event: React.ChangeEvent<HTMLSelectElement>,
+        option: string
+    ) {
+        const pre = Gen_pre();
+        pre.video.string[`${option}`] = event.target.value;
+        SetConfig(pre);
+    }
+    const LoadList = (target: string) => {
+        const pre = [];
+        let obj;
+        if (target == "codec") {
+            obj = config.video.codecList;
         }
-    )
-    return(
+        if (target == "quality") {
+            obj = config.video.qualityList;
+        }
+        for (const i of Object.keys(Object(obj))) {
+            pre.push(React.createElement("option", { key: i }, i));
+        }
+        return React.createElement(
+            "select",
+            {
+                value: config.video.string[`${target}`],
+                onChange: (e: React.ChangeEvent<HTMLSelectElement>) => {
+                    SL_Reload(e, target);
+                },
+            },
+            [...pre]
+        );
+    };
+    return (
         <>
             <h1 className="header">Video</h1>
             <div className="options">
                 <div className="combbox">
                     <label>Quality</label>
-                    <select>
-                        <option>tst</option>
-                    </select>
+                    {LoadList("quality")}
                 </div>
                 <div className="combbox">
                     <label>Codec</label>
-                    <select ref={v_codec}>
-                        <option>Tst</option>
-                    </select>
+                    {LoadList("codec")}
                 </div>
                 <div className="checkbox">
                     <label className="togglebutton">
-                        <input type="checkbox"/>
+                        <input
+                            type="checkbox"
+                            checked={config.video.boolean.thumbnail}
+                            onChange={(e) => {
+                                Reload(e, "thumbnail");
+                            }}
+                        />
                     </label>
                     <label>Thumbnail</label>
                 </div>
                 <div className="checkbox">
                     <label className="togglebutton">
-                        <input type="checkbox"/>
+                        <input
+                            type="checkbox"
+                            checked={config.video.boolean.metadata}
+                            onChange={(e) => {
+                                Reload(e,"metadata")
+                            }}
+                        />
                     </label>
                     <label>Metadata</label>
                 </div>
             </div>
         </>
-    )
-    */
+    );
 };

@@ -7,11 +7,10 @@ export interface JSONType {
     other: Boolen_Dict;
 }
 interface Media {
-    thumbnail: boolean;
-    metadata: boolean;
-    advance: boolean;
-    quality: Str_Dict;
-    codec: Str_Dict;
+    boolean: Boolen_Dict;
+    string: Str_Dict;
+    qualityList: Str_Dict;
+    codecList: Str_Dict;
 }
 export interface Boolen_Dict {
     [key: string]: boolean;
