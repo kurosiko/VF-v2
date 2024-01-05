@@ -1,5 +1,5 @@
 import path from "path";
-import { BrowserWindow, app, dialog, ipcMain } from "electron";
+import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
 import { load, save } from "./func/config";
 import { JSONType } from "./JsonType";
 const config: JSONType = load();
@@ -17,37 +17,14 @@ function createWindow() {
             nodeIntegration: false,
         },
     });
-    /*
-    ipcMain.handle("getpath",()=>{
-      const path =  dialog
-      .showOpenDialogSync(
-        {
-          title:"Select Path",
-          defaultPath:__dirname,
-          properties: ['openDirectory']
-        }
-      )
-      mainWindow.webContents.send("ResPath",path)
-    })
-    ipcMain.handle("ReqConfig",(_event)=>{
-      mainWindow.webContents.send("ResConfig",config)
-    })
-    ipcMain.handle("save",async(_event,_config:JSONType)=>{
-      save(_config)
-      config = await load()
-      mainWindow.webContents.send("ResConfig",config)
-    })
-    ipcMain.handle("download",(_event,url:string)=>{
-      get_thumbnail(url).then((thumbnail:string)=>{       
-        console.log(thumbnail)
-        mainWindow.webContents.send("thumbnail",{"url":url,"img":thumbnail})
-      })
-      //download(url,config)
-    }
-    )
-    */
     mainWindow.loadFile("dist/index.html").then(() => {
-      mainWindow.webContents.send("ResConfig", config);
+        mainWindow.webContents.send("ResConfig", config);
+    });
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        if (url.startsWith("http")) {
+            shell.openExternal(url);
+        }
+        return { action: "deny" };
     });
     ipcMain.handle("ReqConfig", (_, args) => {});
     ipcMain.handle("ReqPath", () => {
@@ -59,11 +36,17 @@ function createWindow() {
         console.log(path);
         mainWindow.webContents.send("ResPath", path);
     });
-    //mainWindow.focus();
+    ipcMain.handle("download",()=>{})
+    mainWindow.on("close", (event) => {
+        event.preventDefault()
+        mainWindow.webContents.send("ReqConfig_Save");
+    });
+    ipcMain.handle("ResConfig_Save", (_, args) => {
+        console.log(args);
+        save(config)
+        app.quit();
+    });
 }
-
 app.whenReady().then(() => {
     createWindow();
 });
-
-app.once("window-all-closed", () => app.quit());

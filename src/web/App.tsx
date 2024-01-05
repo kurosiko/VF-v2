@@ -15,18 +15,31 @@ export const App = () => {
     window.api.ResConfig((Res: JSONType) => {
         SetConfig(Res);
     });
+    window.api.ReqConfig_Save(() => {
+        window.api.ResConfig_Save(config);
+    });
     console.log(config);
     return (
         <>
-            <div id="main" draggable="true" onDrop={(event) => {}}>
+            <div
+                id="main"
+                draggable={false}
+                onDrop={(event) => {
+                    console.log(event);
+                }}
+            >
                 <div id="menu">
-                    <h2
-                        onClick={() => {
-                            console.log(config);
-                        }}
-                    >
-                        SETTING
-                    </h2>
+                    {window.location.hash==="#/"?
+                        <h2
+                            onClick={() => {
+                                console.log(config);
+                            }}
+                        >
+                            SETTING
+                        </h2> : <button onClick={() => {
+                            navigate("option/dev")
+                        }}>Dev</button>
+                    }
                     <button
                         type="button"
                         onClick={() => {
@@ -83,7 +96,6 @@ export const App = () => {
                         </div>
                         <label>Audio Only</label>
                     </div>
-                    <Link to={"/"}>Home(dev)</Link>
                 </div>
                 <div id="inputbox">
                     <Routes>

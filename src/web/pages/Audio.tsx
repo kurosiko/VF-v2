@@ -64,6 +64,18 @@ export const Audio = () => {
                     <label className="togglebutton">
                         <input
                             type="checkbox"
+                            checked={config.audio.boolean.force}
+                            onChange={(e) => {
+                                Reload(e, "force");
+                            }}
+                        />
+                    </label>
+                    <label>Force convert</label>
+                </div>
+                <div className="checkbox">
+                    <label className="togglebutton">
+                        <input
+                            type="checkbox"
                             checked={config.audio.boolean.thumbnail}
                             onChange={(e) => {
                                 Reload(e, "thumbnail");

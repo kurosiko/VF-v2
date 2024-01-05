@@ -32,6 +32,18 @@ contextBridge.exposeInMainWorld("api", {
             config(args);
         });
     },
+    ReqConfig_Save: (sendConfig: Function) => {
+        ipcRenderer.removeAllListeners("ReqConfig_Save");
+        ipcRenderer.once("ReqConfig_Save", (_) => {
+            sendConfig();
+        });
+    },
+    ResConfig_Save: (config: JSONType) => {
+        ipcRenderer.invoke("ResConfig_Save", config).catch((error) => {
+            console.log(error)
+        })
+    }
+    ,
     SaveConfig: (config: JSONType) => {
         ipcRenderer.invoke("save", config).catch((error) => {
             console.log(error);

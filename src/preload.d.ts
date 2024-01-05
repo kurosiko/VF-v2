@@ -12,4 +12,6 @@ export interface AppAPI {
     ResConfig: (func: (config: JSONType) => void) => void;
     SaveConfig: (config: JSONType) => void;
     sendThumbnail: (sender: (url: Str_Dict) => void) => void;
+    ReqConfig_Save: (sendConfig: () => void) => void;
+    ResConfig_Save: (config:JSONType) => void;
 }

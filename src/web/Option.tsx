@@ -5,6 +5,7 @@ import { Video } from "./pages/Video";
 import { Audio } from "./pages/Audio";
 import { Other } from "./pages/Other";
 import { Log } from "./pages/Log";
+import { Dev } from "./pages/Dev";
 export const Option = () => {
     const navigate = useNavigate();
     return (
@@ -15,6 +16,7 @@ export const Option = () => {
                 <Route path="/audio" element={<Audio />} />
                 <Route path="/other" element={<Other />} />
                 <Route path="/log" element={<Log />} />
+                <Route path="/dev" element={<Dev/>}/>
                 <Route path="*" element={<h1>/Option but 404</h1>} />
             </Routes>
             <button

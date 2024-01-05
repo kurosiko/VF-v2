@@ -88,20 +88,6 @@ export const General = () => {
                         Browse
                     </button>
                 </div>
-                <button
-                    style={{ color: "red" }}
-                    onClick={() => {
-                        const pre = Gen_pre();
-                        pre.general = {
-                            dl: false,
-                            uploader: false,
-                            playlist: false,
-                        };
-                        SetConfig(pre);
-                    }}
-                >
-                    Reset General
-                </button>
             </div>
         </>
     );

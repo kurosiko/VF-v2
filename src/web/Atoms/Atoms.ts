@@ -11,7 +11,7 @@ export const CONFIG = atom<JSONType>({
         },
         video: {
             boolean: {
-                advance: false,
+                force: false,
                 thumbnail: false,
                 metadata: false,
             },
@@ -25,14 +25,13 @@ export const CONFIG = atom<JSONType>({
                 test2: "",
             },
             codecList: {
-                mp7: "OMG",
-                mp6: "OMG",
-                mp5: "OMG",
+                Auto: "",
+                mp4: "",
             },
         },
         audio: {
             boolean: {
-                advance: false,
+                force: false,
                 thumbnail: false,
                 metadata: false,
             },
@@ -57,5 +56,5 @@ export const CONFIG = atom<JSONType>({
             dev: false,
         },
         ytdlp_v: "",
-    }
+    },
 });

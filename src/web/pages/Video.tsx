@@ -1,8 +1,7 @@
-import React, { useRef } from "react";
+import React from "react";
 import { JSONType } from "../../JsonType";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
-
 export const Video = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Gen_pre = () => {
@@ -64,6 +63,18 @@ export const Video = () => {
                     <label className="togglebutton">
                         <input
                             type="checkbox"
+                            checked={config.video.boolean.force}
+                            onChange={(e) => {
+                                Reload(e, "force");
+                            }}
+                        />
+                    </label>
+                    <label>Force convert</label>
+                </div>
+                <div className="checkbox">
+                    <label className="togglebutton">
+                        <input
+                            type="checkbox"
                             checked={config.video.boolean.thumbnail}
                             onChange={(e) => {
                                 Reload(e, "thumbnail");
@@ -78,7 +89,7 @@ export const Video = () => {
                             type="checkbox"
                             checked={config.video.boolean.metadata}
                             onChange={(e) => {
-                                Reload(e,"metadata")
+                                Reload(e, "metadata");
                             }}
                         />
                     </label>
