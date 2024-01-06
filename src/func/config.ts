@@ -4,29 +4,53 @@ import { JSONType } from "../JsonType";
 const Default = {
     dir: "./",
     general: {
-        dl: false,
-        uploader: false,
-        playlist: false,
+        dl: true,
+        uploader: true,
+        playlist: true,
+        only: true,
+        list: true,
     },
     video: {
-        advance: false,
-        thumbnail: false,
-        metadata: false,
-        quality: {
-            highest: "bestvideo+bestaudio",
+        boolean: {
+            force: true,
+            thumbnail: true,
+            metadata: true,
         },
-        codec: {
-            mp7: "OMG",
+        string: {
+            codec: "mp4",
+            quality: "bv+ba",
+        },
+        qualityList: {
+            highest: "bestvideo+bestaudio",
+            NoAudio: "bestvideo",
+        },
+        codecList: {
+            Auto: "",
+            mp4: "",
+            "You can add codecs from config.json": "",
         },
     },
     audio: {
-        advance: false,
-        thumbnail: false,
-        metadata: false,
-        quality: {
-            highest: "bestvideo+bestaudio",
+        boolean: {
+            force: true,
+            thumbnail: false,
+            metadata: false,
         },
-        codec: {},
+        string: {
+            codec: "mp3",
+            quality: "ba",
+        },
+        qualityList: {
+            highest: "bestaudio",
+        },
+        codecList: {
+            mp3: "mp3",
+            acc: "acc",
+            vorbis: "vorbis",
+            m4a: "m4a",
+            opus: "opus",
+            wav: "wav",
+        },
     },
     other: {
         notification: true,

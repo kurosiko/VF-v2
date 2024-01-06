@@ -8,11 +8,13 @@ export const CONFIG = atom<JSONType>({
             dl: false,
             uploader: false,
             playlist: false,
+            only: false,
+            list: false,
         },
         video: {
             boolean: {
-                force: false,
-                thumbnail: false,
+                force: true,
+                thumbnail: true,
                 metadata: false,
             },
             string: {
@@ -27,11 +29,12 @@ export const CONFIG = atom<JSONType>({
             codecList: {
                 Auto: "",
                 mp4: "",
+                "You can add codecs from config.json": "",
             },
         },
         audio: {
             boolean: {
-                force: false,
+                force: true,
                 thumbnail: false,
                 metadata: false,
             },
@@ -55,6 +58,6 @@ export const CONFIG = atom<JSONType>({
             update: true,
             dev: false,
         },
-        ytdlp_v: "",
-    },
+        ytdlp_v: "2023.12.30",
+    }
 });

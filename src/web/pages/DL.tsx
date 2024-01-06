@@ -13,6 +13,7 @@ export const DL = () => {
         <>
             <div id="url_input" onSubmit={() => {
                 console.log(url.current?.value)
+                //gen arg list
                 //hand to download func ydl opts and url()?
             }}>
                 <form>

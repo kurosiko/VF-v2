@@ -23,6 +23,7 @@
 		]
 	},
 	"dependencies": {
+		"@digitak/esrun": "^3.2.26",
 		"@reduxjs/toolkit": "^2.0.1",
 		"@types/request": "^2.48.12",
 		"child_process": "^1.0.2",

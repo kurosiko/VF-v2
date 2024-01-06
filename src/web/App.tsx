@@ -16,9 +16,22 @@ export const App = () => {
         SetConfig(Res);
     });
     window.api.ReqConfig_Save(() => {
+        console.log("close Req");
         window.api.ResConfig_Save(config);
     });
     console.log(config);
+    const Gen_pre = () => {
+        const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
+        return gened_pre;
+    };
+    function Reload(
+        event: React.ChangeEvent<HTMLInputElement>,
+        option: string
+    ) {
+        const pre = Gen_pre();
+        pre.general[`${option}`] = event.target.checked;
+        SetConfig(pre);
+    }
     return (
         <>
             <div
@@ -29,17 +42,23 @@ export const App = () => {
                 }}
             >
                 <div id="menu">
-                    {window.location.hash==="#/"?
+                    {window.location.hash === "#/" ? (
                         <h2
                             onClick={() => {
                                 console.log(config);
                             }}
                         >
                             SETTING
-                        </h2> : <button onClick={() => {
-                            navigate("option/dev")
-                        }}>Dev</button>
-                    }
+                        </h2>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                navigate("option/dev");
+                            }}
+                        >
+                            Dev
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={() => {
@@ -83,7 +102,13 @@ export const App = () => {
                     <div className="checkbox">
                         <div>
                             <label className="togglebutton">
-                                <input type="checkbox" />
+                                <input
+                                    type="checkbox"
+                                    checked={config.general.list}
+                                    onChange={(e) => {
+                                        Reload(e, "list");
+                                    }}
+                                />
                             </label>
                         </div>
                         <label>Playlist</label>
@@ -91,7 +116,13 @@ export const App = () => {
                     <div className="checkbox">
                         <div>
                             <label className="togglebutton">
-                                <input type="checkbox" />
+                                <input
+                                    type="checkbox"
+                                    checked={config.general.only}
+                                    onChange={(e) => {
+                                        Reload(e, "only");
+                                    }}
+                                />
                             </label>
                         </div>
                         <label>Audio Only</label>

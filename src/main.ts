@@ -2,8 +2,12 @@ import path from "path";
 import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
 import { load, save } from "./func/config";
 import { JSONType } from "./JsonType";
+import { setup } from "./func/setup";
 const config: JSONType = load();
 console.log(config);
+if (config.other.update) {
+    config.ytdlp_v = await setup(config.ytdlp_v);
+}
 function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 500,
@@ -37,8 +41,8 @@ function createWindow() {
         mainWindow.webContents.send("ResPath", path);
     });
     ipcMain.handle("download",()=>{})
-    mainWindow.on("close", (event) => {
-        event.preventDefault()
+    mainWindow.once("close", (event) => {
+        event.preventDefault();
         mainWindow.webContents.send("ReqConfig_Save");
     });
     ipcMain.handle("ResConfig_Save", (_, args) => {
@@ -47,6 +51,7 @@ function createWindow() {
         app.quit();
     });
 }
+
 app.whenReady().then(() => {
     createWindow();
 });

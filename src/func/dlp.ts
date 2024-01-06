@@ -253,6 +253,7 @@ export default class YTDlpWrap {
         options = YTDlpWrap.setDefaultOptions(options);
         const execEventEmitter = new EventEmitter() as YTDlpEventEmitter;
         const ytDlpProcess = spawn(this.binaryPath, ytDlpArguments, options);
+        
         execEventEmitter.ytDlpProcess = ytDlpProcess;
         YTDlpWrap.bindAbortSignal(abortSignal, ytDlpProcess);
 
