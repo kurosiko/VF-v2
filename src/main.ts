@@ -3,6 +3,8 @@ import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
 import { load, save } from "./func/config";
 import { JSONType } from "./JsonType";
 import { setup } from "./func/setup";
+import { download } from "./func/download";
+import { removeAllListeners } from "process";
 const config: JSONType = load();
 console.log(config);
 if (config.other.update) {
@@ -40,16 +42,20 @@ function createWindow() {
         console.log(path);
         mainWindow.webContents.send("ResPath", path);
     });
-    ipcMain.handle("download",()=>{})
-    mainWindow.once("close", (event) => {
+    ipcMain.handle("download", (_, opts: string[]) => {
+        download(opts);
+    });
+    mainWindow.on("close", (event) => {
+        console.log("blocked")
         event.preventDefault();
         mainWindow.webContents.send("ReqConfig_Save");
     });
     ipcMain.handle("ResConfig_Save", (_, args) => {
-        console.log(args);
-        save(config)
+        mainWindow.removeAllListeners("close")
+        save(args);
         app.quit();
     });
+    return mainWindow
 }
 
 app.whenReady().then(() => {

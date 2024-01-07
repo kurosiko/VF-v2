@@ -70,7 +70,11 @@ export const General = () => {
                         }}
                         ref={Path}
                     >
-                        PATH
+                        {
+                            config.dir ?
+                                config.dir :
+                                "PATH"
+                        }
                     </label>
                     <button
                         onClick={(event) => {

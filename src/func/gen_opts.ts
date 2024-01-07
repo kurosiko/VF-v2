@@ -1,10 +1,12 @@
-import path from "path";
+import path from "path-browserify"
 import { JSONType } from "../JsonType";
 function dir(config: JSONType) {
     let output = config.dir;
     if (config.general.dl) output = path.join(output, "DL_Video");
     if (config.general.list) {
-        output = path.join(output, "%(playlist|)s");
+        if (config.general.playlist) {
+            output = path.join(output, "%(playlist|)s");
+        }
     } else {
         if (config.general.uploader) output = path.join(output, "%(uploader)s");
     }
@@ -34,73 +36,12 @@ function embed(config: JSONType) {
     }
     return option;
 }
-export const Gen_opts = (config: JSONType) => {
-    const url =
-        "https://www.youtube.com/watch?v=4KDUn3y3Sfw&list=RD4KDUn3y3Sfw";
+export const Gen_opts = (url: string, config: JSONType) => {
     const opts = [
         url,
         ...["-o", `${dir(config)}`],
         ...["-f", ...format(config)],
         ...embed(config),
     ];
-    console.log(opts);
+    return opts;
 };
-
-Gen_opts({
-    dir: "./TestDir",
-    general: {
-        dl: true,
-        uploader: true,
-        playlist: true,
-        only: true,
-        list: true,
-    },
-    video: {
-        boolean: {
-            force: true,
-            thumbnail: true,
-            metadata: true,
-        },
-        string: {
-            codec: "mp4",
-            quality: "bv+ba",
-        },
-        qualityList: {
-            highest: "bestvideo+bestaudio",
-            NoAudio: "bestvideo",
-        },
-        codecList: {
-            Auto: "",
-            mp4: "",
-            "You can add codecs from config.json": "",
-        },
-    },
-    audio: {
-        boolean: {
-            force: true,
-            thumbnail: false,
-            metadata: false,
-        },
-        string: {
-            codec: "mp3",
-            quality: "ba",
-        },
-        qualityList: {
-            highest: "bestaudio",
-        },
-        codecList: {
-            mp3: "mp3",
-            acc: "acc",
-            vorbis: "vorbis",
-            m4a: "m4a",
-            opus: "opus",
-            wav: "wav",
-        },
-    },
-    other: {
-        notification: true,
-        update: true,
-        dev: false,
-    },
-    ytdlp_v: "2023.12.30",
-});

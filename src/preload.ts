@@ -4,8 +4,8 @@ import { config } from "process";
 import { JSONType } from "./JsonType";
 
 contextBridge.exposeInMainWorld("api", {
-    download: (url: string) => {
-        ipcRenderer.invoke("download", url).catch((error) => {
+    download: (opts: string[]) => {
+        ipcRenderer.invoke("download",opts).catch((error) => {
             console.log(error);
         });
     },

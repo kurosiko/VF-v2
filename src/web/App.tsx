@@ -42,7 +42,8 @@ export const App = () => {
                 }}
             >
                 <div id="menu">
-                    {window.location.hash === "#/" ? (
+                    {window.location.hash === "#/" ||
+                    window.location.hash === "" ? (
                         <h2
                             onClick={() => {
                                 console.log(config);

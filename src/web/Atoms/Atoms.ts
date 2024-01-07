@@ -13,51 +13,43 @@ export const CONFIG = atom<JSONType>({
         },
         video: {
             boolean: {
-                force: true,
-                thumbnail: true,
-                metadata: false,
-            },
-            string: {
-                codec: "mp4",
-                quality: "GOOD!",
-            },
-            qualityList: {
-                highest: "bestvideo+bestaudio",
-                test: "",
-                test2: "",
-            },
-            codecList: {
-                Auto: "",
-                mp4: "",
-                "You can add codecs from config.json": "",
-            },
-        },
-        audio: {
-            boolean: {
-                force: true,
+                force: false,
                 thumbnail: false,
                 metadata: false,
             },
             string: {
-                codec: "mp4",
-                quality: "GOOD!",
+                codec: "null",
+                quality: "null",
             },
             qualityList: {
-                highest: "bestvideo+bestaudio",
-                test: "",
-                test2: "",
+                null: "null",
             },
             codecList: {
-                mp7: "OMG",
-                mp6: "OMG",
-                mp5: "OMG",
+                null: "null",
             },
         },
+        audio: {
+            boolean: {
+                force: false,
+                thumbnail: false,
+                metadata: false,
+            },
+            string: {
+                codec: "null",
+                quality: "null",
+            },
+            qualityList: {
+                null: "null",
+            },
+            codecList: {
+                null: "null",
+            }
+        },
         other: {
-            notification: true,
-            update: true,
-            dev: false,
+            notification: false,
+            update: false,
+            dev: true,
         },
         ytdlp_v: "2023.12.30",
-    }
+    },
 });
