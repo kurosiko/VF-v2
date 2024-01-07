@@ -46,16 +46,16 @@ function createWindow() {
         download(opts);
     });
     mainWindow.on("close", (event) => {
-        console.log("blocked")
+        console.log("blocked");
         event.preventDefault();
         mainWindow.webContents.send("ReqConfig_Save");
     });
-    ipcMain.handle("ResConfig_Save", (_, args) => {
-        mainWindow.removeAllListeners("close")
-        save(args);
+    ipcMain.handle("ResConfig_Save", (_, args: JSONType) => {
+        mainWindow.removeAllListeners("close");
+        if (!(args.dir == "null")) save(args);
         app.quit();
     });
-    return mainWindow
+    return mainWindow;
 }
 
 app.whenReady().then(() => {

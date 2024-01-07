@@ -23,6 +23,7 @@ function format(config: JSONType) {
         if (config.video.boolean.force)
             preset.push("--merge-output-format", config.video.string.codec);
     }
+    if (!config.general.list) preset.push("--no-playlist");
     return preset;
 }
 function embed(config: JSONType) {
@@ -42,6 +43,7 @@ export const Gen_opts = (url: string, config: JSONType) => {
         ...["-o", `${dir(config)}`],
         ...["-f", ...format(config)],
         ...embed(config),
+        "--no-post-overwrites"
     ];
     return opts;
 };

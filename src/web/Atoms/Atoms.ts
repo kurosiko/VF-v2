@@ -3,7 +3,7 @@ import { JSONType } from "../../JsonType";
 export const CONFIG = atom<JSONType>({
     key: "config",
     default: {
-        dir: "./",
+        dir: "null",
         general: {
             dl: false,
             uploader: false,
