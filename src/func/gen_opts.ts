@@ -1,4 +1,4 @@
-import path from "path-browserify"
+import path from "path-browserify";
 import { JSONType } from "../JsonType";
 function dir(config: JSONType) {
     let output = config.dir;
@@ -14,12 +14,13 @@ function dir(config: JSONType) {
     return output;
 }
 function format(config: JSONType) {
-    let preset = [config.video.string.quality];
+    let preset = [];
     if (config.general.only) {
-        preset.push("-x");
-        if (config.audio.boolean.force)
-            preset.push("--audio-format", config.audio.string.codec);
+        preset.push(config.audio.string.quality);
+        if (config.audio.boolean.force) preset.push("-x");
+        preset.push("--audio-format", config.audio.string.codec);
     } else {
+        preset.push(config.video.string.quality);
         if (config.video.boolean.force)
             preset.push("--merge-output-format", config.video.string.codec);
     }
@@ -37,13 +38,28 @@ function embed(config: JSONType) {
     }
     return option;
 }
+function can_embed(codec: string) {
+    return ![
+        "mp3",
+        "mkv",
+        "mka",
+        "ogg",
+        "opus",
+        "flac",
+        "m4a",
+        "mp4",
+        "m4v",
+        "mov",
+    ].includes(codec);
+}
 export const Gen_opts = (url: string, config: JSONType) => {
     const opts = [
         url,
         ...["-o", `${dir(config)}`],
         ...["-f", ...format(config)],
         ...embed(config),
-        "--no-post-overwrites"
+        "-i",
+        "--no-post-overwrites",
     ];
     return opts;
 };

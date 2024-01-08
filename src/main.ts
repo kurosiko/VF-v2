@@ -52,7 +52,7 @@ function createWindow() {
     });
     ipcMain.handle("ResConfig_Save", (_, args: JSONType) => {
         mainWindow.removeAllListeners("close");
-        if (!(args.dir == "null")) save(args);
+        if (args.dir != "null") save(args);
         app.quit();
     });
     return mainWindow;

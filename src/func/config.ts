@@ -62,6 +62,7 @@ const Default = {
 export const load = () => {
     const JsonPath = path.resolve("./config/config.json");
     if (!fs.existsSync(JsonPath)) {
+        console.log("Log not found");
         fs.writeFileSync(JsonPath, JSON.stringify(Default, null, 4), "utf-8");
     }
     return JSON.parse(fs.readFileSync(JsonPath, "utf-8"));

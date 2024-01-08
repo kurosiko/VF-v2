@@ -13,5 +13,7 @@ export const download = (opts: string[]) => {
         })
         .on("close", (e) => {
             console.log(e);
-        });
+        }).on("error", (e) => {
+            console.log(e)
+        })
 };
