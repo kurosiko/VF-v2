@@ -1,0 +1,12 @@
+#dev{
+    color: black;
+    display: flex;
+    flex-direction: column;
+    >button{
+        color: black;
+        border: 0px;
+    }
+    >button:hover{
+        background-color: cadetblue;
+    }
+}
