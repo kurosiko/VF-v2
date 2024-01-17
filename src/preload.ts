@@ -55,7 +55,12 @@ contextBridge.exposeInMainWorld("api", {
             thumbnail(args);
         });
     },
-    sendProgress: (progress: Function) => {
-        ipcRenderer.on("progress", (_event, args) => {});
+    ResProgress: (progress: Function) => {
+        ipcRenderer.on("progress", (_event, args) => {
+            progress(args)
+        });
     },
+    ReciveProgress: () => {
+        
+    }
 });

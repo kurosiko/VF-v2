@@ -4,7 +4,6 @@ import { load, save } from "./func/config";
 import { JSONType } from "./JsonType";
 import { setup } from "./func/setup";
 import { download } from "./func/download";
-import { removeAllListeners } from "process";
 const config: JSONType = load();
 console.log(config);
 if (config.other.update) {
@@ -32,7 +31,9 @@ function createWindow() {
         }
         return { action: "deny" };
     });
-    ipcMain.handle("ReqConfig", (_, args) => {});
+    ipcMain.handle("ReqConfig", () => {
+        mainWindow.webContents.send("ResConfig", config);
+    });
     ipcMain.handle("ReqPath", () => {
         const path = dialog.showOpenDialogSync({
             title: "Select Path",

@@ -8,13 +8,20 @@ import { Error } from "./pages/Error";
 import { Option } from "./Option";
 import { JSONType } from "../JsonType";
 import { useRecoilState } from "recoil";
-import { CONFIG } from "./Atoms/Atoms";
+import { CONFIG, PROGRESS } from "./Atoms/Atoms";
+import { Queue } from "../Queue";
 export const App = () => {
     const navigate = useNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
+    const [progress,SetProgress] = useRecoilState(PROGRESS)
     window.api.ResConfig((Res: JSONType) => {
         SetConfig(Res);
     });
+    window.api.ResProgress((Res: Queue) => {
+        const pre = [...progress]
+        pre.push(Res)
+        SetProgress(pre)
+    })
     window.api.ReqConfig_Save(() => {
         console.log("close Req");
         window.api.ResConfig_Save(config);

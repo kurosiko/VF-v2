@@ -19,27 +19,31 @@
     flex-direction: column;
     z-index: 5;
     display: flex;
-    > .progress_data {
-        flex: 2;
-        display: flex;
-        flex-direction: row;
-        > .percent {
-            flex: 1;
-        }
-        > .title {
-            flex: 2;
-            width: 0px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-    }
-    > .progressbar {
-        flex: 1;
-    }
 }
-.bar {
-    width: 20px;
-    height: 100%;
-    background-color: rgb(58, 92, 164);
+.progress_data {
+    align-items: center;
+    flex: 5;
+    display: flex;
+    flex-direction: row;
+}
+.percent {
+    flex: 1;
+}
+.title {
+    flex: 2;
+    width: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.progressbar {
+    flex: 1;
+    width: 100%;
+    background-color: #fff;
+}
+.progressbar::-webkit-progress-bar{
+    background-color: rgb(80, 80, 80);
+}
+.progressbar::-webkit-progress-value{
+    background-color: rgb(11, 125, 28);
 }

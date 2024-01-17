@@ -1,5 +1,6 @@
 import { atom } from "recoil";
 import { JSONType } from "../../JsonType";
+import { Queue } from "../../Queue";
 export const CONFIG = atom<JSONType>({
     key: "config",
     default: {
@@ -53,3 +54,9 @@ export const CONFIG = atom<JSONType>({
         ytdlp_v: "2023.12.30",
     },
 });
+export const PROGRESS = atom<Queue[]>(
+    {
+        key: "progress",
+        default: []
+    }
+)
