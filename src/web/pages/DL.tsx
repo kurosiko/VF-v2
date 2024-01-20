@@ -5,7 +5,7 @@ import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../Atoms/Atoms";
 import { Gen_opts } from "../../func/gen_opts";
 import { JSONType } from "../../JsonType";
-import { Queue } from "../../Queue";
+import { Progress} from "../../Progress";
 export const DL = () => {
     const url = useRef<HTMLInputElement>(null);
     const [config, SetConfig] = useRecoilState(CONFIG);
@@ -24,20 +24,12 @@ export const DL = () => {
         window.api.download(Gen_opts(url, config));
     }
     function load_progress() {
-        const test = [
-            {
-                pid:20,
-                title: "SAKURA",
-                percent: 50,
-                thumbnail:
-                    "https://i1.sndcdn.com/artworks-c7WnXKYIXUQ5mASP-YvK1cw-original.jpg",
-            }
-        ];
-        const queue = progress.map((item: Queue): JSX.Element => {
-            console.log(item);
+        const queue = progress.map((item: Progress): JSX.Element => {
             return (
-                <div className="progress">
-                    <img src={item.thumbnail}></img>
+                <div className="progress" key={item.pid}>
+                    <div className="thumbnail">
+                        <img src={item.thumbnail} />
+                    </div>
                     <div className="progress_main">
                         <div className="progress_data">
                             <label className="title">{item.title}</label>

@@ -2,11 +2,11 @@ import React from "react";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../Atoms/Atoms";
 import { Gen_opts } from "../../func/gen_opts";
-import "../css/Dev.css"
-import { Queue } from "../../Queue";
+import "../css/Dev.css";
+import { Progress } from "../../Progress";
 export const Dev = () => {
-    const [config, setConfig] = useRecoilState(CONFIG)
-    const [progress, setProgress] = useRecoilState(PROGRESS)
+    const [config, setConfig] = useRecoilState(CONFIG);
+    const [progress, setProgress] = useRecoilState(PROGRESS);
     return (
         <>
             <h1 className="header">Developer</h1>
@@ -23,9 +23,9 @@ export const Dev = () => {
                     onClick={() => {
                         const pre = [...progress];
                         pre.push({
-                            pid:20,
-                            title: "SAKURA"
-                        } as Queue);
+                            pid: 20,
+                            title: "SAKURA",
+                        } as Progress);
                         console.log(pre);
                         setProgress(pre);
                     }}

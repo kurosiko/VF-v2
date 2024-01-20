@@ -1,4 +1,4 @@
-export interface Queue {
+export interface Progress {
     pid: number;
     title?: string;
     thumbnail?: string;

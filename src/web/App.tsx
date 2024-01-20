@@ -9,24 +9,30 @@ import { Option } from "./Option";
 import { JSONType } from "../JsonType";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "./Atoms/Atoms";
-import { Queue } from "../Queue";
+import { Progress } from "../Progress";
 export const App = () => {
     const navigate = useNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
-    const [progress,SetProgress] = useRecoilState(PROGRESS)
+    const [progress, SetProgress] = useRecoilState(PROGRESS);
     window.api.ResConfig((Res: JSONType) => {
         SetConfig(Res);
     });
-    window.api.ResProgress((Res: Queue) => {
-        const pre = [...progress]
-        pre.push(Res)
-        SetProgress(pre)
-    })
     window.api.ReqConfig_Save(() => {
-        console.log("close Req");
         window.api.ResConfig_Save(config);
     });
+    window.api.ReceiveBase((base_data: Progress) => {
+        SetProgress([base_data, ...progress]);
+    });
+    window.api.Kill((pid: number) => {
+        console.log(pid);
+        SetProgress(
+            progress.filter((item: Progress) => {
+                return item.pid != pid;
+            })
+        );
+    });
     console.log(config);
+    console.log(progress);
     const Gen_pre = () => {
         const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
         return gened_pre;

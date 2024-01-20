@@ -253,7 +253,7 @@ export default class YTDlpWrap {
         options = YTDlpWrap.setDefaultOptions(options);
         const execEventEmitter = new EventEmitter() as YTDlpEventEmitter;
         const ytDlpProcess = spawn(this.binaryPath, ytDlpArguments, options);
-        
+
         execEventEmitter.ytDlpProcess = ytDlpProcess;
         YTDlpWrap.bindAbortSignal(abortSignal, ytDlpProcess);
 
@@ -375,16 +375,13 @@ export default class YTDlpWrap {
 
     async getVideoInfo(ytDlpArguments: string | string[]): Promise<any> {
         if (typeof ytDlpArguments == "string")
-            ytDlpArguments = [ytDlpArguments];
-        if (
-            !ytDlpArguments.includes("-f") &&
-            !ytDlpArguments.includes("--format")
-        )
-            ytDlpArguments = ytDlpArguments.concat(["-f", "best"]);
-
-        let ytDlpStdout = await this.execPromise(
-            ytDlpArguments.concat(["--dump-json"])
-        );
+            ytDlpArguments = [
+                ytDlpArguments.replace(/&/g,"'&'"),
+                "-J",
+                "-I",
+                "1",
+            ];
+        let ytDlpStdout = await this.execPromise(ytDlpArguments);
         try {
             return JSON.parse(ytDlpStdout);
         } catch (e) {
@@ -392,6 +389,12 @@ export default class YTDlpWrap {
                 "[" + ytDlpStdout.replace(/\n/g, ",").slice(0, -1) + "]"
             );
         }
+    }
+
+    //added
+    async getTnumbnail(url: string): Promise<string> {
+        let ytDlpStdout = await this.execPromise([url, "--get-thumbnail"]);
+        return ytDlpStdout;
     }
 
     static bindAbortSignal(

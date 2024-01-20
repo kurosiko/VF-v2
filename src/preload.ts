@@ -1,11 +1,11 @@
 import { error } from "console";
 import { contextBridge, ipcRenderer } from "electron";
-import { config } from "process";
+import { config, removeAllListeners } from "process";
 import { JSONType } from "./JsonType";
 
 contextBridge.exposeInMainWorld("api", {
     download: (opts: string[]) => {
-        ipcRenderer.invoke("download",opts).catch((error) => {
+        ipcRenderer.invoke("download", opts).catch((error) => {
             console.log(error);
         });
     },
@@ -27,7 +27,7 @@ contextBridge.exposeInMainWorld("api", {
         });
     },
     ResConfig: (config: Function) => {
-        ipcRenderer.removeAllListeners("ResConfig")
+        ipcRenderer.removeAllListeners("ResConfig");
         ipcRenderer.once("ResConfig", (_, args) => {
             config(args);
         });
@@ -40,27 +40,22 @@ contextBridge.exposeInMainWorld("api", {
     },
     ResConfig_Save: (config: JSONType) => {
         ipcRenderer.invoke("ResConfig_Save", config).catch((error) => {
-            console.log(error)
-        })
-    }
-    ,
+            console.log(error);
+        });
+    },
     SaveConfig: (config: JSONType) => {
         ipcRenderer.invoke("save", config).catch((error) => {
             console.log(error);
         });
     },
-    sendThumbnail: (thumbnail: Function) => {
-        ipcRenderer.once("thumbnail", (_event, args) => {
-            console.log(args);
-            thumbnail(args);
+    ReceiveBase: (f: Function) => {
+        ipcRenderer.on("sendBase", (_, base_data) => {
+            f(base_data);
         });
     },
-    ResProgress: (progress: Function) => {
-        ipcRenderer.on("progress", (_event, args) => {
-            progress(args)
-        });
-    },
-    ReciveProgress: () => {
-        
+    Kill: (f: Function) => {
+        ipcRenderer.on("close", (_, pid) => {
+            f(pid)
+        })
     }
 });

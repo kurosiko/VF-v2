@@ -4,9 +4,8 @@ function dir(config: JSONType) {
     let output = config.dir;
     if (config.general.dl) output = path.join(output, "DL_Video");
     if (config.general.list) {
-        if (config.general.playlist) {
+        if (config.general.playlist)
             output = path.join(output, "%(playlist|)s");
-        }
     } else {
         if (config.general.uploader) output = path.join(output, "%(uploader)s");
     }
@@ -16,7 +15,9 @@ function dir(config: JSONType) {
 function format(config: JSONType) {
     let preset = [];
     if (config.general.only) {
-        preset.push(config.audio.string.quality);
+        preset.push(
+            `${config.audio.string.quality}`
+        );
         if (config.audio.boolean.force) preset.push("-x");
         preset.push("--audio-format", config.audio.string.codec);
     } else {
