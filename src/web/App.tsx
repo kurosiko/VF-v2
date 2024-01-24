@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import "./css/Back.css";
@@ -30,6 +30,17 @@ export const App = () => {
                 return item.pid != pid;
             })
         );
+    });
+    window.api.Refresh((Refresh: Progress) => {
+        const target = progress.findIndex((item: Progress) => {
+            return item.pid == Refresh.pid;
+        });
+        const pre = [...progress];
+        pre[target] = Object.assign(
+            JSON.parse(JSON.stringify(progress[target])),
+            Refresh
+        );
+        SetProgress(pre);
     });
     console.log(config);
     console.log(progress);

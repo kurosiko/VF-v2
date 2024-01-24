@@ -54,8 +54,15 @@ contextBridge.exposeInMainWorld("api", {
         });
     },
     Kill: (f: Function) => {
+        ipcRenderer.removeAllListeners("close")
         ipcRenderer.on("close", (_, pid) => {
             f(pid)
+        })
+    },
+    Refresh: (f: Function) => {
+        ipcRenderer.removeAllListeners("progress");
+        ipcRenderer.on("progress", (_, progress) => {
+            f(progress)
         })
     }
 });

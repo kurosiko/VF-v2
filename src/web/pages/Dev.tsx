@@ -24,7 +24,8 @@ export const Dev = () => {
                         const pre = [...progress];
                         pre.push({
                             pid: 20,
-                            title: "SAKURA",
+                            title: "ABCDEFGHIJKLMNO",
+                            percent:Math.floor(Math.random()*100)
                         } as Progress);
                         console.log(pre);
                         setProgress(pre);

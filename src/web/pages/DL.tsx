@@ -34,7 +34,6 @@ export const DL = () => {
                         <div className="progress_data">
                             <label className="title">{item.title}</label>
                             <label className="percent">{item.percent}%</label>
-                            <label>{item.pid}</label>
                         </div>
                         <progress
                             value={item.percent}

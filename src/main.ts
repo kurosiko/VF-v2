@@ -9,6 +9,7 @@ console.log(config);
 if (config.other.update) {
     config.ytdlp_v = await setup(config.ytdlp_v);
 }
+app.setAppUserModelId("VideoFetcher");
 function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 500,

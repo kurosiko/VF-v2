@@ -19,7 +19,8 @@
 	"electronmon": {
 		"patterns": [
 			"dist/**/*",
-			"!config/**"
+			"!config/**",
+			"!resource/**"
 		]
 	},
 	"dependencies": {

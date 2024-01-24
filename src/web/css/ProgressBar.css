@@ -31,7 +31,7 @@ img{
     flex: 1;
 }
 .title {
-    flex: 2;
+    flex: 3;
     width: 0px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -41,10 +41,11 @@ img{
     flex: 1;
     width: 100%;
     background-color: #fff;
+    transition: 1s ease-in-out;
 }
 .progressbar::-webkit-progress-bar{
     background-color: rgb(80, 80, 80);
 }
 .progressbar::-webkit-progress-value{
-    background-color: rgb(11, 125, 28);
+    background-color: #1f6aa5;
 }
