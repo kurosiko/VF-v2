@@ -1,9 +1,10 @@
 import path from "path";
-import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
+import { BrowserWindow, app, dialog, ipcMain, shell,nativeImage ,Notification} from "electron";
 import { load, save } from "./func/config";
 import { JSONType } from "./JsonType";
 import { setup } from "./func/setup";
 import { download } from "./func/download";
+import { Noti } from "./Noti";
 const config: JSONType = load();
 console.log(config);
 if (config.other.update) {
@@ -62,4 +63,22 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow();
+    const test = async (noti_data:Noti) => {
+        const t_data = await fetch(noti_data.thumbnail);
+        const image = nativeImage.createFromBuffer(
+            Buffer.from(await t_data.arrayBuffer())
+        );
+        const notification = new Notification({
+            title: noti_data.title,
+            body: noti_data.uploader,
+            icon:image
+        });
+        notification.show();
+    }
+    test({
+        title: "test",
+        uploader: "me!",
+        thumbnail: "https://i.ytimg.com/vi/VTNLVKz_1zc/maxresdefault.jpg",
+        base_url: "https://www.youtube.com/watch?v=VTNLVKz_1zc",
+    });
 });
