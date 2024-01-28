@@ -4,7 +4,6 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import { Noti } from "../Noti";
-import { title } from "process";
 async function notification(noti_data: Noti) {
     const image_path = path.resolve("./thumbnail.png");
     if (!noti_data.output) {
@@ -57,6 +56,7 @@ export const download = async (opts: string[]) => {
     console.log(opts.join(" "));
     const yt_dlp = new YTDlpWrap(path.resolve("yt-dlp.exe"));
     let closed = false;
+    let has_error = false;
     let Rate_ms = 50;
     let Rate_state = 0;
     let noti_data: Noti;
@@ -88,6 +88,9 @@ export const download = async (opts: string[]) => {
             mainWindow.webContents.send("close", pid);
         })
         .on("error", (e) => {
+            closed = true;
+            has_error = true;
+            mainWindow.webContents.send("close", pid);
             console.log(e);
         })
         .on("ytDlpEvent", (e, ee) => {
@@ -116,45 +119,54 @@ export const download = async (opts: string[]) => {
             });
         }
     }
-    noti_data = {
-        title: info.title,
-        uploader: info.uploader,
-        base_url: opts[0],
-        thumbnail: info.thumbnail,
-        output: `${await yt_dlp.execPromise([
-            ...opts,
-            "--print",
-            "filename",
-            "-I",
-            "1",
-        ])}`.replace(/\n/g, ""),
-    };
-    noti_data = {
-        title: noti_data.title.replace(/&/g, "&amp;"),
-        uploader: noti_data.uploader.replace(/&/g, "&amp;"),
-        base_url: noti_data.base_url.replace(/&/g, "&amp;"),
-        thumbnail: noti_data.thumbnail.replace(/&/g, "&amp;"),
-        output: noti_data.output,
-    };
-    console.log(noti_data);
-    function waitClose(resolve: Function, interval: number) {
-        console.log("noti wait");
-        if (closed) {
-            console.log("noti return");
-            resolve();
-            return;
-        }
-        const intervalID = setInterval(() => {
-            if (!closed) {
+    if (!has_error) {
+        noti_data = {
+            title: info.title,
+            uploader: info.uploader,
+            base_url: opts[0],
+            thumbnail: info.thumbnail,
+            output: `${await yt_dlp.execPromise([
+                ...opts,
+                "--print",
+                "filename",
+                "-I",
+                "1",
+            ])}`.replace(/\n/g, ""),
+        };
+        noti_data = {
+            title: noti_data.title.replace(/&/g, "&amp;"),
+            uploader: noti_data.uploader.replace(/&/g, "&amp;"),
+            base_url: noti_data.base_url.replace(/&/g, "&amp;"),
+            thumbnail: noti_data.thumbnail.replace(/&/g, "&amp;"),
+            output: noti_data.output,
+        };
+        console.log(noti_data);
+        function waitClose(resolve: Function, interval: number) {
+            console.log("noti wait");
+            if (closed) {
+                console.log("noti return");
+                resolve();
                 return;
             }
-            clearInterval(intervalID);
-            resolve();
-            console.log("noti return");
-        }, interval);
+            const intervalID = setInterval(() => {
+                if (!closed) {
+                    return;
+                }
+                clearInterval(intervalID);
+                resolve();
+                console.log("noti return");
+            }, interval);
+        }
+        waitClose(() => {
+            console.log("noti run");
+            notification(noti_data);
+        }, 100);
+    } else {
+        notification({
+            title: "ERROR",
+            uploader: "Something worng!",
+            base_url: opts[0],
+            thumbnail: "https://wallpapercave.com/wp/wp9414308.png",
+        });
     }
-    waitClose(() => {
-        console.log("noti run");
-        notification(noti_data);
-    }, 100);
 };

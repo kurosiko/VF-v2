@@ -18,7 +18,7 @@ const Default = {
         },
         string: {
             codec: "mp4",
-            quality: "bv+ba",
+            quality: "highest",
         },
         qualityList: {
             highest: "bestvideo+bestaudio",
