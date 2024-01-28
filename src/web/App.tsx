@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { useNavigate, Route, Routes, Link } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import "./css/Back.css";
 import "./css/General.css";
+import "./css/Toast.css"
 import { DL } from "./pages/DL";
 import { Error } from "./pages/Error";
 import { Option } from "./Option";
@@ -10,8 +11,9 @@ import { JSONType } from "../JsonType";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "./Atoms/Atoms";
 import { Progress } from "../Progress";
+import { useTransitionNavigate } from "./pages/Tran_nav";
 export const App = () => {
-    const navigate = useNavigate();
+    const { transitionNavigate } = useTransitionNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
     const [progress, SetProgress] = useRecoilState(PROGRESS);
     window.api.ResConfig((Res: JSONType) => {
@@ -78,7 +80,7 @@ export const App = () => {
                     ) : (
                         <button
                             onClick={() => {
-                                navigate("option/dev");
+                                transitionNavigate("option/dev");
                             }}
                         >
                             Dev
@@ -87,7 +89,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            navigate("option/general");
+                            transitionNavigate("option/general");
                         }}
                     >
                         General
@@ -95,7 +97,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            navigate("option/video");
+                            transitionNavigate("option/video");
                         }}
                     >
                         Video
@@ -103,7 +105,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            navigate("option/audio");
+                            transitionNavigate("option/audio");
                         }}
                     >
                         Audio
@@ -111,7 +113,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            navigate("option/other");
+                            transitionNavigate("option/other");
                         }}
                     >
                         Other
@@ -119,7 +121,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            navigate("option/log");
+                            transitionNavigate("option/log");
                         }}
                     >
                         Log

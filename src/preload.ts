@@ -1,6 +1,4 @@
-import { error } from "console";
 import { contextBridge, ipcRenderer } from "electron";
-import { config, removeAllListeners } from "process";
 import { JSONType } from "./JsonType";
 
 contextBridge.exposeInMainWorld("api", {
@@ -49,13 +47,14 @@ contextBridge.exposeInMainWorld("api", {
         });
     },
     ReceiveBase: (f: Function) => {
-        ipcRenderer.on("sendBase", (_, base_data) => {
+        ipcRenderer.removeAllListeners("sendBase");
+        ipcRenderer.once("sendBase", (_, base_data) => {
             f(base_data);
         });
     },
     Kill: (f: Function) => {
         ipcRenderer.removeAllListeners("close")
-        ipcRenderer.on("close", (_, pid) => {
+        ipcRenderer.once("close", (_, pid) => {
             f(pid)
         })
     },

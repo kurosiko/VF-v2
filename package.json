@@ -20,7 +20,8 @@
 		"patterns": [
 			"dist/**/*",
 			"!config/**",
-			"!resource/**"
+			"!resource/**",
+			"!thumbnail.png"
 		]
 	},
 	"dependencies": {
@@ -37,6 +38,7 @@
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.20.0",
+		"react-slide-routes": "^3.0.3",
 		"recoil": "^0.7.7",
 		"request": "^2.88.2",
 		"stream": "^0.0.2",

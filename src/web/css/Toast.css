@@ -1,0 +1,23 @@
+.toast{
+    position: fixed;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(153, 242, 19, 0.519);
+    border-radius: 5px;
+    bottom: 10px;
+    right: 10px;
+    width: 100px;
+    height:35px;
+    z-index: 50;
+    animation: 0.5s toast ease-in-out,0.5s toast 2s ease-in-out reverse forwards;
+}
+@keyframes toast{
+    from{
+        transform: translateX(150%);
+    }
+    to{
+        transform: translateX(0%);
+    }
+}

@@ -1,11 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
+
 import "../css/DL.css";
 import "../css/ProgressBar.css";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../Atoms/Atoms";
 import { Gen_opts } from "../../func/gen_opts";
 import { JSONType } from "../../JsonType";
-import { Progress} from "../../Progress";
+import { Progress } from "../../Progress";
 export const DL = () => {
     const url = useRef<HTMLInputElement>(null);
     const [config, SetConfig] = useRecoilState(CONFIG);
@@ -55,11 +56,26 @@ export const DL = () => {
                 onSubmit={() => {
                     if (url.current?.value) {
                         download(url.current.value);
+                        url.current.value = "";
                     }
+                }}
+                onDoubleClick={async (event) => {
+                    navigator.clipboard.readText().then((text) => {
+                        if (URL.canParse(text)) {
+                            download(text);
+                        } else {
+                            console.log("Error Toast")//
+                        }
+                    });
+                
                 }}
             >
                 <form>
-                    <input type="text" placeholder="Enter URL" ref={url} />
+                    <input
+                        type="text"
+                        placeholder="Enter URL or Double Click to Paste"
+                        ref={url}
+                    />
                 </form>
             </div>
             <div

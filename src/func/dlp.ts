@@ -379,7 +379,7 @@ export default class YTDlpWrap {
                 ytDlpArguments.replace(/&/g,"'&'"),
                 "-J",
                 "-I",
-                "2"
+                "1"
             ];
         let ytDlpStdout = await this.execPromise(ytDlpArguments);
         try {

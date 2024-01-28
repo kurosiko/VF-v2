@@ -3,5 +3,6 @@ export interface Noti{
     uploader: string,
     thumbnail: string,
     user_photo?: string,
-    base_url:string
+    base_url: string
+    output?:string
 }

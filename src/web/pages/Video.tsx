@@ -21,7 +21,7 @@ export const Video = () => {
         option: string
     ) {
         const pre = Gen_pre();
-        pre.video.string[`${option}`] = event.target.value;
+        pre.video.string[option] = event.target.value;
         SetConfig(pre);
     }
     const LoadList = (target: string) => {

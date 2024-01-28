@@ -1,0 +1,22 @@
+#inputbox {
+    view-transition-name: inputbox;
+}
+.slide-to-left::view-transition-old(inputbox) {
+    animation: 0.3s slide-to-left ease-in-out;
+}
+.slide-to-left::view-transition-new(inputbox) {
+    animation: 0.3s slide-from-right ease-in-out;
+}
+
+@keyframes slide-to-left {
+    to {
+        transform: translateX(0%);
+        filter: brightness(0.3);
+    }
+}
+@keyframes slide-from-right {
+    from {
+        transform: translateX(100%);
+        box-shadow: -10px 0px 10px rgba(29, 237, 220);
+    }
+}

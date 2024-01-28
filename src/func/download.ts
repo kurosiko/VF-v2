@@ -1,15 +1,65 @@
 import { BrowserWindow, Notification } from "electron";
 import YTDlpWrap from "./dlp";
 import path from "path";
-import { c_noti } from "./notification";
+import os from "os";
+import fs from "fs";
 import { Noti } from "../Noti";
+import { title } from "process";
+async function notification(noti_data: Noti) {
+    const image_path = path.resolve("./thumbnail.png");
+    if (!noti_data.output) {
+        noti_data.output = path.join(os.homedir(), "Desktop");
+    }
+    if (!noti_data.thumbnail) {
+        noti_data.thumbnail = "https://wallpapercave.com/wp/wp9414308.png";
+    }
+    fs.writeFileSync(
+        image_path,
+        Buffer.from(await (await fetch(noti_data.thumbnail)).arrayBuffer())
+    );
+    const xml = `
+        <toast launch="myapp:action=navigate&amp;contentId=351" activationType="protocol">
+        <visual>
+            <binding template="ToastGeneric">
+                <image placement="hero" src="${image_path}"/>
+                <text>${noti_data.title}</text>
+                <text>${noti_data.uploader}</text>
+            </binding>
+        </visual>
+        <actions>
+            <action
+                content="PlayNow"
+                activationType="protocol"
+                arguments="${noti_data.output}"/>    
+            <action
+                content="Open Folder"
+                activationType="protocol"
+                arguments="${path.dirname(noti_data.output)}"/>
+            <action
+                content="Open URL"
+                activationType="protocol"
+                arguments="${noti_data.base_url.replace(/&/, "&amp;")}"/>
+            <action
+                content='Did u find this?'
+                arguments="https://www.canvas.ac/"
+                placement='contextMenu'
+                activationType="protocol"/>
+        </actions>
+    </toast>`;
+    console.log(xml);
+    new Notification({
+        toastXml: xml,
+    }).show();
+}
 export const download = async (opts: string[]) => {
     const mainWindow = BrowserWindow.getAllWindows()[0];
     console.log(opts);
+    console.log(opts.join(" "));
     const yt_dlp = new YTDlpWrap(path.resolve("yt-dlp.exe"));
     let closed = false;
     let Rate_ms = 50;
     let Rate_state = 0;
+    let noti_data: Noti;
     /*
     0:send progress
     1:in count
@@ -32,17 +82,16 @@ export const download = async (opts: string[]) => {
             } else {
             }
         })
-        .on("close", (e) => {
+        .on("close", () => {
             closed = true;
             console.log(`close in ${pid}`);
             mainWindow.webContents.send("close", pid);
-            //c_noti(noti_data)
         })
         .on("error", (e) => {
             console.log(e);
         })
         .on("ytDlpEvent", (e, ee) => {
-            console.log(e, ee);
+            //console.log(e,ee)
         });
     let pid = emitter.ytDlpProcess?.pid;
     if (!pid) {
@@ -50,34 +99,62 @@ export const download = async (opts: string[]) => {
         console.log("Rand PID");
     }
     const info = await yt_dlp.getVideoInfo(opts[0]);
-    const noti_data:Noti = {
-        title: info.fulltitle,
-        uploader: info.uploader,
-        base_url: opts[0],
-        thumbnail:info["thumbnail"]
-    };
     const base_data = {
         pid: pid,
-        title: info["fulltitle"],
-        thumbnail: info["thumbnail"],
+        title: info.title,
+        thumbnail: info.thumbnail,
         percent: 0,
     };
-    console.log(base_data);
     if (!closed) {
+        console.log(base_data);
         mainWindow.webContents.send("sendBase", base_data);
         console.log(`from ${pid}`);
-        const playlist = await yt_dlp.execPromise([
-            opts[0],
-            "-I",
-            "1",
-            "--print",
-            "playlist",
-        ]);
-        if (playlist != "NA\n") {
+        if (info._type == "playlist" && !opts.includes("--no-playlist")) {
             mainWindow.webContents.send("progress", {
                 pid: pid,
-                title: playlist,
+                title: info.title,
             });
         }
     }
+    noti_data = {
+        title: info.title,
+        uploader: info.uploader,
+        base_url: opts[0],
+        thumbnail: info.thumbnail,
+        output: `${await yt_dlp.execPromise([
+            ...opts,
+            "--print",
+            "filename",
+            "-I",
+            "1",
+        ])}`.replace(/\n/g, ""),
+    };
+    noti_data = {
+        title: noti_data.title.replace(/&/g, "&amp;"),
+        uploader: noti_data.uploader.replace(/&/g, "&amp;"),
+        base_url: noti_data.base_url.replace(/&/g, "&amp;"),
+        thumbnail: noti_data.thumbnail.replace(/&/g, "&amp;"),
+        output: noti_data.output,
+    };
+    console.log(noti_data);
+    function waitClose(resolve: Function, interval: number) {
+        console.log("noti wait");
+        if (closed) {
+            console.log("noti return");
+            resolve();
+            return;
+        }
+        const intervalID = setInterval(() => {
+            if (!closed) {
+                return;
+            }
+            clearInterval(intervalID);
+            resolve();
+            console.log("noti return");
+        }, interval);
+    }
+    waitClose(() => {
+        console.log("noti run");
+        notification(noti_data);
+    }, 100);
 };

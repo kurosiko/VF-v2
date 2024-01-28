@@ -7,3 +7,4 @@ config.json
 yt-dlp.exe
 ffmpeg.exe
 output.mp4
+thumbnail.png

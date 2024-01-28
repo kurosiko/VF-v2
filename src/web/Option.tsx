@@ -6,8 +6,9 @@ import { Audio } from "./pages/Audio";
 import { Other } from "./pages/Other";
 import { Log } from "./pages/Log";
 import { Dev } from "./pages/Dev";
+import { useTransitionNavigate } from "./pages/Tran_nav";
 export const Option = () => {
-    const navigate = useNavigate();
+    const { transitionNavigate } = useTransitionNavigate();
     return (
         <>
             <Routes>
@@ -17,13 +18,13 @@ export const Option = () => {
                 <Route path="/other" element={<Other />} />
                 <Route path="/log" element={<Log />} />
                 <Route path="/dev" element={<Dev/>}/>
-                <Route path="*" element={<h1>/Option but 404</h1>} />
+                <Route path="*" element={<h2>In option Error</h2>} />
             </Routes>
             <button
                 type="button"
                 id="back"
                 onClick={() => {
-                    navigate("/");
+                    transitionNavigate("/")
                 }}
             >
                 Back to Home
