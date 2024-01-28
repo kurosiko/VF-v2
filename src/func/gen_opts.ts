@@ -15,15 +15,19 @@ function dir(config: JSONType) {
 function format(config: JSONType) {
     let preset = [];
     if (config.general.only) {
-        preset.push(
-            `${config.audio.string.quality}`
-        );
+        preset.push(config.audio.qualityList[config.audio.string.quality]);
         if (config.audio.boolean.force) preset.push("-x");
-        preset.push("--audio-format", config.audio.string.codec);
+        preset.push(
+            "--audio-format",
+            config.audio.codecList[config.audio.string.codec]
+        );
     } else {
-        preset.push(config.video.string.quality);
+        preset.push(config.video.qualityList[config.video.string.quality]);
         if (config.video.boolean.force)
-            preset.push("--merge-output-format", config.video.string.codec);
+            preset.push(
+                "--merge-output-format",
+                config.video.codecList[config.video.string.codec]
+            );
     }
     if (!config.general.list) preset.push("--no-playlist");
     return preset;
