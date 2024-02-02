@@ -21,11 +21,15 @@ export const CONFIG = atom<JSONType>({
             string: {
                 codec: "null",
                 quality: "null",
+                default: "null",
             },
             qualityList: {
                 null: "null",
             },
             codecList: {
+                null: "null",
+            },
+            defaultList: {
                 null: "null",
             },
         },
@@ -38,11 +42,15 @@ export const CONFIG = atom<JSONType>({
             string: {
                 codec: "null",
                 quality: "null",
+                default: "null",
             },
             qualityList: {
                 null: "null",
             },
             codecList: {
+                null: "null",
+            },
+            defaultList: {
                 null: "null",
             },
         },

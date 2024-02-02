@@ -66,13 +66,13 @@ html {
     }
 }
 .options {
-    display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 20px;
     box-sizing: border-box;
+    overflow-y: scroll;
     > * {
-        flex: 1;
+        height: 50px;
     }
 }
 .checkbox {
@@ -159,7 +159,7 @@ html {
     }
     > select {
         flex: 3;
-        border: 1px #232323;
+        border: 0px;
         height: 25px;
         border-radius: 2px;
         background-color: #242424;

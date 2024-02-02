@@ -63,5 +63,10 @@ contextBridge.exposeInMainWorld("api", {
         ipcRenderer.on("progress", (_, progress) => {
             f(progress)
         })
+    },
+    Open_dir: () => {
+        ipcRenderer.invoke("open_dir").catch((err) => {
+            console.log(err);
+        });
     }
 });

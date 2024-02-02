@@ -1,5 +1,4 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../Atoms/Atoms";
 import { Gen_opts } from "../../func/gen_opts";
@@ -17,7 +16,12 @@ export const Dev = () => {
                 <a href="https://github.com/kurosiko/VF-v2">Repository</a>
                 <button
                     onClick={() => {
-                        window.api.download(Gen_opts("test", config));
+                        window.api.download(
+                            Gen_opts(
+                                "https://www.youtube.com/watch?v=YvJYz2SSK6k",
+                                config
+                            )
+                        );
                     }}
                 >
                     Download
@@ -43,10 +47,19 @@ export const Dev = () => {
                 >
                     Clear
                 </button>
+                <button
+                    onClick={() => {
+                        transitionNavigate("/");
+                    }}
+                >
+                    Tran_nav
+                </button>
+                <button onClick={() => {
+                    window.api.Open_dir()
+                }}>
+                    Base dir
+                </button>
             </div>
-            <button onClick={() => {
-                transitionNavigate("/")
-            }}>test</button>
         </>
     );
 };

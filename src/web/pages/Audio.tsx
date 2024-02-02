@@ -1,20 +1,18 @@
 import React, { useRef } from "react";
-import { JSONType } from "../../JsonType";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
 
 export const Audio = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Gen_pre = () => {
-        const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
-        return gened_pre;
+        return JSON.parse(JSON.stringify(config));
     };
     function Reload(
         event: React.ChangeEvent<HTMLInputElement>,
         option: string
     ) {
         const pre = Gen_pre();
-        pre.audio.boolean[`${option}`] = event.target.checked;
+        pre.audio.boolean[option] = event.target.checked;
         SetConfig(pre);
     }
     function SL_Reload(
@@ -22,30 +20,29 @@ export const Audio = () => {
         option: string
     ) {
         const pre = Gen_pre();
-        pre.audio.string[`${option}`] = event.target.value;
+        pre.audio.string[option] = event.target.value;
         SetConfig(pre);
     }
-    const LoadList = (target: string) => {
-        const pre = [];
-        let obj;
-        if (target == "codec") {
-            obj = config.audio.codecList;
+    const LoadList = (target: "codecList" | "qualityList" | "defaultList") => {
+        const pre: React.ReactElement[] = [];
+        const lists = config.audio[target];
+        for (const key of Object.keys(lists)) {
+            pre.push(<option key={key}>{key}</option>);
         }
-        if (target == "quality") {
-            obj = config.audio.qualityList;
-        }
-        for (const i of Object.keys(Object(obj))) {
-            pre.push(React.createElement("option", { key: i }, i));
-        }
-        return React.createElement(
-            "select",
-            {
-                value: config.audio.string[`${target}`],
-                onChange: (e: React.ChangeEvent<HTMLSelectElement>) => {
-                    SL_Reload(e, target);
-                },
-            },
-            [...pre]
+        const match: { [key: string]: string } = {
+            codecList: "codec",
+            qualityList: "quality",
+            defaultList: "default",
+        };
+        return (
+            <select
+                value={config.audio.string[target]}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    SL_Reload(e, match[target]);
+                }}
+            >
+                {[...pre]}
+            </select>
         );
     };
     return (
@@ -54,48 +51,35 @@ export const Audio = () => {
             <div className="options">
                 <div className="combbox">
                     <label>Quality</label>
-                    {LoadList("quality")}
+                    {LoadList("qualityList")}
                 </div>
                 <div className="combbox">
                     <label>Codec</label>
-                    {LoadList("codec")}
+                    {LoadList("codecList")}
                 </div>
-                <div className="checkbox">
-                    <label className="togglebutton">
-                        <input
-                            type="checkbox"
-                            checked={config.audio.boolean.force}
-                            onChange={(e) => {
-                                Reload(e, "force");
-                            }}
-                        />
-                    </label>
-                    <label>Force convert</label>
+                <div className="combbox">
+                    <label>Default</label>
+                    {LoadList("defaultList")}
                 </div>
-                <div className="checkbox">
-                    <label className="togglebutton">
-                        <input
-                            type="checkbox"
-                            checked={config.audio.boolean.thumbnail}
-                            onChange={(e) => {
-                                Reload(e, "thumbnail");
-                            }}
-                        />
-                    </label>
-                    <label>Thumbnail</label>
-                </div>
-                <div className="checkbox">
-                    <label className="togglebutton">
-                        <input
-                            type="checkbox"
-                            checked={config.audio.boolean.metadata}
-                            onChange={(e) => {
-                                Reload(e, "metadata");
-                            }}
-                        />
-                    </label>
-                    <label>Metadata</label>
-                </div>
+                {["force", "thumbanil", "metadata"].map((option) => {
+                    return (
+                        <div className="checkbox" key={option}>
+                            <label className="togglebutton">
+                                <input
+                                    type="checkbox"
+                                    checked={config.audio.boolean[option]}
+                                    onChange={(e) => {
+                                        Reload(e, option);
+                                    }}
+                                ></input>
+                            </label>
+                            <label>
+                                {option.charAt(0).toUpperCase() +
+                                    option.slice(1)}
+                            </label>
+                        </div>
+                    );
+                })}
             </div>
         </>
     );

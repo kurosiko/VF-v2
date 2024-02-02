@@ -16,6 +16,10 @@ function format(config: JSONType) {
     let preset = [];
     if (config.general.only) {
         preset.push(config.audio.qualityList[config.audio.string.quality]);
+        if (config.audio.defaultList[config.audio.string.default])
+            preset.push(
+                `/${config.audio.defaultList[config.audio.string.default]}`
+            );
         if (config.audio.boolean.force) preset.push("-x");
         preset.push(
             "--audio-format",
@@ -23,6 +27,10 @@ function format(config: JSONType) {
         );
     } else {
         preset.push(config.video.qualityList[config.video.string.quality]);
+        if (config.video.defaultList[config.video.string.default])
+            preset.push(
+                `/${config.video.defaultList[config.video.string.default]}`
+            );
         if (config.video.boolean.force)
             preset.push(
                 "--merge-output-format",
@@ -60,7 +68,7 @@ function can_embed(codec: string) {
 export const Gen_opts = (url: string, config: JSONType) => {
     const opts = [
         url,
-        ...["-o", `${dir(config)}`],
+        ...["-o", dir(config)],
         ...["-f", ...format(config)],
         ...embed(config),
         "-i",

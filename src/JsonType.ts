@@ -11,6 +11,7 @@ interface Media {
     string: Str_Dict;
     qualityList: Str_Dict;
     codecList: Str_Dict;
+    defaultList: Str_Dict;
 }
 export interface Boolen_Dict {
     [key: string]: boolean;

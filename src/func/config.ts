@@ -1,14 +1,15 @@
 import fs from "fs";
 import path from "path";
+import os from "os";
 import { JSONType } from "../JsonType";
 const Default = {
-    dir: "./",
+    dir: path.join(os.homedir(), "Desktop"),
     general: {
         dl: true,
         uploader: true,
         playlist: true,
-        only: true,
-        list: true,
+        only: false,
+        list: false,
     },
     video: {
         boolean: {
@@ -19,15 +20,24 @@ const Default = {
         string: {
             codec: "mp4",
             quality: "highest",
+            default: "ba+bv",
         },
         qualityList: {
             highest: "bestvideo+bestaudio",
             NoAudio: "bestvideo",
         },
         codecList: {
-            Auto: "",
-            mp4: "",
-            "You can add codecs from config.json": "",
+            mp4: "mp4",
+            mkv: "mkv",
+            mov: "mov",
+            webm: "webm",
+            flv: "flv",
+            avi: "avi",
+        },
+        defaultList: {
+            error: "",
+            ba_bv: "ba+bv",
+            best: "best",
         },
     },
     audio: {
@@ -38,7 +48,8 @@ const Default = {
         },
         string: {
             codec: "mp3",
-            quality: "ba",
+            quality: "highest",
+            default: "ba",
         },
         qualityList: {
             highest: "bestaudio",
@@ -51,18 +62,24 @@ const Default = {
             opus: "opus",
             wav: "wav",
         },
+        defaultList: {
+            error: "",
+            ba: "ba",
+            best: "best",
+        },
     },
     other: {
         notification: true,
         update: true,
         dev: false,
     },
-    ytdlp_v: "",
+    ytdlp_v: "null",
 };
 export const load = () => {
     const JsonPath = path.resolve("./config/config.json");
     if (!fs.existsSync(JsonPath)) {
         console.log("Log not found");
+        if (!fs.existsSync(path.dirname(JsonPath))) fs.mkdirSync("config");
         fs.writeFileSync(JsonPath, JSON.stringify(Default, null, 4), "utf-8");
     }
     return JSON.parse(fs.readFileSync(JsonPath, "utf-8"));

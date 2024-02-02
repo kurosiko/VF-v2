@@ -18,7 +18,7 @@ export const Other = () => {
     }
     return (
         <>
-            <h1 className="header">other</h1>
+            <h1 className="header">Other</h1>
             <div className="options">
                 <div className="checkbox">
                     <label className="togglebutton">

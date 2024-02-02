@@ -5,15 +5,12 @@ import {
     dialog,
     ipcMain,
     shell,
-    nativeImage,
-    Notification,
-    Menu,
 } from "electron";
 import { load, save } from "./func/config";
 import { JSONType } from "./JsonType";
 import { setup } from "./func/setup";
 import { download } from "./func/download";
-import { Noti } from "./Noti";
+import { exec } from "child_process";
 const config: JSONType = load();
 console.log(config);
 if (config.other.update) {
@@ -67,6 +64,9 @@ function createWindow() {
         if (args.dir != "null") save(args);
         app.quit();
     });
+    ipcMain.handle("open_dir", (_) => {
+        exec(`explorer.exe ${path.resolve("./")}`);
+    })
     return mainWindow;
 }
 
