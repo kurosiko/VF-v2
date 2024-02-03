@@ -5,6 +5,7 @@ import { Gen_opts } from "../../func/gen_opts";
 import "../css/Dev.css";
 import { Progress } from "../../Progress";
 import { useTransitionNavigate } from "./Tran_nav";
+import { escape } from "querystring";
 export const Dev = () => {
     const [config, setConfig] = useRecoilState(CONFIG);
     const [progress, setProgress] = useRecoilState(PROGRESS);
@@ -54,9 +55,11 @@ export const Dev = () => {
                 >
                     Tran_nav
                 </button>
-                <button onClick={() => {
-                    window.api.Open_dir()
-                }}>
+                <button
+                    onClick={() => {
+                        window.api.Open_dir("./");
+                    }}
+                >
                     Base dir
                 </button>
             </div>

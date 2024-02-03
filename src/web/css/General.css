@@ -27,7 +27,7 @@
         transition: all 0.1s ease-in-out;
     }
     > label:hover::before {
-        content: "Click to copy path";
+        content: "Click to open directory";
         width: 100%;
         opacity: 1;
         background-color: #242424;

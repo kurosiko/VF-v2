@@ -1,6 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { JSONType } from "./JsonType";
-
 contextBridge.exposeInMainWorld("api", {
     download: (opts: string[]) => {
         ipcRenderer.invoke("download", opts).catch((error) => {
@@ -53,20 +52,20 @@ contextBridge.exposeInMainWorld("api", {
         });
     },
     Kill: (f: Function) => {
-        ipcRenderer.removeAllListeners("close")
+        ipcRenderer.removeAllListeners("close");
         ipcRenderer.once("close", (_, pid) => {
-            f(pid)
-        })
+            f(pid);
+        });
     },
     Refresh: (f: Function) => {
         ipcRenderer.removeAllListeners("progress");
         ipcRenderer.on("progress", (_, progress) => {
-            f(progress)
-        })
+            f(progress);
+        });
     },
-    Open_dir: () => {
-        ipcRenderer.invoke("open_dir").catch((err) => {
+    Open_dir: (path: string) => {
+        ipcRenderer.invoke("open_dir", path).catch((err) => {
             console.log(err);
         });
-    }
+    },
 });

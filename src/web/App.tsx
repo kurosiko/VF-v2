@@ -3,10 +3,15 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import "./css/Back.css";
 import "./css/General.css";
-import "./css/Toast.css"
+import "./css/Toast.css";
 import { DL } from "./pages/DL";
 import { Error } from "./pages/Error";
-import { Option } from "./Option";
+import { General } from "./pages/General";
+import { Video } from "./pages/Video";
+import { Audio } from "./pages/Audio";
+import { Other } from "./pages/Other";
+import { Log } from "./pages/Log";
+import { Dev } from "./pages/Dev";
 import { JSONType } from "../JsonType";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "./Atoms/Atoms";
@@ -80,51 +85,69 @@ export const App = () => {
                     ) : (
                         <button
                             onClick={() => {
-                                transitionNavigate("option/dev");
+                                transitionNavigate(".");
                             }}
                         >
-                            Dev
+                            <span className="material-symbols-outlined icon">
+                                home
+                            </span>
+                            <label>Home</label>
                         </button>
                     )}
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("option/general");
+                            transitionNavigate("general");
                         }}
                     >
-                        General
+                        <span className="material-symbols-outlined icon">
+                            folder
+                        </span>
+                        <label>General</label>
                     </button>
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("option/video");
+                            transitionNavigate("video");
                         }}
                     >
-                        Video
+                        <span className="material-symbols-outlined icon">
+                            movie
+                        </span>
+                        <label>Video</label>
                     </button>
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("option/audio");
+                            transitionNavigate("audio");
                         }}
                     >
-                        Audio
+                        <span className="material-symbols-outlined icon">
+                            volume_up
+                        </span>
+                        <label>audio</label>
                     </button>
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("option/other");
+                            transitionNavigate("other");
                         }}
                     >
-                        Other
+                        <span className="material-symbols-outlined icon">
+                            tune
+                        </span>
+                        <label>Other</label>
                     </button>
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("option/log");
+                            transitionNavigate("log");
                         }}
                     >
-                        Log
+                        <span className="material-symbols-outlined icon">
+                            subject
+                        </span>
+                        <label>Log</label>
                     </button>
                     <div className="checkbox">
                         <div>
@@ -154,10 +177,27 @@ export const App = () => {
                         </div>
                         <label>Audio Only</label>
                     </div>
+                    {config.other.dev && (
+                        <button
+                            onClick={() => {
+                                transitionNavigate("Dev");
+                            }}
+                        >
+                            <span className="material-symbols-outlined icon">
+                                code
+                            </span>
+                            <label>Dev</label>
+                        </button>
+                    )}
                 </div>
                 <div id="inputbox">
                     <Routes>
-                        <Route path="option/*" element={<Option />} />
+                        <Route path="/general" element={<General />} />
+                        <Route path="/video" element={<Video />} />
+                        <Route path="/audio" element={<Audio />} />
+                        <Route path="/other" element={<Other />} />
+                        <Route path="/log" element={<Log />} />
+                        <Route path="/dev" element={<Dev />} />
                         <Route path="/" element={<DL />} />
                         <Route path="*" element={<Error />} />
                     </Routes>

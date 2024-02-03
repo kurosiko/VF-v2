@@ -63,18 +63,12 @@ export const General = () => {
                 <div id="path">
                     <label
                         onClick={(event) => {
-                            navigator.clipboard.writeText(
-                                event.currentTarget.innerHTML
-                            );
-                            console.log("Path Copied");
+                            if (!(config.dir == "null"))
+                                window.api.Open_dir(config.dir);
                         }}
                         ref={Path}
                     >
-                        {
-                            config.dir ?
-                                config.dir :
-                                "PATH"
-                        }
+                        {config.dir ? config.dir : "PATH"}
                     </label>
                     <button
                         onClick={(event) => {

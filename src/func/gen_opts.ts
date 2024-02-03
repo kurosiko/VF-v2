@@ -1,46 +1,48 @@
 import path from "path-browserify";
 import { JSONType } from "../JsonType";
-function dir(config: JSONType) {
+const dir = (config: JSONType) => {
     let output = config.dir;
     if (config.general.dl) output = path.join(output, "DL_Video");
-    if (config.general.list) {
-        if (config.general.playlist)
-            output = path.join(output, "%(playlist|)s");
-    } else {
-        if (config.general.uploader) output = path.join(output, "%(uploader)s");
-    }
-    output = path.join(output, "%(title)s.%(ext)s");
+    output = path.join(
+        output,
+        config.general.playlist
+            ? "%(playlist|)s"
+            : config.general.uploader
+            ? "%(uploader)s"
+            : "",
+        "%(title)s.%(ext)s"
+    );
     return output;
-}
-function format(config: JSONType) {
+};
+const format = (config: JSONType) => {
     let preset = [];
     if (config.general.only) {
-        preset.push(config.audio.qualityList[config.audio.string.quality]);
-        if (config.audio.defaultList[config.audio.string.default])
-            preset.push(
-                `/${config.audio.defaultList[config.audio.string.default]}`
-            );
-        if (config.audio.boolean.force) preset.push("-x");
+        const audioQuality =
+            config.audio.qualityList[config.audio.string.quality];
+        const audioDefault =
+            config.audio.defaultList[config.audio.string.default];
+        const audioCodec = config.audio.codecList[config.audio.string.codec];
         preset.push(
-            "--audio-format",
-            config.audio.codecList[config.audio.string.codec]
+            audioDefault ? `${audioQuality}/${audioDefault}` : audioQuality
         );
+        if (config.audio.boolean.force)
+            preset.concat(["-x", `--audio-format`, audioCodec]);
     } else {
-        preset.push(config.video.qualityList[config.video.string.quality]);
-        if (config.video.defaultList[config.video.string.default])
-            preset.push(
-                `/${config.video.defaultList[config.video.string.default]}`
-            );
+        const videoQuality =
+            config.video.qualityList[config.video.string.quality];
+        const videoDefault =
+            config.video.defaultList[config.video.string.default];
+        const videoCodec = config.video.codecList[config.video.string.codec];
+        preset.push(
+            videoDefault ? `${videoQuality}/${videoDefault}` : videoQuality
+        );
         if (config.video.boolean.force)
-            preset.push(
-                "--merge-output-format",
-                config.video.codecList[config.video.string.codec]
-            );
+            preset.concat(["--merge-output-format", videoCodec]);
     }
     if (!config.general.list) preset.push("--no-playlist");
     return preset;
-}
-function embed(config: JSONType) {
+};
+const embed = (config: JSONType) => {
     let option = [];
     if (config.general.only) {
         if (config.audio.boolean.metadata) option.push("--embed-metadata");
@@ -50,29 +52,16 @@ function embed(config: JSONType) {
         if (config.video.boolean.thumbnail) option.push("--embed-thumbnail");
     }
     return option;
-}
-function can_embed(codec: string) {
-    return ![
-        "mp3",
-        "mkv",
-        "mka",
-        "ogg",
-        "opus",
-        "flac",
-        "m4a",
-        "mp4",
-        "m4v",
-        "mov",
-    ].includes(codec);
-}
+};
 export const Gen_opts = (url: string, config: JSONType) => {
-    const opts = [
+    return [
         url,
-        ...["-o", dir(config)],
-        ...["-f", ...format(config)],
+        "-o",
+        dir(config),
+        "-f",
+        ...format(config),
         ...embed(config),
         "-i",
         "--no-post-overwrites",
     ];
-    return opts;
 };

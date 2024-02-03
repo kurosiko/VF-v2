@@ -17,7 +17,7 @@ async function notification(noti_data: Noti) {
         Buffer.from(await (await fetch(noti_data.thumbnail)).arrayBuffer())
     );
     const xml = `
-        <toast launch="myapp:action=navigate&amp;contentId=351" activationType="protocol">
+        <toast activationType="protocol" launch="${noti_data.output}">
         <visual>
             <binding template="ToastGeneric">
                 <image placement="hero" src="${image_path}"/>
@@ -50,6 +50,7 @@ async function notification(noti_data: Noti) {
         toastXml: xml,
     }).show();
 }
+
 export const download = async (opts: string[]) => {
     const mainWindow = BrowserWindow.getAllWindows()[0];
     console.log(opts);
@@ -114,7 +115,6 @@ export const download = async (opts: string[]) => {
         console.log(`from ${pid}`);
         if (info._type == "playlist" && !opts.includes("--no-playlist")) {
             mainWindow.webContents.send("progress", {
-                pid: pid,
                 title: info.title,
             });
         }

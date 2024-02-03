@@ -1,11 +1,5 @@
 import path from "path";
-import {
-    BrowserWindow,
-    app,
-    dialog,
-    ipcMain,
-    shell,
-} from "electron";
+import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
 import { load, save } from "./func/config";
 import { JSONType } from "./JsonType";
 import { setup } from "./func/setup";
@@ -23,6 +17,8 @@ function createWindow() {
         height: 480,
         x: 1800,
         y: 50,
+        minHeight: 300,
+        minWidth: 500,
         alwaysOnTop: true,
         webPreferences: {
             preload: path.resolve(__dirname, "preload.js"),
@@ -64,9 +60,12 @@ function createWindow() {
         if (args.dir != "null") save(args);
         app.quit();
     });
-    ipcMain.handle("open_dir", (_) => {
-        exec(`explorer.exe ${path.resolve("./")}`);
-    })
+    ipcMain.handle("open_dir", (_, args) => {
+        const _path = path.isAbsolute(args) ? args : path.resolve(args)
+        console.log(path.isAbsolute(args));
+        console.log(`[IsAbsolute:${_path}]`);
+        shell.openPath(_path);
+    });
     return mainWindow;
 }
 

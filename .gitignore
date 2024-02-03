@@ -9,3 +9,4 @@ ffmpeg.exe
 output.mp4
 thumbnail.png
 output/
+temp/
