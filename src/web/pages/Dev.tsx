@@ -62,6 +62,13 @@ export const Dev = () => {
                 >
                     Base dir
                 </button>
+                <button
+                    onClick={() => {
+                        window.api.ResConfig_Save(config)
+                    }}
+                >
+                    Base dir
+                </button>
             </div>
         </>
     );

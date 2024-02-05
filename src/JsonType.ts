@@ -1,5 +1,6 @@
 export interface JSONType {
     ytdlp_v: string;
+    ffmpeg: boolean;
     dir: string;
     general: Boolen_Dict;
     video: Media;

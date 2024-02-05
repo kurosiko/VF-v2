@@ -5,7 +5,7 @@ const dir = (config: JSONType) => {
     if (config.general.dl) output = path.join(output, "DL_Video");
     output = path.join(
         output,
-        config.general.playlist
+        config.general.playlist && config.general.list
             ? "%(playlist|)s"
             : config.general.uploader
             ? "%(uploader)s"
@@ -26,7 +26,7 @@ const format = (config: JSONType) => {
             audioDefault ? `${audioQuality}/${audioDefault}` : audioQuality
         );
         if (config.audio.boolean.force)
-            preset.concat(["-x", `--audio-format`, audioCodec]);
+            preset.push("-x", `--audio-format`, audioCodec);
     } else {
         const videoQuality =
             config.video.qualityList[config.video.string.quality];
@@ -37,9 +37,10 @@ const format = (config: JSONType) => {
             videoDefault ? `${videoQuality}/${videoDefault}` : videoQuality
         );
         if (config.video.boolean.force)
-            preset.concat(["--merge-output-format", videoCodec]);
+            preset.push("--merge-output-format",videoCodec);
     }
     if (!config.general.list) preset.push("--no-playlist");
+    console.log(preset);
     return preset;
 };
 const embed = (config: JSONType) => {

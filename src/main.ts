@@ -4,11 +4,16 @@ import { load, save } from "./func/config";
 import { JSONType } from "./JsonType";
 import { setup } from "./func/setup";
 import { download } from "./func/download";
-import { exec } from "child_process";
+import { ffdl } from "./func/ffdl";
 const config: JSONType = load();
 console.log(config);
 if (config.other.update) {
     config.ytdlp_v = await setup(config.ytdlp_v);
+}
+
+if (!config.ffmpeg) {
+    await ffdl(config.ffmpeg)
+    config.ffmpeg = true
 }
 app.setAppUserModelId("VideoFetcher");
 function createWindow() {

@@ -74,6 +74,7 @@ const Default = {
         dev: false,
     },
     ytdlp_v: "null",
+    ffmpeg:false
 };
 export const load = () => {
     const JsonPath = path.resolve("./config/config.json");

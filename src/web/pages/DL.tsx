@@ -14,9 +14,7 @@ export const DL = () => {
     window.api.ResConfig((res: JSONType) => {
         SetConfig(res);
     });
-    if (!url) {
-        return;
-    }
+    if (!url) return;
     if (config.dir == "null") {
         console.log("Reload");
         window.api.ReqConfig();
@@ -35,6 +33,16 @@ export const DL = () => {
                         <div className="progress_data">
                             <label className="title">{item.title}</label>
                             <label className="percent">{item.percent}%</label>
+                            <label
+                                className="pid"
+                                style={{
+                                    display: config.other.div
+                                        ? "block"
+                                        : "none",
+                                }}
+                            >
+                                {item.pid}
+                            </label>
                         </div>
                         <progress
                             value={item.percent}
@@ -64,10 +72,9 @@ export const DL = () => {
                         if (URL.canParse(text)) {
                             download(text);
                         } else {
-                            console.log("Error Toast")//
+                            console.log("Error Toast"); //
                         }
                     });
-                
                 }}
             >
                 <form>

@@ -60,7 +60,7 @@ export const Video = () => {
                     <label>Default</label>
                     {LoadList("defaultList")}
                 </div>
-                {["force", "thumbanil", "metadata"].map((option) => {
+                {["force", "thumbnail", "metadata"].map((option) => {
                     return (
                         <div className="checkbox" key={option}>
                             <label className="togglebutton">
