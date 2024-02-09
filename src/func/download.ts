@@ -51,8 +51,7 @@ async function notification(noti_data: Noti) {
     }).show();
 }
 
-export const download = async (opts: string[]) => {
-    const mainWindow = BrowserWindow.getAllWindows()[0];
+export const download = async (opts: string[],mainWindow:Electron.BrowserWindow) => {
     console.log(opts);
     console.log(opts.join(" "));
     const yt_dlp = new YTDlpWrap(path.resolve("yt-dlp.exe"));

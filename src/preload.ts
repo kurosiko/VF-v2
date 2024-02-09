@@ -68,4 +68,10 @@ contextBridge.exposeInMainWorld("api", {
             console.log(err);
         });
     },
+    Progress: (f: Function) => {
+        ipcRenderer.removeAllListeners("setup")
+        ipcRenderer.on("setup", (_, percent) => {
+            f(percent)
+        })
+    }
 });

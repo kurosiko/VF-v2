@@ -64,10 +64,17 @@ export const Dev = () => {
                 </button>
                 <button
                     onClick={() => {
-                        window.api.ResConfig_Save(config)
+                        window.api.ResConfig_Save(config);
                     }}
                 >
-                    Base dir
+                    Kill
+                </button>
+                <button
+                    onClick={() => {
+                        transitionNavigate("../progress");
+                    }}
+                >
+                    progress
                 </button>
             </div>
         </>

@@ -17,5 +17,6 @@ export interface AppAPI {
     ReceiveBase: (f: (base_data: Progress) => void) => void;
     Refresh: (f: (state: Progress) => void) => void;
     Kill: (f: (pid: number) => void) => void;
-    Open_dir: (path:string) => void;
+    Open_dir: (path: string) => void;
+    Progress: (f: (percent: number) => void) => void;
 }

@@ -17,6 +17,7 @@ import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "./Atoms/Atoms";
 import { Progress } from "../Progress";
 import { useTransitionNavigate } from "./pages/Tran_nav";
+import { ProgressBar } from "./pages/Progress";
 export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
@@ -198,6 +199,7 @@ export const App = () => {
                         <Route path="/other" element={<Other />} />
                         <Route path="/log" element={<Log />} />
                         <Route path="/dev" element={<Dev />} />
+                        <Route path="/progress" element={<ProgressBar/>}/>
                         <Route path="/" element={<DL />} />
                         <Route path="*" element={<Error />} />
                     </Routes>

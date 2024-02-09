@@ -1,22 +1,19 @@
 import fs, { rmSync } from "fs";
+import { dialog } from "electron";
 import path from "path";
 import AdmZip from "adm-zip";
-import { dialog } from "electron";
-export const ffdl = async (ffmpeg: boolean) => {
-    if (ffmpeg || (await fs.existsSync(path.join(__dirname, "ffmepg.exe")))) {
-            return
-    } else {
-        const msg = await dialog.showMessageBoxSync({
-                type: "info",
-                message: "Do you want to download FFmpeg?",
-                detail: "FFmpeg was not found in the installed directroy.",
-                buttons: ["Yes", "No"],
-                defaultId: 0,
-                cancelId: 1,
-            });
-        if (msg == 1)
-            return
-    }
+//import { dialog } from "electron";
+export const ffdl = async (mainWindow:Electron.BrowserWindow) => {
+    const msg = await dialog.showMessageBoxSync({
+        type: "info",
+        message: "Do you want to download FFmpeg?",
+        detail: "FFmpeg was not found in the installed directroy.",
+        buttons: ["Yes", "No"],
+        defaultId: 0,
+        cancelId: 1,
+    });
+    if (msg == 1) return;
+    mainWindow.loadFile("dist/index.html/", { hash: "progress" });
     console.log("[download ffmpeg]");
     const temp = path.resolve("./temp");
     console.log(temp);
@@ -38,9 +35,12 @@ export const ffdl = async (ffmpeg: boolean) => {
     while (!done) {
         const responce = await reader?.read();
         loaded += responce?.value?.byteLength || 0;
+        const percent = Math.round((loaded / total) * 10000) / 100
+        mainWindow.webContents.send("setup", percent)
+        mainWindow.setProgressBar(percent/100)
         process.stdout.write(
             `\r\x1b[0KDownloading... ${
-                Math.round((loaded / total) * 10000) / 100
+            percent
             }%`
         );
         if (responce?.done) break;
@@ -48,15 +48,27 @@ export const ffdl = async (ffmpeg: boolean) => {
     }
     stream.end();
     stream.close(async () => {
-        console.log(stream.closed)
+        console.log(stream.closed);
         console.log("\nDone");
         const zip = new AdmZip(temp_file);
-        await zip.extractEntryTo(
+        console.log(
+            zip.getEntries().map((item) => {
+                return item.entryName;
+            })
+        );
+        zip.extractEntryTo(
             "ffmpeg-6.1.1-essentials_build/bin/ffmpeg.exe",
-            __dirname,
+            path.resolve("./"),
             false,
             true
         );
+        await dialog.showMessageBoxSync({
+            type: "info",
+            message: "Finished downloading FFmpeg.exe",
+            detail: "Enjoy VideoFetcher-v2!!",
+        });
         await rmSync(temp, { recursive: true, force: true });
+        mainWindow.loadFile("dist/index.html")
+        mainWindow.setProgressBar(0)
     });
 };

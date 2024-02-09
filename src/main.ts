@@ -5,16 +5,6 @@ import { JSONType } from "./JsonType";
 import { setup } from "./func/setup";
 import { download } from "./func/download";
 import { ffdl } from "./func/ffdl";
-const config: JSONType = load();
-console.log(config);
-if (config.other.update) {
-    config.ytdlp_v = await setup(config.ytdlp_v);
-}
-
-if (!config.ffmpeg) {
-    await ffdl(config.ffmpeg)
-    config.ffmpeg = true
-}
 app.setAppUserModelId("VideoFetcher");
 function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -53,7 +43,7 @@ function createWindow() {
         mainWindow.webContents.send("ResPath", path);
     });
     ipcMain.handle("download", (_, opts: string[]) => {
-        download(opts);
+        download(opts, mainWindow);
     });
     mainWindow.on("close", (event) => {
         console.log("blocked");
@@ -66,14 +56,22 @@ function createWindow() {
         app.quit();
     });
     ipcMain.handle("open_dir", (_, args) => {
-        const _path = path.isAbsolute(args) ? args : path.resolve(args)
+        const _path = path.isAbsolute(args) ? args : path.resolve(args);
         console.log(path.isAbsolute(args));
         console.log(`[IsAbsolute:${_path}]`);
         shell.openPath(_path);
     });
     return mainWindow;
 }
-
+const config: JSONType = load();
+console.log(config);
+if (config.other.update) {
+    config.ytdlp_v = await setup(config.ytdlp_v);
+}
 app.whenReady().then(() => {
-    createWindow();
+    const mainWindow = createWindow();
+    if (!config.ffmpeg) {
+        ffdl(mainWindow);
+        config.ffmpeg = true;
+    }
 });
