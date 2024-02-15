@@ -29,10 +29,10 @@ const format = (config: JSONType) => {
             preset.push("-x", `--audio-format`, audioCodec);
     } else {
         const videoQuality =
-            config.video.qualityList[config.video.string.quality];
+            config.video.string.quality
         const videoDefault =
-            config.video.defaultList[config.video.string.default];
-        const videoCodec = config.video.codecList[config.video.string.codec];
+            config.video.string.default
+        const videoCodec = config.video.string.codec
         preset.push(
             videoDefault ? `${videoQuality}/${videoDefault}` : videoQuality
         );

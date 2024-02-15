@@ -14,11 +14,8 @@ export const DL = () => {
     window.api.ResConfig((res: JSONType) => {
         SetConfig(res);
     });
+    
     if (!url) return;
-    if (config.dir == "null") {
-        console.log("Reload");
-        window.api.ReqConfig();
-    }
     function download(url: string) {
         window.api.download(Gen_opts(url, config));
     }
@@ -72,7 +69,7 @@ export const DL = () => {
                         if (URL.canParse(text)) {
                             download(text);
                         } else {
-                            console.log("Error Toast"); //
+                            console.log("Error Toast"); //create a error toast message
                         }
                     });
                 }}

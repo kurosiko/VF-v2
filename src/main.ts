@@ -65,13 +65,24 @@ function createWindow() {
 }
 const config: JSONType = load();
 console.log(config);
-if (config.other.update) {
-    config.ytdlp_v = await setup(config.ytdlp_v);
-}
 app.whenReady().then(() => {
     const mainWindow = createWindow();
-    if (!config.ffmpeg) {
-        ffdl(mainWindow);
-        config.ffmpeg = true;
-    }
+    mainWindow.webContents.on("did-stop-loading", async () => {
+        console.log("[Setup]");
+        console.log(
+            `current:\n[yt-dlp:${config.ytdlp_v},ffmpeg:${config.ffmpeg}]`
+        );
+        mainWindow.webContents.removeAllListeners("did-stop-loading");
+        if (config.other.update) {
+            config.ytdlp_v = await setup(config.ytdlp_v);
+        }
+        if (!config.ffmpeg) {
+            config.ffmpeg = await ffdl(mainWindow);
+            mainWindow.webContents
+                .executeJavaScript("window.location.hash='#'")
+                .then(() => {
+                    mainWindow.webContents.send("ResConfig", config);
+                });
+        }
+    });
 });

@@ -51,7 +51,10 @@ async function notification(noti_data: Noti) {
     }).show();
 }
 
-export const download = async (opts: string[],mainWindow:Electron.BrowserWindow) => {
+export const download = async (
+    opts: string[],
+    mainWindow: Electron.BrowserWindow
+) => {
     console.log(opts);
     console.log(opts.join(" "));
     const yt_dlp = new YTDlpWrap(path.resolve("yt-dlp.exe"));
@@ -59,12 +62,12 @@ export const download = async (opts: string[],mainWindow:Electron.BrowserWindow)
     let has_error = false;
     let Rate_ms = 50;
     let Rate_state = 0;
-    let noti_data: Noti;
     /*
-    0:send progress
-    1:in count
-    2:set
+    0 = run
+    1 = 
+    2 = wait
     */
+    let noti_data: Noti;
     const emitter = yt_dlp
         .exec(opts)
         .on("progress", (e) => {
@@ -79,7 +82,6 @@ export const download = async (opts: string[],mainWindow:Electron.BrowserWindow)
                     Rate_state = 0;
                 }, Rate_ms);
                 Rate_state = 1;
-            } else {
             }
         })
         .on("close", () => {

@@ -9,4 +9,13 @@
     >button:hover{
         background-color: cadetblue;
     }
+    >*{
+        flex: 1;
+    }
+}
+#tabs{
+    overflow-y: scroll;
+    >*{
+        height: 350px;
+    }
 }

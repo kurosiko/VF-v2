@@ -1,7 +1,6 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
-
 export const Audio = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Gen_pre = () => {
@@ -15,30 +14,35 @@ export const Audio = () => {
         pre.audio.boolean[option] = event.target.checked;
         SetConfig(pre);
     }
-    function SL_Reload(
-        event: React.ChangeEvent<HTMLSelectElement>,
-        option: string
-    ) {
-        const pre = Gen_pre();
-        pre.audio.string[option] = event.target.value;
-        SetConfig(pre);
-    }
     const LoadList = (target: "codecList" | "qualityList" | "defaultList") => {
         const pre: React.ReactElement[] = [];
         const lists = config.audio[target];
-        for (const key of Object.keys(lists)) {
-            pre.push(<option key={key}>{key}</option>);
-        }
         const match: { [key: string]: string } = {
             codecList: "codec",
             qualityList: "quality",
             defaultList: "default",
         };
+        for (const key of Object.keys(lists)) {
+            pre.push(
+                <option
+                    key={key}
+                    value={config.audio[target][key]}
+                    selected={
+                        config.audio.string[match[target]] ==
+                        config.audio[target][key]
+                    }
+                >
+                    {key}:{config.audio[target][key]}
+                </option>
+            );
+        }
         return (
             <select
-                value={config.audio.string[target]}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                    SL_Reload(e, match[target]);
+                value={config.audio.string[match[target]]}
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                    const pre = Gen_pre();
+                    pre.audio.string[match[target]] = event.target.value;
+                    SetConfig(pre);
                 }}
             >
                 {[...pre]}

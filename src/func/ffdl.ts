@@ -2,18 +2,19 @@ import fs, { rmSync } from "fs";
 import { dialog } from "electron";
 import path from "path";
 import AdmZip from "adm-zip";
-//import { dialog } from "electron";
-export const ffdl = async (mainWindow:Electron.BrowserWindow) => {
-    const msg = await dialog.showMessageBoxSync({
-        type: "info",
-        message: "Do you want to download FFmpeg?",
-        detail: "FFmpeg was not found in the installed directroy.",
-        buttons: ["Yes", "No"],
-        defaultId: 0,
-        cancelId: 1,
-    });
-    if (msg == 1) return;
-    mainWindow.loadFile("dist/index.html/", { hash: "progress" });
+export const ffdl = async (mainWindow: Electron.BrowserWindow) => {
+    if (await fs.existsSync(path.resolve("./ffmpeg.exe"))) return true;
+        const msg = dialog.showMessageBoxSync(mainWindow, {
+            type: "info",
+            title: "VideoFetcher",
+            message: "Do you want to download FFmpeg?",
+            detail: "FFmpeg was not found in the installed directroy.",
+            buttons: ["Yes", "No"],
+            defaultId: 0,
+            cancelId: 1,
+        });
+    if (msg == 1) return true;
+    mainWindow.webContents.executeJavaScript("window.location.hash='#progress'");
     console.log("[download ffmpeg]");
     const temp = path.resolve("./temp");
     console.log(temp);
@@ -23,7 +24,7 @@ export const ffdl = async (mainWindow:Electron.BrowserWindow) => {
         "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
     );
     const contentLength = res.headers.get("content-length");
-    if (!contentLength) return;
+    if (!contentLength) return false;
     const total = parseInt(contentLength, 10);
     let loaded = 0;
     let done = false;
@@ -35,14 +36,10 @@ export const ffdl = async (mainWindow:Electron.BrowserWindow) => {
     while (!done) {
         const responce = await reader?.read();
         loaded += responce?.value?.byteLength || 0;
-        const percent = Math.round((loaded / total) * 10000) / 100
-        mainWindow.webContents.send("setup", percent)
-        mainWindow.setProgressBar(percent/100)
-        process.stdout.write(
-            `\r\x1b[0KDownloading... ${
-            percent
-            }%`
-        );
+        const percent = Math.round((loaded / total) * 10000) / 100;
+        mainWindow.webContents.send("setup", percent);
+        mainWindow.setProgressBar(percent / 100);
+        process.stdout.write(`\r\x1b[0KDownloading... ${percent}%`);
         if (responce?.done) break;
         stream.write(responce?.value);
     }
@@ -62,13 +59,14 @@ export const ffdl = async (mainWindow:Electron.BrowserWindow) => {
             false,
             true
         );
-        await dialog.showMessageBoxSync({
+        await dialog.showMessageBoxSync(mainWindow, {
             type: "info",
+            title: "VideoFetcher",
             message: "Finished downloading FFmpeg.exe",
             detail: "Enjoy VideoFetcher-v2!!",
         });
         await rmSync(temp, { recursive: true, force: true });
-        mainWindow.loadFile("dist/index.html")
-        mainWindow.setProgressBar(0)
+        mainWindow.setProgressBar(0);
     });
+    return true;
 };

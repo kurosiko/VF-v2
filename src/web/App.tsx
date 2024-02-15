@@ -64,6 +64,7 @@ export const App = () => {
         pre.general[`${option}`] = event.target.checked;
         SetConfig(pre);
     }
+    if (config.dir == "null") window.api.ReqConfig();
     return (
         <>
             <div
@@ -191,6 +192,15 @@ export const App = () => {
                         </button>
                     )}
                 </div>
+                <div
+                    style={{
+                        position: "fixed",
+                        top: "50px",
+                        right: "30px",
+                        zIndex:"1000"
+                    }}
+                >
+                </div>
                 <div id="inputbox">
                     <Routes>
                         <Route path="/general" element={<General />} />
@@ -199,7 +209,7 @@ export const App = () => {
                         <Route path="/other" element={<Other />} />
                         <Route path="/log" element={<Log />} />
                         <Route path="/dev" element={<Dev />} />
-                        <Route path="/progress" element={<ProgressBar/>}/>
+                        <Route path="/progress" element={<ProgressBar />} />
                         <Route path="/" element={<DL />} />
                         <Route path="*" element={<Error />} />
                     </Routes>

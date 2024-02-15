@@ -14,30 +14,28 @@ export const Video = () => {
         pre.video.boolean[option] = event.target.checked;
         SetConfig(pre);
     }
-    function SL_Reload(
-        event: React.ChangeEvent<HTMLSelectElement>,
-        option: string
-    ) {
-        const pre = Gen_pre();
-        pre.video.string[option] = event.target.value;
-        SetConfig(pre);
-    }
     const LoadList = (target: "codecList" | "qualityList" | "defaultList") => {
         const pre: React.ReactElement[] = [];
         const lists = config.video[target];
-        for (const key of Object.keys(lists)) {
-            pre.push(<option key={key}>{key}</option>);
-        }
-        const match:{[key:string]:string} = {
+        const match: { [key: string]: string } = {
             codecList: "codec",
             qualityList: "quality",
             defaultList: "default",
         };
+        for (const key of Object.keys(lists)) {
+            pre.push(
+                <option key={key} value={config.video[target][key]} selected={config.video.string[match[target]]==config.video[target][key]}>
+                    {key}:{config.video[target][key]}
+                </option>
+            );
+        }
         return (
             <select
-                value={config.video.string[target]}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                    SL_Reload(e, match[target]);
+                value={config.video.string[match[target]]}
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                    const pre = Gen_pre();
+                    pre.video.string[match[target]] = event.target.value;
+                    SetConfig(pre);
                 }}
             >
                 {[...pre]}
