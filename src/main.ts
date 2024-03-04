@@ -61,6 +61,19 @@ function createWindow() {
         console.log(`[IsAbsolute:${_path}]`);
         shell.openPath(_path);
     });
+    ipcMain.handle(
+        "ReqAdd",
+        (
+            _,
+            add_obj: {},
+            target: "audio" | "video",
+            list: "codecList" | "qualityList" | "defaultList",
+            add: boolean
+        ) => {
+            console.log(target)
+            mainWindow.webContents.send("add", add_obj, target, list, add);
+        }
+    );
     return mainWindow;
 }
 const config: JSONType = load();

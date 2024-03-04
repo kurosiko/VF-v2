@@ -1,0 +1,58 @@
+.bg_tr {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: #000000a3;
+    top: 0;
+    left: 0;
+}
+.popup {
+    position: fixed;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    z-index: 50;
+    max-width: 100%;
+    width: 50vw;
+    background: #515151;
+    padding: 5px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.popup > * {
+    border: 0px;
+}
+.popup_input {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+.popup_input > input {
+    color: #fff;
+    padding: 5px 10px;
+    width: 100%;
+    border-radius: 5px;
+    background: #343638;
+    line-height: 1.25;
+    border: 0px;
+    width: 100%;
+}
+.popup_input > .name {
+    flex: 1;
+    min-width: 0px;
+}
+.popup_input > .key {
+    flex: 3;
+    min-width: 0px;
+}
+.popup_add {
+    width: 100%;
+    background: #313131;
+    height: 30px;
+}
+.popup_add:hover {
+    background: #d7d7d7;
+    color: #000;
+}

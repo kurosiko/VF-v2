@@ -36,6 +36,10 @@
         border-bottom: 2px #cccccc solid;
         text-overflow: ellipsis;
     }
+    > button {
+        flex: 0.5;
+        background: transparent;
+    }
 }
 #url_input {
     > form {

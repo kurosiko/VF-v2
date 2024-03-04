@@ -1,6 +1,6 @@
 {
-    "name": "electron-project",
-    "description": "electron-project",
+    "name": "videofetcher",
+    "description": "in dev",
     "version": "0.1.0",
     "license": "MIT",
     "author": {
@@ -30,7 +30,7 @@
         ],
         "win": {
             "target": "nsis",
-            "icon":"C:\\Users\\kurosiko\\Desktop\\youtubedl.ico"
+            "icon": "C:\\Users\\kurosiko\\Desktop\\youtubedl.ico"
         },
         "nsis": {
             "oneClick": false,

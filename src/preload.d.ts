@@ -19,4 +19,18 @@ export interface AppAPI {
     Kill: (f: (pid: number) => void) => void;
     Open_dir: (path: string) => void;
     Progress: (f: (percent: number) => void) => void;
+    AddConfig: (
+        f: (
+            add_obj: {},
+            target: "audio" | "video",
+            list: "codecList" | "qualityList" | "defaultList",
+            add: boolean
+        ) => void
+    ) => void;
+    ReqAddConfig: (
+        add_obj: {},
+        target: "audio" | "video",
+        list: "codecList" | "qualityList" | "defaultList",
+        add: boolean
+    ) => void;
 }

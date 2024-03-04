@@ -1,10 +1,11 @@
-import { BrowserWindow, Notification } from "electron";
+import { Notification } from "electron";
 import YTDlpWrap from "./dlp";
 import path from "path";
 import os from "os";
 import fs from "fs";
 import { Noti } from "../Noti";
 async function notification(noti_data: Noti) {
+    console.log(noti_data);
     const image_path = path.resolve("./thumbnail.png");
     if (!noti_data.output) {
         noti_data.output = path.join(os.homedir(), "Desktop");
@@ -17,7 +18,7 @@ async function notification(noti_data: Noti) {
         Buffer.from(await (await fetch(noti_data.thumbnail)).arrayBuffer())
     );
     const xml = `
-        <toast activationType="protocol" launch="${noti_data.output}">
+    <toast activationType="protocol" launch="${noti_data.output}">
         <visual>
             <binding template="ToastGeneric">
                 <image placement="hero" src="${image_path}"/>
@@ -96,7 +97,7 @@ export const download = async (
             console.log(e);
         })
         .on("ytDlpEvent", (e, ee) => {
-            //console.log(e,ee)
+            //console.log(e, ee);
         });
     let pid = emitter.ytDlpProcess?.pid;
     if (!pid) {
@@ -107,39 +108,35 @@ export const download = async (
     const base_data = {
         pid: pid,
         title: info.title,
-        thumbnail: info.thumbnail,
+        thumbnail:
+            info._type == "playlist"
+                ? info.entries[0].thumbnail
+                : info.thumbnail,
         percent: 0,
     };
     if (!closed) {
         console.log(base_data);
         mainWindow.webContents.send("sendBase", base_data);
         console.log(`from ${pid}`);
-        if (info._type == "playlist" && !opts.includes("--no-playlist")) {
-            mainWindow.webContents.send("progress", {
-                title: info.title,
-            });
-        }
     }
     if (!has_error) {
+        console.log("Noti Run");
+        const final_path = await yt_dlp.execPromise([
+            ...opts,
+            "--print",
+            "filename",
+            "-I",
+            "1",
+        ]);
         noti_data = {
-            title: info.title,
-            uploader: info.uploader,
-            base_url: opts[0],
-            thumbnail: info.thumbnail,
-            output: `${await yt_dlp.execPromise([
-                ...opts,
-                "--print",
-                "filename",
-                "-I",
-                "1",
-            ])}`.replace(/\n/g, ""),
-        };
-        noti_data = {
-            title: noti_data.title.replace(/&/g, "&amp;"),
-            uploader: noti_data.uploader.replace(/&/g, "&amp;"),
-            base_url: noti_data.base_url.replace(/&/g, "&amp;"),
-            thumbnail: noti_data.thumbnail.replace(/&/g, "&amp;"),
-            output: noti_data.output,
+            title: info.title.replace(/&/g, "&amp;"),
+            uploader: info.uploader.replace(/&/g, "&amp;"),
+            base_url: opts[0].replace(/&/g, "&amp;"),
+            thumbnail: (info._type == "video"
+                ? info.thumbnail
+                : info.entries[0].thumbnail
+            ).replace(/&/g, "&amp;"),
+            output: `${final_path}`.replace(/\n/g, ""),
         };
         console.log(noti_data);
         function waitClose(resolve: Function, interval: number) {

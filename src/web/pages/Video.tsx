@@ -1,6 +1,7 @@
 import React from "react";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
+import { Popup } from "../../func/popup";
 export const Video = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Gen_pre = () => {
@@ -22,24 +23,36 @@ export const Video = () => {
             qualityList: "quality",
             defaultList: "default",
         };
+        let default_value;
         for (const key of Object.keys(lists)) {
             pre.push(
-                <option key={key} value={config.video[target][key]} selected={config.video.string[match[target]]==config.video[target][key]}>
+                <option key={key} value={config.video[target][key]}>
                     {key}:{config.video[target][key]}
                 </option>
             );
+            if (config.video.string[match[target]] == config.video[target][key])
+                default_value = config.video.string[match[target]];
         }
         return (
-            <select
-                value={config.video.string[match[target]]}
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                    const pre = Gen_pre();
-                    pre.video.string[match[target]] = event.target.value;
-                    SetConfig(pre);
-                }}
-            >
-                {[...pre]}
-            </select>
+            <>
+                <select
+                    value={default_value}
+                    onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                        const pre = Gen_pre();
+                        pre.video.string[match[target]] = event.target.value;
+                        SetConfig(pre);
+                    }}
+                >
+                    {[...pre]}
+                </select>
+                <button
+                    onClick={(event) => {
+                        Popup("video", target);
+                    }}
+                >
+                    +
+                </button>
+            </>
         );
     };
     return (

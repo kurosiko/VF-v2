@@ -12,6 +12,7 @@ import { Other } from "./Other";
 import { Log } from "./Log";
 import { ProgressBar } from "./Progress";
 import { Error } from "./Error";
+import { Popup } from "../../func/popup";
 export const Dev = () => {
     const [config, setConfig] = useRecoilState(CONFIG);
     const [progress, setProgress] = useRecoilState(PROGRESS);
@@ -98,7 +99,7 @@ export const Dev = () => {
                 <Other />
                 <Log />
                 <ProgressBar />
-                <Error/>
+                <Error />
             </div>
         </>
     );

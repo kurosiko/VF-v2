@@ -22,6 +22,26 @@ export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
     const [progress, SetProgress] = useRecoilState(PROGRESS);
+    window.api.AddConfig(
+        (
+            obj: {},
+            target: "video" | "audio",
+            list: "codecList" | "qualityList" | "defaultList",
+            add: boolean
+        ) => {
+            console.log(obj);
+            console.log(target);
+            console.log(list);
+            console.log(add);
+            const pre = Gen_pre();
+            if (add) {
+                Object.assign(pre[target][list], obj);
+            } else {
+                delete pre[target][list][Object.keys(obj)[0]];
+            }
+            SetConfig(pre);
+        }
+    );
     window.api.ResConfig((Res: JSONType) => {
         SetConfig(Res);
     });
@@ -29,6 +49,7 @@ export const App = () => {
         window.api.ResConfig_Save(config);
     });
     window.api.ReceiveBase((base_data: Progress) => {
+        console.log(base_data);
         SetProgress([base_data, ...progress]);
     });
     window.api.Kill((pid: number) => {
@@ -40,6 +61,8 @@ export const App = () => {
         );
     });
     window.api.Refresh((Refresh: Progress) => {
+        if (Refresh === undefined) return;
+        console.log(Refresh);
         const target = progress.findIndex((item: Progress) => {
             return item.pid == Refresh.pid;
         });
@@ -191,15 +214,6 @@ export const App = () => {
                             <label>Dev</label>
                         </button>
                     )}
-                </div>
-                <div
-                    style={{
-                        position: "fixed",
-                        top: "50px",
-                        right: "30px",
-                        zIndex:"1000"
-                    }}
-                >
                 </div>
                 <div id="inputbox">
                     <Routes>
