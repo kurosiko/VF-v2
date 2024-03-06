@@ -1,6 +1,4 @@
 import React, { useRef } from "react";
-
-import "../css/DL.css";
 import "../css/ProgressBar.css";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../Atoms/Atoms";

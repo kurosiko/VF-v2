@@ -46,11 +46,12 @@ export const Video = () => {
                     {[...pre]}
                 </select>
                 <button
+                    className="edit"
                     onClick={(event) => {
                         Popup("video", target);
                     }}
                 >
-                    +
+                    Edit
                 </button>
             </>
         );

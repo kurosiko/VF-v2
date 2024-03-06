@@ -4,6 +4,7 @@ import "./App.css";
 import "./css/Back.css";
 import "./css/General.css";
 import "./css/Toast.css";
+import "./css/DL.css";
 import { DL } from "./pages/DL";
 import { Error } from "./pages/Error";
 import { General } from "./pages/General";
@@ -218,7 +219,7 @@ export const App = () => {
                 <div id="inputbox">
                     <Routes>
                         <Route path="/general" element={<General />} />
-                        <Route path="/video" element={<Video />} />
+                        <Route path="/video" element={<Video/>} />
                         <Route path="/audio" element={<Audio />} />
                         <Route path="/other" element={<Other />} />
                         <Route path="/log" element={<Log />} />

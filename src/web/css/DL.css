@@ -38,7 +38,10 @@
     }
     > button {
         flex: 0.5;
-        background: transparent;
+        background: #707070;
+        border: 0px;
+        width: 100%;
+        padding: 5px;
     }
 }
 #url_input {

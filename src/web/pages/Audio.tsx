@@ -1,6 +1,7 @@
 import React from "react";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
+import { Popup } from "../../func/popup";
 export const Audio = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Gen_pre = () => {
@@ -22,36 +23,42 @@ export const Audio = () => {
             qualityList: "quality",
             defaultList: "default",
         };
+        let default_value;
         for (const key of Object.keys(lists)) {
             pre.push(
-                <option
-                    key={key}
-                    value={config.audio[target][key]}
-                    selected={
-                        config.audio.string[match[target]] ==
-                        config.audio[target][key]
-                    }
-                >
+                <option key={key} value={config.audio[target][key]}>
                     {key}:{config.audio[target][key]}
                 </option>
             );
+            if (config.audio.string[match[target]] == config.audio[target][key])
+                default_value = config.audio.string[match[target]];
         }
         return (
-            <select
-                value={config.audio.string[match[target]]}
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                    const pre = Gen_pre();
-                    pre.audio.string[match[target]] = event.target.value;
-                    SetConfig(pre);
-                }}
-            >
-                {[...pre]}
-            </select>
+            <>
+                <select
+                    value={default_value}
+                    onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                        const pre = Gen_pre();
+                        pre.audio.string[match[target]] = event.target.value;
+                        SetConfig(pre);
+                    }}
+                >
+                    {[...pre]}
+                </select>
+                <button
+                    className="edit"
+                    onClick={(event) => {
+                        Popup("audio", target);
+                    }}
+                >
+                    Edit
+                </button>
+            </>
         );
     };
     return (
         <>
-            <h1 className="header">Audio</h1>
+            <h1 className="header">audio</h1>
             <div className="options">
                 <div className="combbox">
                     <label>Quality</label>
