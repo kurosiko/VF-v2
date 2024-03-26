@@ -1,4 +1,4 @@
-import { JSONType, Str_Dict } from "./JsonType";
+import { JSONType } from "./VFTypes";
 import { Progress } from "./Progress";
 declare global {
     interface Window {

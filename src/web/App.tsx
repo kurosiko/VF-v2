@@ -13,7 +13,7 @@ import { Audio } from "./pages/Audio";
 import { Other } from "./pages/Other";
 import { Log } from "./pages/Log";
 import { Dev } from "./pages/Dev";
-import { JSONType } from "../JsonType";
+import { JSONType } from "../VFTypes";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "./Atoms/Atoms";
 import { Progress } from "../Progress";
@@ -219,7 +219,7 @@ export const App = () => {
                 <div id="inputbox">
                     <Routes>
                         <Route path="/general" element={<General />} />
-                        <Route path="/video" element={<Video/>} />
+                        <Route path="/video" element={<Video />} />
                         <Route path="/audio" element={<Audio />} />
                         <Route path="/other" element={<Other />} />
                         <Route path="/log" element={<Log />} />

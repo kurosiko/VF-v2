@@ -3,7 +3,7 @@ import "../css/ProgressBar.css";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../Atoms/Atoms";
 import { Gen_opts } from "../../func/gen_opts";
-import { JSONType } from "../../JsonType";
+import { JSONType } from "../../VFTypes";
 import { Progress } from "../../Progress";
 export const DL = () => {
     const url = useRef<HTMLInputElement>(null);
@@ -12,7 +12,7 @@ export const DL = () => {
     window.api.ResConfig((res: JSONType) => {
         SetConfig(res);
     });
-    
+
     if (!url) return;
     function download(url: string) {
         window.api.download(Gen_opts(url, config));

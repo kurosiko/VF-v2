@@ -1,5 +1,5 @@
 import path from "path-browserify";
-import { JSONType } from "../JsonType";
+import { JSONType } from "../VFTypes";
 const dir = (config: JSONType) => {
     let output = config.dir;
     if (config.general.dl) output = path.join(output, "DL_Video");
@@ -28,16 +28,14 @@ const format = (config: JSONType) => {
         if (config.audio.boolean.force)
             preset.push("-x", `--audio-format`, audioCodec);
     } else {
-        const videoQuality =
-            config.video.string.quality
-        const videoDefault =
-            config.video.string.default
-        const videoCodec = config.video.string.codec
+        const videoQuality = config.video.string.quality;
+        const videoDefault = config.video.string.default;
+        const videoCodec = config.video.string.codec;
         preset.push(
             videoDefault ? `${videoQuality}/${videoDefault}` : videoQuality
         );
         if (config.video.boolean.force)
-            preset.push("--merge-output-format",videoCodec);
+            preset.push("--merge-output-format", videoCodec);
     }
     if (!config.general.list) preset.push("--no-playlist");
     console.log(preset);

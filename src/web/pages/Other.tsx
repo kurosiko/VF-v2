@@ -1,5 +1,5 @@
 import React from "react";
-import { JSONType } from "../../JsonType";
+import { JSONType } from "../../VFTypes";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
 export const Other = () => {

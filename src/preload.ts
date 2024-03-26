@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { JSONType } from "./JsonType";
+import { JSONType } from "./VFTypes";
 const error_logger = (text: string) => {
     console.log(text);
 };

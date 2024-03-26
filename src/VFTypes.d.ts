@@ -1,4 +1,4 @@
-export interface JSONType {
+export type JSONType = {
     ytdlp_v: string;
     ffmpeg: boolean;
     dir: string;
@@ -6,17 +6,24 @@ export interface JSONType {
     video: Media;
     audio: Media;
     other: Boolen_Dict;
-}
-interface Media {
+};
+export type Media = {
     boolean: Boolen_Dict;
     string: Str_Dict;
     qualityList: Str_Dict;
     codecList: Str_Dict;
     defaultList: Str_Dict;
-}
-export interface Boolen_Dict {
+};
+export type Boolen_Dict = {
     [key: string]: boolean;
-}
-export interface Str_Dict {
+};
+export type Str_Dict = {
     [key: string]: string;
-}
+};
+export type WinState = {
+    height: number;
+    width: number;
+    x: number;
+    y: number;
+};
+
