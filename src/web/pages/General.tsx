@@ -5,7 +5,7 @@ import { CONFIG } from "../Atoms/Atoms";
 export const General = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Path = useRef<HTMLLabelElement>(null);
-    const Gen_pre = () => {
+    const Gen_pre: () => JSONType = () => {
         const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
         return gened_pre;
     };
@@ -75,9 +75,9 @@ export const General = () => {
                             window.api.ResPath((path: string) => {
                                 if (Path.current && path) {
                                     Path.current.innerText = path;
-                                    const pre = Gen_pre();
-                                    pre.dir = path;
-                                    SetConfig(pre);
+                                    SetConfig(
+                                        Object.assign(Gen_pre(), { dir: path })
+                                    );
                                 }
                             });
                             window.api.ReqPath();

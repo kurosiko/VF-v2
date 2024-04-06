@@ -32,7 +32,7 @@ const format = (config: JSONType) => {
         const videoDefault = config.video.string.default;
         const videoCodec = config.video.string.codec;
         preset.push(
-            videoDefault ? `${videoQuality}/${videoDefault}` : videoQuality
+            videoDefault ? `${videoQuality}/${videoDefault}/b` : videoQuality
         );
         if (config.video.boolean.force)
             preset.push("--merge-output-format", videoCodec);

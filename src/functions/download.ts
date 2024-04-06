@@ -105,14 +105,16 @@ export const download = async (
         console.log("Rand PID");
     }
     const info = await yt_dlp.getVideoInfo(opts[0]);
+
     const base_data = {
-        pid: pid,
-        title: info.title,
-        thumbnail:
-            info._type == "playlist"
-                ? info.entries[0].thumbnail
-                : info.thumbnail,
-        percent: 0,
+        [pid]: {
+            title: info.title,
+            thumbnail:
+                info._type == "playlist"
+                    ? info.entries[0].thumbnail
+                    : info.thumbnail,
+            percent: 0,
+        },
     };
     if (!closed) {
         console.log(base_data);

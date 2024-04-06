@@ -23,6 +23,7 @@ export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
     const [progress, SetProgress] = useRecoilState(PROGRESS);
+    /*
     window.api.AddConfig(
         (
             obj: {},
@@ -43,8 +44,8 @@ export const App = () => {
             SetConfig(pre);
         }
     );
-    window.api.ResConfig((Res: JSONType) => {
-        SetConfig(Res);
+    window.api.ResConfig((config: JSONType) => {
+        SetConfig(config);
     });
     window.api.ReqConfig_Save(() => {
         window.api.ResConfig_Save(config);
@@ -74,6 +75,7 @@ export const App = () => {
         );
         SetProgress(pre);
     });
+    */
     console.log(config);
     console.log(progress);
     const Gen_pre = () => {

@@ -3,12 +3,14 @@ import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
 
 import { load, save } from "./functions/json_io";
 import { JSONType, WinState } from "./VFTypes";
-import { setup } from "./func/setup";
+import { setup } from "./functions/setup";
 import { download } from "./functions/download";
-import { ffdl } from "./func/ffdl";
+import { ffdl } from "./functions/ffdl";
 import { targetList } from "./functions/List";
 app.setAppUserModelId("VideoFetcher");
 
+/*
+ */
 class VF_Window {
     win_state: WinState;
     config: JSONType;
@@ -31,25 +33,24 @@ class VF_Window {
             },
         });
         this.Register();
-        this.mainWindow.loadFile("dist/index.html");
+        this.mainWindow.loadFile("dist/index.html").then(this.dl_assets);
     }
-    exit(event: { preventDefault: () => void }) {
-        event.preventDefault();
-        const [x, y] = this.mainWindow.getPosition();
-        const [height, width] = this.mainWindow.getSize();
-        save(
-            {
-                x: x,
-                y: y,
-                height: height,
-                width: width,
-            },
-            targetList("window")
-        );
+    exit(x: number, y: number, height: number, width: number) {
+        save({ x: x, y: y, height: height, width: width },targetList("window"));
+        save(this.config);
     }
-    dl_assets() {}
+    dl_assets() {
+        setup(this.config.ytdlp_v);
+        ffdl(this.mainWindow);
+    }
     Register() {
-        this.mainWindow.on("close", this.exit);
+        this.mainWindow.on("close", (event) => {
+            event.preventDefault();
+            const [x, y] = this.mainWindow.getPosition();
+            const [height, width] = this.mainWindow.getSize();
+            this.exit(x, y, height, width);
+            console.log(x, y, height, width);
+        });
         ipcMain.handle("ReqConfig", () => {
             this.mainWindow.webContents.send("ResConfig", this.config);
         });
@@ -96,7 +97,8 @@ class VF_Window {
 app.whenReady().then(() => {
     new VF_Window();
 });
-
+/**/
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 /*
 function createWindow() {
     const win_state: WinState = load(targetList("window"));
@@ -123,7 +125,12 @@ function createWindow() {
         }
         return { action: "deny" };
     });
-  
+    ipcMain.handle("download", (_, opts: string[]) => {
+        download(opts, mainWindow);
+    });
+    ipcMain.handle("ReqConfig", () => {
+        mainWindow.webContents.send("ResConfig", config);
+    });
     mainWindow.on("close", (event) => {
         console.log("blocked");
         event.preventDefault();
