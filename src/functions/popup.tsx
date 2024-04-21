@@ -1,10 +1,66 @@
-import React, { useRef, useState } from "react";
+import React, { LegacyRef, useCallback, useEffect, useRef } from "react";
 import "../web/css/Popup.css";
-import { createRoot } from "react-dom/client";
+import { JSONType } from "../VFTypes";
+import { dictKeys } from "./Types/AllowType";
+import { dialog } from "electron";
 export const Popup = (
-    from: "video" | "audio",
-    list: "codecList" | "qualityList" | "defaultList"
+    config: JSONType,
+    target: dictKeys,
+    from: "video" | "audio"
 ) => {
+    //if (!Object.hasOwn(config, from)) return;
+    /*
+    const dialog = useCallback((node:LegacyRef<HTMLDialogElement>) => {
+        if (!node) return
+    },[])
+    */
+    
+    const dialog = useRef(null);
+
+    const useDialog = (dialog_ref: React.RefObject<HTMLDialogElement>) => {
+        return {
+            open: () => {
+                dialog_ref.current?.showModal()
+            },
+            close: () => {
+                console.log(dialog_ref.current?.returnValue)
+                dialog_ref.current?.removeAttribute("open");
+            },
+        };
+    };
+    const { open, close } = useDialog(dialog);
+    useEffect(open, []);
+    return (
+        <dialog open={false} ref={dialog} className="popup" onClick={(e) => {}}>
+            <label>Test</label>
+            <div>
+                <div className="pop_sl">
+                    <select>
+                        {Object.keys(config[from][target]).map(
+                            (key: string) => {
+                                return (
+                                    <option className="popup_ops" key={key}>
+                                        {Object.values(key)}
+                                    </option>
+                                );
+                            }
+                        )}
+                    </select>
+                </div>
+                <div className="pop_btn">
+                    <button>Remove</button>
+                    <button
+                        onClick={(e) => {
+                            close();
+                        }}
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </dialog>
+    );
+    /*
     const target = document.getElementById("pop");
     const close = () => {
         root.unmount();
@@ -88,4 +144,5 @@ export const Popup = (
     if (!target) return;
     const root = createRoot(target);
     root.render(<Popup />);
+    */
 };

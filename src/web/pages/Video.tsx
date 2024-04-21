@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
-import { Popup } from "../../func/popup";
+import { Popup } from "../../functions/popup";
 export const Video = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
+    const [open, SetOpen] = useState(false);
     const Gen_pre = () => {
         return JSON.parse(JSON.stringify(config));
     };
@@ -45,12 +46,7 @@ export const Video = () => {
                 >
                     {[...pre]}
                 </select>
-                <button
-                    className="edit"
-                    onClick={(event) => {
-                        Popup("video", target);
-                    }}
-                >
+                <button className="edit" onClick={(event) => {}}>
                     Edit
                 </button>
             </>

@@ -12,8 +12,8 @@ export interface AppAPI {
     ReqConfig: () => void;
     ResConfig: (f: (config: JSONType) => void) => void;
     SaveConfig: (config: JSONType) => void;
-    ReqConfig_Save: (f: () => void) => void;
-    ResConfig_Save: (config: JSONType) => void;
+    Exit_Req: (f: () => void) => void;
+    Exit_Res: (config: JSONType) => void;
     ReceiveBase: (f: (base_data: Progress) => void) => void;
     Refresh: (f: (state: Progress) => void) => void;
     Kill: (f: (pid: number) => void) => void;

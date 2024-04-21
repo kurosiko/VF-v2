@@ -1,7 +1,6 @@
 export interface Progress {
-    pid: {
-        title?: string;
-        thumbnail?: string;
-        percent: number;
-    };
+    pid: number;
+    title?: string;
+    thumbnail?: string;
+    percent: number;
 }

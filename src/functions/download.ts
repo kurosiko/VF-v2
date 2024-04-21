@@ -4,6 +4,7 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import { Noti } from "../Noti";
+import { Progress } from "../Progress";
 async function notification(noti_data: Noti) {
     console.log(noti_data);
     const image_path = path.resolve("./thumbnail.png");
@@ -106,15 +107,14 @@ export const download = async (
     }
     const info = await yt_dlp.getVideoInfo(opts[0]);
 
-    const base_data = {
-        [pid]: {
-            title: info.title,
-            thumbnail:
-                info._type == "playlist"
-                    ? info.entries[0].thumbnail
-                    : info.thumbnail,
-            percent: 0,
-        },
+    const base_data: Progress = {
+        pid: pid,
+        title: info.title,
+        thumbnail:
+            info._type == "playlist"
+                ? info.entries[0].thumbnail
+                : info.thumbnail,
+        percent: 0,
     };
     if (!closed) {
         console.log(base_data);

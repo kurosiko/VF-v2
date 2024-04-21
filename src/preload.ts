@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld("api", {
         ipcRenderer.invoke("ReqPath").catch(error_logger);
     },
     ResPath: (listener: Function) => {
+        ipcRenderer.removeAllListeners("ResPath")
         ipcRenderer.on("ResPath", (_, args) => {
             if (args) {
                 listener(args[0]);
@@ -26,14 +27,14 @@ contextBridge.exposeInMainWorld("api", {
             config(args);
         });
     },
-    ReqConfig_Save: (sendConfig: Function) => {
-        ipcRenderer.removeAllListeners("ReqConfig_Save");
-        ipcRenderer.once("ReqConfig_Save", (_) => {
+    Exit_Req: (sendConfig: Function) => {
+        ipcRenderer.removeAllListeners("exit_req");
+        ipcRenderer.once("exit_req", (_) => {
             sendConfig();
         });
     },
-    ResConfig_Save: (config: JSONType) => {
-        ipcRenderer.invoke("ResConfig_Save", config).catch(error_logger);
+    Exit_Res: (config: JSONType) => {
+        ipcRenderer.invoke("exit_res", config).catch(error_logger);
     },
     SaveConfig: (config: JSONType) => {
         ipcRenderer.invoke("save", config).catch(error_logger);
@@ -47,12 +48,12 @@ contextBridge.exposeInMainWorld("api", {
     Kill: (f: Function) => {
         ipcRenderer.removeAllListeners("close");
         ipcRenderer.once("close", (_, pid) => {
-            f(pid);
+            if (pid) f(pid);
         });
     },
     Refresh: (f: Function) => {
         ipcRenderer.removeAllListeners("progress");
-        ipcRenderer.on("progress", (_, progress) => {
+        ipcRenderer.once("progress", (_, progress) => {
             f(progress);
         });
     },

@@ -19,77 +19,31 @@ import { CONFIG, PROGRESS } from "./Atoms/Atoms";
 import { Progress } from "../Progress";
 import { useTransitionNavigate } from "./pages/Tran_nav";
 import { ProgressBar } from "./pages/Progress";
+import { IPCRegister } from "../functions/RendererHook";
+import { ipcRenderer } from "electron";
+
 export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
     const [progress, SetProgress] = useRecoilState(PROGRESS);
-    /*
-    window.api.AddConfig(
-        (
-            obj: {},
-            target: "video" | "audio",
-            list: "codecList" | "qualityList" | "defaultList",
-            add: boolean
-        ) => {
-            console.log(obj);
-            console.log(target);
-            console.log(list);
-            console.log(add);
-            const pre = Gen_pre();
-            if (add) {
-                Object.assign(pre[target][list], obj);
-            } else {
-                delete pre[target][list][Object.keys(obj)[0]];
-            }
-            SetConfig(pre);
-        }
-    );
-    window.api.ResConfig((config: JSONType) => {
-        SetConfig(config);
-    });
-    window.api.ReqConfig_Save(() => {
-        window.api.ResConfig_Save(config);
-    });
-    window.api.ReceiveBase((base_data: Progress) => {
-        console.log(base_data);
-        SetProgress([base_data, ...progress]);
-    });
-    window.api.Kill((pid: number) => {
-        console.log(pid);
-        SetProgress(
-            progress.filter((item: Progress) => {
-                return item.pid != pid;
-            })
-        );
-    });
-    window.api.Refresh((Refresh: Progress) => {
-        if (Refresh === undefined) return;
-        console.log(Refresh);
-        const target = progress.findIndex((item: Progress) => {
-            return item.pid == Refresh.pid;
-        });
-        const pre = [...progress];
-        pre[target] = Object.assign(
-            JSON.parse(JSON.stringify(progress[target])),
-            Refresh
-        );
-        SetProgress(pre);
-    });
-    */
-    console.log(config);
-    console.log(progress);
     const Gen_pre = () => {
         const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
         return gened_pre;
     };
+
     function Reload(
         event: React.ChangeEvent<HTMLInputElement>,
         option: string
     ) {
+        console.log(option);
         const pre = Gen_pre();
         pre.general[`${option}`] = event.target.checked;
+
         SetConfig(pre);
     }
+    
+    
+    IPCRegister();
     if (config.dir == "null") window.api.ReqConfig();
     return (
         <>
@@ -153,7 +107,7 @@ export const App = () => {
                         <span className="material-symbols-outlined icon">
                             volume_up
                         </span>
-                        <label>audio</label>
+                        <label>Audio</label>
                     </button>
                     <button
                         type="button"

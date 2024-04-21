@@ -10,6 +10,7 @@ import { targetList } from "./functions/List";
 app.setAppUserModelId("VideoFetcher");
 
 /*
+
  */
 class VF_Window {
     win_state: WinState;
@@ -19,10 +20,10 @@ class VF_Window {
         this.win_state = load(targetList("window"));
         this.config = load(targetList("config"));
         this.mainWindow = new BrowserWindow({
-            x: this.win_state.x,
-            y: this.win_state.y,
-            height: this.win_state.height,
-            width: this.win_state.width,
+            x: this.win_state.x ? this.win_state.x : 300,
+            y: this.win_state.y ? this.win_state.y : 300,
+            height: this.win_state.height ? this.win_state.height : 550,
+            width: this.win_state.width ? this.win_state.width : 550,
             minHeight: 300,
             minWidth: 500,
             alwaysOnTop: true,
@@ -36,7 +37,10 @@ class VF_Window {
         this.mainWindow.loadFile("dist/index.html").then(this.dl_assets);
     }
     exit(x: number, y: number, height: number, width: number) {
-        save({ x: x, y: y, height: height, width: width },targetList("window"));
+        save(
+            { x: x, y: y, height: height, width: width },
+            targetList("window")
+        );
         save(this.config);
     }
     dl_assets() {
@@ -44,12 +48,22 @@ class VF_Window {
         ffdl(this.mainWindow);
     }
     Register() {
+        this.mainWindow.on("moved", () => {
+            console.log("Pos",this.mainWindow.getPosition());
+            console.log("Size",this.mainWindow.getSize());
+        });
         this.mainWindow.on("close", (event) => {
             event.preventDefault();
+            this.mainWindow.webContents.send("exit_req");
+        });
+        ipcMain.handle("exit_res", (_, args: JSONType) => {
             const [x, y] = this.mainWindow.getPosition();
-            const [height, width] = this.mainWindow.getSize();
-            this.exit(x, y, height, width);
+            const [width, height] = this.mainWindow.getSize();
             console.log(x, y, height, width);
+            this.exit(x, y, height, width);
+            if (args.dir != "null") {
+                app.exit();
+            }
         });
         ipcMain.handle("ReqConfig", () => {
             this.mainWindow.webContents.send("ResConfig", this.config);
@@ -66,10 +80,6 @@ class VF_Window {
         });
         ipcMain.handle("download", (_, opts: string[]) => {
             download(opts, this.mainWindow);
-        });
-        ipcMain.handle("ResConfig_Save", (_, args: JSONType) => {
-            this.mainWindow.removeAllListeners("close");
-            if (args.dir != "null") app.quit();
         });
         ipcMain.handle("open_dir", (_, args) => {
             shell.openPath(path.isAbsolute(args) ? args : path.resolve(args));

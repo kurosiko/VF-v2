@@ -1,7 +1,7 @@
 import React from "react";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
-import { Popup } from "../../func/popup";
+import { Popup } from "../../functions/popup";
 export const Audio = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Gen_pre = () => {
@@ -48,7 +48,7 @@ export const Audio = () => {
                 <button
                     className="edit"
                     onClick={(event) => {
-                        Popup("audio", target);
+                        
                     }}
                 >
                     Edit
