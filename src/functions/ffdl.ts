@@ -4,17 +4,19 @@ import path from "path";
 import AdmZip from "adm-zip";
 export const ffdl = async (mainWindow: Electron.BrowserWindow) => {
     if (await fs.existsSync(path.resolve("./ffmpeg.exe"))) return true;
-        const msg = dialog.showMessageBoxSync(mainWindow, {
-            type: "info",
-            title: "VideoFetcher",
-            message: "Do you want to download FFmpeg?",
-            detail: "FFmpeg was not found in the installed directroy.",
-            buttons: ["Yes", "No"],
-            defaultId: 0,
-            cancelId: 1,
-        });
+    const msg = dialog.showMessageBoxSync(mainWindow, {
+        type: "info",
+        title: "VideoFetcher",
+        message: "Do you want to download FFmpeg?",
+        detail: "FFmpeg was not found in the installed directroy.",
+        buttons: ["Yes", "No"],
+        defaultId: 0,
+        cancelId: 1,
+    });
     if (msg == 1) return true;
-    mainWindow.webContents.executeJavaScript("window.location.hash='#progress'");
+    mainWindow.webContents.executeJavaScript(
+        "window.location.hash='#progress'"
+    );
     console.log("[download ffmpeg]");
     const temp = path.resolve("./temp");
     console.log(temp);
@@ -48,13 +50,8 @@ export const ffdl = async (mainWindow: Electron.BrowserWindow) => {
         console.log(stream.closed);
         console.log("\nDone");
         const zip = new AdmZip(temp_file);
-        console.log(
-            zip.getEntries().map((item) => {
-                return item.entryName;
-            })
-        );
         zip.extractEntryTo(
-            "ffmpeg-6.1.1-essentials_build/bin/ffmpeg.exe",
+            `${zip.getEntries()[0].entryName.split("/")[0]}/bin/ffmpeg.exe`,
             path.resolve("./"),
             false,
             true

@@ -29,7 +29,7 @@ contextBridge.exposeInMainWorld("api", {
     },
     Exit_Req: (sendConfig: Function) => {
         ipcRenderer.removeAllListeners("exit_req");
-        ipcRenderer.once("exit_req", (_) => {
+        ipcRenderer.on("exit_req", (_) => {
             sendConfig();
         });
     },

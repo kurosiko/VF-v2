@@ -1,5 +1,12 @@
 import path from "path";
-import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
+import {
+    BrowserWindow,
+    Notification,
+    app,
+    dialog,
+    ipcMain,
+    shell,
+} from "electron";
 
 import { load, save } from "./functions/json_io";
 import { JSONType, WinState } from "./VFTypes";
@@ -9,9 +16,6 @@ import { ffdl } from "./functions/ffdl";
 import { targetList } from "./functions/List";
 app.setAppUserModelId("VideoFetcher");
 
-/*
-
- */
 class VF_Window {
     win_state: WinState;
     config: JSONType;
@@ -19,6 +23,7 @@ class VF_Window {
     constructor() {
         this.win_state = load(targetList("window"));
         this.config = load(targetList("config"));
+        new Notification({ title: "Please Wait", body: "Booting..." }).show();
         this.mainWindow = new BrowserWindow({
             x: this.win_state.x ? this.win_state.x : 300,
             y: this.win_state.y ? this.win_state.y : 300,
@@ -27,40 +32,57 @@ class VF_Window {
             minHeight: 300,
             minWidth: 500,
             alwaysOnTop: true,
+            show: false,
             webPreferences: {
                 preload: path.resolve(__dirname, "preload.js"),
                 contextIsolation: true,
                 nodeIntegration: false,
             },
         });
+        this.mainWindow.loadFile("dist/index.html");
         this.Register();
-        this.mainWindow.loadFile("dist/index.html").then(this.dl_assets);
+        this.dl_assets().then(() => {
+            this.mainWindow.webContents.send("ResConfig", this.config);
+            this.mainWindow.show();
+        });
     }
-    exit(x: number, y: number, height: number, width: number) {
-        save(
+    async exit(
+        x: number,
+        y: number,
+        height: number,
+        width: number,
+        config: JSONType
+    ) {
+        await save(
             { x: x, y: y, height: height, width: width },
             targetList("window")
         );
-        save(this.config);
+        console.log(config);
+        await save(config, targetList("config"));
     }
-    dl_assets() {
-        setup(this.config.ytdlp_v);
-        ffdl(this.mainWindow);
+    async dl_assets() {
+        await setup(this.config.ytdlp_v).then((version: string) => {
+            this.config.ytdlp_v = version;
+        });
+        await ffdl(this.mainWindow).then((bol: boolean) => {
+            this.config.ffmpeg = bol;
+        });
     }
     Register() {
         this.mainWindow.on("moved", () => {
-            console.log("Pos",this.mainWindow.getPosition());
-            console.log("Size",this.mainWindow.getSize());
+            console.log("Pos", this.mainWindow.getPosition());
+            console.log("Size", this.mainWindow.getSize());
         });
         this.mainWindow.on("close", (event) => {
             event.preventDefault();
+            console.log("blocked");
             this.mainWindow.webContents.send("exit_req");
         });
         ipcMain.handle("exit_res", (_, args: JSONType) => {
             const [x, y] = this.mainWindow.getPosition();
             const [width, height] = this.mainWindow.getSize();
             console.log(x, y, height, width);
-            this.exit(x, y, height, width);
+            this.exit(x, y, height, width, args);
             if (args.dir != "null") {
                 app.exit();
             }

@@ -106,7 +106,7 @@ export const download = async (
         console.log("Rand PID");
     }
     const info = await yt_dlp.getVideoInfo(opts[0]);
-
+    console.log(info)
     const base_data: Progress = {
         pid: pid,
         title: info.title,
