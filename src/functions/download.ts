@@ -1,24 +1,165 @@
 import { Notification } from "electron";
-import YTDlpWrap from "./core";
 import path from "path";
 import os from "os";
 import fs from "fs";
 import { Noti } from "../Noti";
 import { Progress } from "../Progress";
-async function notification(noti_data: Noti) {
-    console.log(noti_data);
-    const image_path = path.resolve("./thumbnail.png");
-    if (!noti_data.output) {
-        noti_data.output = path.join(os.homedir(), "Desktop");
-    }
-    if (!noti_data.thumbnail) {
-        noti_data.thumbnail = "https://wallpapercave.com/wp/wp9414308.png";
-    }
-    fs.writeFileSync(
-        image_path,
-        Buffer.from(await (await fetch(noti_data.thumbnail)).arrayBuffer())
-    );
-    const xml = `
+import YTDlpWrap from "./core";
+import { embed } from "./embed";
+import YTMusic from "ytmusic-api";
+import { off } from "process";
+
+export const download = async (
+    opts: string[],
+    mainWindow: Electron.BrowserWindow
+) => {
+    class Download extends YTDlpWrap {
+        closed: boolean;
+        has_error: boolean;
+        Rate_ms: number;
+        Rate_state: "ready" | "reset" | "wait";
+        mainWindow: Electron.BrowserWindow;
+        opts: string[];
+
+        pid: number;
+
+        constructor(mainWindow: Electron.BrowserWindow, opts: string[]) {
+            super();
+            this.closed = false;
+            this.has_error = false;
+            this.pid = 0;
+            this.Rate_ms = 1000;
+            this.Rate_state = "ready";
+            this.mainWindow = mainWindow;
+            this.opts = opts;
+            this.setBinaryPath(path.resolve("yt-dlp.exe"));
+        }
+        async run() {
+            const yt_dlp = this.exec(opts)
+                .on("progress", (event) => {
+                    if (this.Rate_state == "ready") {
+                        this.mainWindow.webContents.send("progress", {
+                            pid: this.pid,
+                            percent: event.percent,
+                        });
+                        this.Rate_state = "reset";
+                    } else if (this.Rate_state == "reset") {
+                        setTimeout(() => {
+                            this.Rate_state = "ready";
+                        }, this.Rate_ms);
+                        this.Rate_state = "wait";
+                    }
+                })
+                .on("close", () => {
+                    this.closed = true;
+                    this.mainWindow.webContents.send("close", this.pid);
+                });
+            this.pid = yt_dlp.ytDlpProcess?.pid
+                ? yt_dlp.ytDlpProcess?.pid
+                : Math.floor(Math.random() * 999999);
+            const info = await this.getVideoInfo(opts[0]);
+            const base_data: Progress = {
+                pid: this.pid,
+                title: info.title,
+                thumbnail:
+                    info._type == "playlist"
+                        ? info.entries[0].thumbnail
+                        : info.thumbnail,
+                percent: 0,
+            };
+            if (!this.closed)
+                mainWindow.webContents.send("sendBase", base_data);
+            if (!this.has_error) {
+                const noti_data = {
+                    title: this.escapeStr(info.title),
+                    uploader: this.escapeStr(info.uploader),
+                    base_url: this.escapeStr(opts[0]),
+                    thumbnail: this.escapeStr(
+                        info._type == "video"
+                            ? info.thumbnail
+                            : info.entries[0].thumbnail
+                    ),
+                    output: this.escapeStr(
+                        (
+                            await this.execPromise([
+                                ...opts,
+                                "--print",
+                                "filename",
+                                "-I",
+                                "1",
+                            ])
+                        ).replace(/\n/g, "")
+                    ),
+                };
+
+                this.waitClose(() => {
+                    this.notification(noti_data);
+                    if (true) this.Embed(this.opts[0], noti_data.output); //ex
+                }, 100);
+            } else {
+                this.notification({
+                    title: "ERROR",
+                    uploader: "ERROR",
+                    base_url: opts[0],
+                    thumbnail: "https://wallpapercave.com/wp/wp9414308.png",
+                });
+            }
+        }
+        async Embed(url: string, output: string) {
+            console.log("EmbedRUN");
+            console.log(url)
+            console.log(output)
+            const yt = new YTMusic();
+            await yt.initialize();
+            const id = await this.execPromise([url, "--get-id"]);
+            console.log(id)
+            const image_url = (await yt.getSong(id.replace(/\n/g,"")))["thumbnails"].at(-1)?.url;
+            console.log(image_url)
+            if (!image_url) return;
+            const prew = output.split(".")[0]+".mp3"
+            console.log(prew);
+            if (!prew)
+                return
+            embed(prew,image_url);
+        }
+        escapeStr(str: string) {
+            return str.replace(/&/g, "&amp;");
+        }
+        waitClose(resolve: Function, interval: number) {
+            console.log("noti wait");
+            if (this.closed) {
+                console.log("noti return");
+                resolve();
+                return;
+            }
+            const intervalID = setInterval(() => {
+                if (!this.closed) {
+                    console.log("wait noti");
+                    return;
+                }
+                clearInterval(intervalID);
+                resolve();
+                console.log("noti return");
+            }, interval);
+        }
+        async notification(noti_data: Noti) {
+            const image_data = await fetch(noti_data.thumbnail);
+            //const file_name = `./thumbnail.${(await image_data.blob()).type}`;
+            const image_path = path.resolve("./thumbnail.jpeg");
+            if (!noti_data.output) {
+                noti_data.output = path.join(os.homedir(), "Desktop");
+            }
+            if (!noti_data.thumbnail) {
+                noti_data.thumbnail =
+                    "https://wallpapercave.com/wp/wp9414308.png";
+            }
+            fs.writeFileSync(
+                image_path,
+                Buffer.from(
+                    await (await fetch(noti_data.thumbnail)).arrayBuffer()
+                )
+            );
+            const xml = `
     <toast activationType="protocol" launch="${noti_data.output}">
         <visual>
             <binding template="ToastGeneric">
@@ -40,133 +181,13 @@ async function notification(noti_data: Noti) {
                 content="Open URL"
                 activationType="protocol"
                 arguments="${noti_data.base_url.replace(/&/, "&amp;")}"/>
-            <action
-                content='Did u find this?'
-                arguments="https://www.canvas.ac/"
-                placement='contextMenu'
-                activationType="protocol"/>
         </actions>
     </toast>`;
-    console.log(xml);
-    new Notification({
-        toastXml: xml,
-    }).show();
-}
-
-export const download = async (
-    opts: string[],
-    mainWindow: Electron.BrowserWindow
-) => {
-    console.log(opts);
-    console.log(opts.join(" "));
-    const yt_dlp = new YTDlpWrap(path.resolve("yt-dlp.exe"));
-    let closed = false;
-    let has_error = false;
-    let Rate_ms = 50;
-    let Rate_state = 0;
-    /*
-    0 = run
-    1 = 
-    2 = wait
-    */
-    let noti_data: Noti;
-    const emitter = yt_dlp
-        .exec(opts)
-        .on("progress", (e) => {
-            if (Rate_state == 0) {
-                mainWindow.webContents.send("progress", {
-                    pid: pid,
-                    percent: e.percent,
-                });
-                Rate_state = 2;
-            } else if (Rate_state == 2) {
-                setTimeout(() => {
-                    Rate_state = 0;
-                }, Rate_ms);
-                Rate_state = 1;
-            }
-        })
-        .on("close", () => {
-            closed = true;
-            console.log(`close in ${pid}`);
-            mainWindow.webContents.send("close", pid);
-        })
-        .on("error", (e) => {
-            closed = true;
-            has_error = true;
-            mainWindow.webContents.send("close", pid);
-            console.log(e);
-        })
-        .on("ytDlpEvent", (e, ee) => {
-            //console.log(e, ee);
-        });
-    let pid = emitter.ytDlpProcess?.pid;
-    if (!pid) {
-        pid = Math.floor(Math.random() * 999999);
-        console.log("Rand PID");
-    }
-    const info = await yt_dlp.getVideoInfo(opts[0]);
-    console.log(info)
-    const base_data: Progress = {
-        pid: pid,
-        title: info.title,
-        thumbnail:
-            info._type == "playlist"
-                ? info.entries[0].thumbnail
-                : info.thumbnail,
-        percent: 0,
-    };
-    if (!closed) {
-        console.log(base_data);
-        mainWindow.webContents.send("sendBase", base_data);
-        console.log(`from ${pid}`);
-    }
-    if (!has_error) {
-        console.log("Noti Run");
-        const final_path = await yt_dlp.execPromise([
-            ...opts,
-            "--print",
-            "filename",
-            "-I",
-            "1",
-        ]);
-        noti_data = {
-            title: info.title.replace(/&/g, "&amp;"),
-            uploader: info.uploader.replace(/&/g, "&amp;"),
-            base_url: opts[0].replace(/&/g, "&amp;"),
-            thumbnail: (info._type == "video"
-                ? info.thumbnail
-                : info.entries[0].thumbnail
-            ).replace(/&/g, "&amp;"),
-            output: `${final_path}`.replace(/\n/g, ""),
-        };
-        console.log(noti_data);
-        function waitClose(resolve: Function, interval: number) {
-            console.log("noti wait");
-            if (closed) {
-                console.log("noti return");
-                resolve();
-                return;
-            }
-            const intervalID = setInterval(() => {
-                if (!closed) {
-                    return;
-                }
-                clearInterval(intervalID);
-                resolve();
-                console.log("noti return");
-            }, interval);
+            new Notification({
+                toastXml: xml,
+            }).show();
         }
-        waitClose(() => {
-            console.log("noti run");
-            notification(noti_data);
-        }, 100);
-    } else {
-        notification({
-            title: "ERROR",
-            uploader: "Something worng!",
-            base_url: opts[0],
-            thumbnail: "https://wallpapercave.com/wp/wp9414308.png",
-        });
     }
+    new Download(mainWindow, opts).run();
+    console.log(opts);
 };
