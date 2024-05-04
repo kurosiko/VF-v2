@@ -4,14 +4,17 @@ const error_logger = (text: string) => {
     console.log(text);
 };
 contextBridge.exposeInMainWorld("api", {
-    download: (opts: string[]) => {
-        ipcRenderer.invoke("download", opts).catch(error_logger);
+    download: (
+        opts: string[],
+        additional: { audioOnly: boolean; codec: string }
+    ) => {
+        ipcRenderer.invoke("download", opts, additional).catch(error_logger);
     },
     ReqPath: () => {
         ipcRenderer.invoke("ReqPath").catch(error_logger);
     },
     ResPath: (listener: Function) => {
-        ipcRenderer.removeAllListeners("ResPath")
+        ipcRenderer.removeAllListeners("ResPath");
         ipcRenderer.on("ResPath", (_, args) => {
             if (args) {
                 listener(args[0]);

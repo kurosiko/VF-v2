@@ -7,11 +7,14 @@ import { Progress } from "../Progress";
 import YTDlpWrap from "./core";
 import { embed } from "./embed";
 import YTMusic from "ytmusic-api";
-import { off } from "process";
 
 export const download = async (
     opts: string[],
-    mainWindow: Electron.BrowserWindow
+    mainWindow: Electron.BrowserWindow,
+    additional: {
+        audioOnly: boolean;
+        codec: string;
+    }
 ) => {
     class Download extends YTDlpWrap {
         closed: boolean;
@@ -20,10 +23,15 @@ export const download = async (
         Rate_state: "ready" | "reset" | "wait";
         mainWindow: Electron.BrowserWindow;
         opts: string[];
-
+        only: boolean;
+        codec: string;
         pid: number;
 
-        constructor(mainWindow: Electron.BrowserWindow, opts: string[]) {
+        constructor(
+            mainWindow: Electron.BrowserWindow,
+            opts: string[],
+            additional: { audioOnly: boolean; codec: string }
+        ) {
             super();
             this.closed = false;
             this.has_error = false;
@@ -32,6 +40,8 @@ export const download = async (
             this.Rate_state = "ready";
             this.mainWindow = mainWindow;
             this.opts = opts;
+            this.only = additional.audioOnly;
+            this.codec = additional.codec;
             this.setBinaryPath(path.resolve("yt-dlp.exe"));
         }
         async run() {
@@ -94,7 +104,8 @@ export const download = async (
 
                 this.waitClose(() => {
                     this.notification(noti_data);
-                    if (true) this.Embed(this.opts[0], noti_data.output); //ex
+                    console.log(this.only);
+                    if (this.only) this.Embed(this.opts[0], noti_data.output); //ex
                 }, 100);
             } else {
                 this.notification({
@@ -107,20 +118,23 @@ export const download = async (
         }
         async Embed(url: string, output: string) {
             console.log("EmbedRUN");
-            console.log(url)
-            console.log(output)
+            console.log(new URL(url).hostname);
+            //if (!(new URL(url).hostname == "music.youtube.com")) return;
+            console.log(url);
+            console.log(output);
             const yt = new YTMusic();
             await yt.initialize();
             const id = await this.execPromise([url, "--get-id"]);
-            console.log(id)
-            const image_url = (await yt.getSong(id.replace(/\n/g,"")))["thumbnails"].at(-1)?.url;
-            console.log(image_url)
+            console.log(id);
+            const image_url = (await yt.getSong(id.replace(/\n/g, "")))[
+                "thumbnails"
+            ].at(-1)?.url;
+            console.log(image_url);
             if (!image_url) return;
-            const prew = output.split(".")[0]+".mp3"
+            const prew = output.split(".").slice(0,-1).join(".") + `.${this.codec}`;
             console.log(prew);
-            if (!prew)
-                return
-            embed(prew,image_url);
+            if (!prew) return;
+            embed(prew, image_url);
         }
         escapeStr(str: string) {
             return str.replace(/&/g, "&amp;");
@@ -188,6 +202,6 @@ export const download = async (
             }).show();
         }
     }
-    new Download(mainWindow, opts).run();
+    new Download(mainWindow, opts, additional).run();
     console.log(opts);
 };

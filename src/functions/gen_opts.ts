@@ -1,5 +1,6 @@
 import path from "path-browserify";
 import { JSONType } from "../VFTypes";
+/*
 const dir = (config: JSONType) => {
     let output = config.dir;
     if (config.general.dl) output = path.join(output, "DL_Video");
@@ -41,6 +42,45 @@ const format = (config: JSONType) => {
     console.log(preset);
     return preset;
 };
+*/
+const genOutput = (config: JSONType) => {
+    const baseDir = config.dir;
+    const subDir = config.general.dl ? "DL_Video" : "";
+    const playlistDir =
+        config.general.playlist && config.general.list ? "%(playlist|)s" : "";
+    const uploaderDir = config.general.uploader ? "%(uploader)s" : "";
+    return path.join(
+        baseDir,
+        subDir,
+        playlistDir,
+        uploaderDir,
+        "%(title)s.%(ext)s"
+    );
+};
+const genFormat = (config: JSONType) => {
+    const getFromList = (type: "audio" | "video") =>
+        config[type].defaultList[config[type].string.default]
+            ? `${config[type].qualityList[config[type].string.quality]}/${
+                  config[type].defaultList[config[type].string.default]
+              }`
+            : config[type].defaultList[config[type].string.quality];
+    const getForce = (type: "audio" | "video") => config[type].boolean.force;
+    const getFormat = (type: "audio" | "video") =>
+        config[type].codecList[config[type].string.codec];
+    let preset: string[] = [];
+    if (config.general.only) {
+        preset.push(getFromList("audio"));
+        if (getForce("audio")) {
+            preset.push("-x", "--audio-format", getFormat("audio"));
+        }
+    } else {
+        preset.push(getFromList("video"));
+        if (getForce("video")) {
+            preset.push("--merge-output-format", getFormat("video"));
+        }
+    }
+    return preset;
+};
 const embed = (config: JSONType) => {
     let option = [];
     if (config.general.only) {
@@ -56,9 +96,9 @@ export const Gen_opts = (url: string, config: JSONType) => {
     return [
         url,
         "-o",
-        dir(config),
+        genOutput(config),
         "-f",
-        ...format(config),
+        ...genFormat(config),
         ...embed(config),
         "-i",
         "--no-post-overwrites",

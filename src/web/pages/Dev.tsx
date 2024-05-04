@@ -1,7 +1,7 @@
 import React from "react";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../Atoms/Atoms";
-import { Gen_opts } from "../../func/gen_opts";
+import { Gen_opts } from "../../functions/gen_opts";
 import "../css/Dev.css";
 import { Progress } from "../../Progress";
 import { useTransitionNavigate } from "./Tran_nav";

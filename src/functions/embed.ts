@@ -16,10 +16,10 @@ export const embed = (input: string, image: string) => {
         "1:v",
     ];
     const exts = path.extname(input);
-    const temp = `"${path.dirname(input)}\\${path
+    const temp = `${path.dirname(input)}\\${path
         .basename(input)
         .split(".")
-        .slice(0, -1)}_temp${exts}"`;
+        .slice(0, -1)}_temp${exts}`;
     console.log(exts);
     console.log(temp);
     if (exts == ".mp3") {
@@ -49,12 +49,10 @@ export const embed = (input: string, image: string) => {
         }
         preset.push("-disposition:1", "attached_pic");
     }
-    preset.push(temp);
+    preset.push(`"${temp}"`);
     console.log("[!!!]" + preset.join(" "));
     execSync(preset.join(" "));
-    fs.rmSync(`'${input}'`);
-    fs.renameSync(temp, `'${input}'`);
+    fs.rmSync(input);
+    fs.renameSync(temp, input);
+    console.log("!!![Embed Finished]!!!");
 };
-export const getId = (opts:string[]) => {
-    
-}

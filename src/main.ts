@@ -100,8 +100,8 @@ class VF_Window {
                 })
             );
         });
-        ipcMain.handle("download", (_, opts: string[]) => {
-            download(opts, this.mainWindow);
+        ipcMain.handle("download", (_, opts: string[], additional: { audioOnly: boolean, codec: string }) => {
+            download(opts, this.mainWindow, additional);
         });
         ipcMain.handle("open_dir", (_, args) => {
             shell.openPath(path.isAbsolute(args) ? args : path.resolve(args));

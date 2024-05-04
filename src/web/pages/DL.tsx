@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import "../css/ProgressBar.css";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../Atoms/Atoms";
-import { Gen_opts } from "../../func/gen_opts";
+import { Gen_opts } from "../../functions/gen_opts";
 import { JSONType } from "../../VFTypes";
 import { Progress } from "../../Progress";
 export const DL = () => {
@@ -12,10 +12,14 @@ export const DL = () => {
     window.api.ResConfig((res: JSONType) => {
         SetConfig(res);
     });
-
     if (!url) return;
     function download(url: string) {
-        window.api.download(Gen_opts(url, config));
+        window.api.download(Gen_opts(url, config), {
+            audioOnly: config.general.only,
+            codec: config[config.general.only ? "audio" : "video"].codecList[
+                config[config.general.only ? "audio" : "video"].string.codec
+            ],
+        });
     }
     function load_progress() {
         const queue = progress.map((item: Progress): JSX.Element => {

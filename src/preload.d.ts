@@ -6,7 +6,10 @@ declare global {
     }
 }
 export interface AppAPI {
-    download: (opts: string[]) => void;
+    download: (
+        opts: string[],
+        additional?: { audioOnly: boolean; codec: string }
+    ) => void;
     ReqPath: () => void;
     ResPath: (f: (path: string) => void) => void;
     ReqConfig: () => void;
