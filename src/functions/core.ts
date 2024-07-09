@@ -1,3 +1,4 @@
+//プログラムがエラーを吐いたときに止まらないようにしたい
 import { EventEmitter } from "events";
 import {
     ChildProcess,
@@ -27,6 +28,7 @@ type YTDlpEventNameDataTypeMap = {
     error: [Error];
     progress: [Progress];
     ytDlpEvent: [eventType: string, eventData: string];
+    stdout: [string];
 };
 
 type YTDlpEventName = keyof YTDlpEventNameDataTypeMap;
@@ -124,6 +126,7 @@ export interface YTDlpReadable extends Readable {
      * 8. ytDlpEvent
      * 9. progress
      */
+    //[addition] raw stdout
     addListener: YTDlpReadableEventNameToEventListenerFunction<this>;
     emit: YTDlpReadableEventNameToEventDataFunction<boolean>;
     on: YTDlpReadableEventNameToEventListenerFunction<this>;
@@ -259,9 +262,9 @@ export default class YTDlpWrap {
 
         let stderrData = "";
         let processError: Error;
-        ytDlpProcess.stdout.on("data", (data) =>
-            YTDlpWrap.emitYoutubeDlEvents(data.toString(), execEventEmitter)
-        );
+        ytDlpProcess.stdout.on("data", (data) => {
+            YTDlpWrap.emitYoutubeDlEvents(data.toString(), execEventEmitter);
+        });
         ytDlpProcess.stderr.on(
             "data",
             (data) => (stderrData += data.toString())
@@ -276,6 +279,8 @@ export default class YTDlpWrap {
                     "error",
                     YTDlpWrap.createError(code, processError, stderrData)
                 );
+
+            console.log("Errror");
         });
         return execEventEmitter;
     }
@@ -376,10 +381,10 @@ export default class YTDlpWrap {
     async getVideoInfo(ytDlpArguments: string | string[]): Promise<any> {
         if (typeof ytDlpArguments == "string")
             ytDlpArguments = [
-                ytDlpArguments.replace(/&/g,"'&'"),
+                ytDlpArguments.replace(/&/g, "'&'"),
                 "-J",
                 "-I",
-                "1"
+                "1",
             ];
         let ytDlpStdout = await this.execPromise(ytDlpArguments);
         try {
@@ -429,6 +434,7 @@ export default class YTDlpWrap {
         let errorMessage = "\nError code: " + code;
         if (processError) errorMessage += "\n\nProcess error:\n" + processError;
         if (stderrData) errorMessage += "\n\nStderr:\n" + stderrData;
+        console.log(errorMessage);
         return new Error(errorMessage);
     }
 
@@ -438,6 +444,8 @@ export default class YTDlpWrap {
     ): void {
         let outputLines = stringData.split(/\r|\n/g).filter(Boolean);
         for (let outputLine of outputLines) {
+            (emitter as YTDlpEventEmitter).emit("stdout", outputLine);
+            //console.log(`[###]${outputLine}`);
             if (outputLine[0] == "[") {
                 let progressMatch = outputLine.match(progressRegex);
                 if (progressMatch) {

@@ -1,0 +1,14 @@
+#progress_flex_box{
+    flex: 2;
+    width: 100%;
+}
+#progress{
+    background: #fff;
+    width: 100%;
+}
+#progress::-webkit-progress-value{
+    background: #62ea7e;
+}
+#progress::-webkit-progress-bar{
+    background: #7e7e7e;
+}

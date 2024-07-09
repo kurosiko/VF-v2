@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { JSONType } from "../../JsonType";
+import { JSONType } from "../../VFTypes";
 import { Progress } from "../../Progress";
 export const CONFIG = atom<JSONType>({
     key: "config",
@@ -59,7 +59,12 @@ export const CONFIG = atom<JSONType>({
             update: false,
             dev: true,
         },
-        ytdlp_v: "2023.12.30",
+        custom: {
+            lyric: false,
+            ytmImage: false,
+        },
+        ytdlp_v: "null",
+        ffmpeg: false,
     },
 });
 export const PROGRESS = atom<Progress[]>({

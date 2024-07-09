@@ -1,18 +1,17 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { JSONType } from "./JsonType";
-
+import { JSONType } from "./VFTypes";
+const error_logger = (text: string) => {
+    console.log(text);
+};
 contextBridge.exposeInMainWorld("api", {
     download: (opts: string[]) => {
-        ipcRenderer.invoke("download", opts).catch((error) => {
-            console.log(error);
-        });
+        ipcRenderer.invoke("download", opts).catch(error_logger);
     },
     ReqPath: () => {
-        ipcRenderer.invoke("ReqPath").catch((error) => {
-            console.log(error);
-        });
+        ipcRenderer.invoke("ReqPath").catch(error_logger);
     },
     ResPath: (listener: Function) => {
+        ipcRenderer.removeAllListeners("ResPath");
         ipcRenderer.on("ResPath", (_, args) => {
             if (args) {
                 listener(args[0]);
@@ -20,9 +19,7 @@ contextBridge.exposeInMainWorld("api", {
         });
     },
     ReqConfig: () => {
-        ipcRenderer.invoke("ReqConfig").catch((error) => {
-            console.log(error);
-        });
+        ipcRenderer.invoke("ReqConfig").catch(error_logger);
     },
     ResConfig: (config: Function) => {
         ipcRenderer.removeAllListeners("ResConfig");
@@ -30,21 +27,17 @@ contextBridge.exposeInMainWorld("api", {
             config(args);
         });
     },
-    ReqConfig_Save: (sendConfig: Function) => {
-        ipcRenderer.removeAllListeners("ReqConfig_Save");
-        ipcRenderer.once("ReqConfig_Save", (_) => {
+    Exit_Req: (sendConfig: Function) => {
+        ipcRenderer.removeAllListeners("exit_req");
+        ipcRenderer.on("exit_req", (_) => {
             sendConfig();
         });
     },
-    ResConfig_Save: (config: JSONType) => {
-        ipcRenderer.invoke("ResConfig_Save", config).catch((error) => {
-            console.log(error);
-        });
+    Exit_Res: (config: JSONType) => {
+        ipcRenderer.invoke("exit_res", config).catch(error_logger);
     },
     SaveConfig: (config: JSONType) => {
-        ipcRenderer.invoke("save", config).catch((error) => {
-            console.log(error);
-        });
+        ipcRenderer.invoke("save", config).catch(error_logger);
     },
     ReceiveBase: (f: Function) => {
         ipcRenderer.removeAllListeners("sendBase");
@@ -53,20 +46,49 @@ contextBridge.exposeInMainWorld("api", {
         });
     },
     Kill: (f: Function) => {
-        ipcRenderer.removeAllListeners("close")
+        ipcRenderer.removeAllListeners("close");
         ipcRenderer.once("close", (_, pid) => {
-            f(pid)
-        })
+            if (pid) f(pid);
+        });
     },
     Refresh: (f: Function) => {
         ipcRenderer.removeAllListeners("progress");
-        ipcRenderer.on("progress", (_, progress) => {
-            f(progress)
-        })
-    },
-    Open_dir: () => {
-        ipcRenderer.invoke("open_dir").catch((err) => {
-            console.log(err);
+        ipcRenderer.once("progress", (_, progress) => {
+            f(progress);
         });
-    }
+    },
+    Open_dir: (path: string) => {
+        ipcRenderer.invoke("open_dir", path).catch(error_logger);
+    },
+    Progress: (f: Function) => {
+        ipcRenderer.removeAllListeners("setup");
+        ipcRenderer.on("setup", (_, percent) => {
+            f(percent);
+        });
+    },
+    ReqAddConfig: (
+        add_obj: {},
+        target: "audio" | "video",
+        list: "codecList" | "qualityList" | "defaultList",
+        add: boolean
+    ) => {
+        ipcRenderer
+            .invoke("ReqAdd", add_obj, target, list, add)
+            .catch(error_logger);
+    },
+    AddConfig: (f: Function) => {
+        ipcRenderer.removeAllListeners("add");
+        ipcRenderer.on(
+            "add",
+            (
+                _,
+                add_obj: {},
+                target: "audio" | "video",
+                list: "codecList" | "qualityList" | "defaultList",
+                add: boolean
+            ) => {
+                f(add_obj, target, list, add);
+            }
+        );
+    },
 });

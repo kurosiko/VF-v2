@@ -6,6 +6,9 @@ yarn-error.log
 config.json
 yt-dlp.exe
 ffmpeg.exe
-output.mp4
-thumbnail.png
-output/
+*.mp4
+*.png
+*.jpeg
+*.jpg
+output/**
+temp/**

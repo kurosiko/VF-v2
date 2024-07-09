@@ -27,7 +27,7 @@
         transition: all 0.1s ease-in-out;
     }
     > label:hover::before {
-        content: "Click to copy path";
+        content: "Click to open directory";
         width: 100%;
         opacity: 1;
         background-color: #242424;
@@ -37,20 +37,17 @@
     }
     > button {
         flex: 2;
-        height: 30px;
-        background-color: #323232;
+        height: 50px;
+        background-color: #3a3a3a;
         color: #fff;
-        border: 1px #323232 solid;
+        border: 1px #ffffff solid;
         transition: all 0.2s;
     }
     > button:hover {
         background-color: #2b2b2b;
-        border: 1px #fff solid;
+        border: 1px #838383 solid;
     }
-    > button:disabled{
+    > button:disabled {
         background-color: red;
-    }
-    > button:enabled{
-        background-color: #323232;
     }
 }

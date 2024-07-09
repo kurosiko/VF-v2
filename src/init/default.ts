@@ -1,8 +1,7 @@
-import fs from "fs";
 import path from "path";
 import os from "os";
-import { JSONType } from "../JsonType";
-const Default = {
+import { JSONType, WinState } from "../VFTypes";
+export const def_cfg: JSONType = {
     dir: path.join(os.homedir(), "Desktop"),
     general: {
         dl: true,
@@ -20,7 +19,7 @@ const Default = {
         string: {
             codec: "mp4",
             quality: "highest",
-            default: "ba+bv",
+            default: "ba_bv",
         },
         qualityList: {
             highest: "bestvideo+bestaudio",
@@ -73,21 +72,18 @@ const Default = {
         update: true,
         dev: false,
     },
+    custom: {
+        lyric: false,
+        ytmImage: false,
+    },
     ytdlp_v: "null",
+    ffmpeg: false,
 };
-export const load = () => {
-    const JsonPath = path.resolve("./config/config.json");
-    if (!fs.existsSync(JsonPath)) {
-        console.log("Log not found");
-        if (!fs.existsSync(path.dirname(JsonPath))) fs.mkdirSync("config");
-        fs.writeFileSync(JsonPath, JSON.stringify(Default, null, 4), "utf-8");
-    }
-    return JSON.parse(fs.readFileSync(JsonPath, "utf-8"));
+
+export const def_win: WinState = {
+    width: 550,
+    height: 550,
+    x: 50,
+    y: 50,
 };
-export const save = (config: JSONType) => {
-    fs.writeFileSync(
-        path.resolve("./config/config.json"),
-        JSON.stringify(config, null, 4),
-        "utf-8"
-    );
-};
+export const def_path = "config/config.json";

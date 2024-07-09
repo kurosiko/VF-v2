@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
+import { Popup } from "../../functions/popup";
 export const Video = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
+    const [open, SetOpen] = useState(false);
     const Gen_pre = () => {
         return JSON.parse(JSON.stringify(config));
     };
@@ -14,34 +16,40 @@ export const Video = () => {
         pre.video.boolean[option] = event.target.checked;
         SetConfig(pre);
     }
-    function SL_Reload(
-        event: React.ChangeEvent<HTMLSelectElement>,
-        option: string
-    ) {
-        const pre = Gen_pre();
-        pre.video.string[option] = event.target.value;
-        SetConfig(pre);
-    }
     const LoadList = (target: "codecList" | "qualityList" | "defaultList") => {
         const pre: React.ReactElement[] = [];
         const lists = config.video[target];
-        for (const key of Object.keys(lists)) {
-            pre.push(<option key={key}>{key}</option>);
-        }
-        const match:{[key:string]:string} = {
+        const match: { [key: string]: string } = {
             codecList: "codec",
             qualityList: "quality",
             defaultList: "default",
         };
+        let default_value;
+        for (const key of Object.keys(lists)) {
+            pre.push(
+                <option key={key} value={config.video[target][key]}>
+                    {key}:{config.video[target][key]}
+                </option>
+            );
+            if (config.video.string[match[target]] == config.video[target][key])
+                default_value = config.video.string[match[target]];
+        }
         return (
-            <select
-                value={config.video.string[target]}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                    SL_Reload(e, match[target]);
-                }}
-            >
-                {[...pre]}
-            </select>
+            <>
+                <select
+                    value={default_value}
+                    onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                        const pre = Gen_pre();
+                        pre.video.string[match[target]] = event.target.value;
+                        SetConfig(pre);
+                    }}
+                >
+                    {[...pre]}
+                </select>
+                <button className="edit" onClick={(event) => {}}>
+                    Edit
+                </button>
+            </>
         );
     };
     return (
@@ -60,7 +68,7 @@ export const Video = () => {
                     <label>Default</label>
                     {LoadList("defaultList")}
                 </div>
-                {["force", "thumbanil", "metadata"].map((option) => {
+                {["force", "thumbnail", "metadata"].map((option) => {
                     return (
                         <div className="checkbox" key={option}>
                             <label className="togglebutton">

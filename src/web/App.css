@@ -1,6 +1,7 @@
 * {
     padding: 0;
     margin: 0;
+    color: #f1f3f4;
 }
 *:focus {
     outline: none;
@@ -9,11 +10,9 @@ html {
     height: 100%;
     width: 100%;
     font-family: system-ui, sans-serif;
+    user-select: none;
 }
-#video {
-    position: absolute;
-    filter: brightness(0.3);
-}
+
 #root {
     background-color: #000000;
 }
@@ -25,17 +24,27 @@ html {
     overflow: hidden;
 }
 #menu {
+    font-size: clamp(20px, 3vw, 50px);
     flex: 1;
     display: flex;
     flex-direction: column;
     background-color: #2b2b2b;
     > * {
         flex: 1;
+        display: flex;
+        font-size: clamp(15px, 3vw, 40px);
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        > label {
+            flex: 2;
+        }
     }
     > h2 {
         display: flex;
         justify-content: center;
         align-items: center;
+        font-size: clamp(20px, 3vw, 50px);
     }
     > button {
         border: 0px;
@@ -54,10 +63,12 @@ html {
         content: "";
         -webkit-transition: all 0.2s;
         transition: all 0.2s;
-        background: #fff;
+        background: #d7d7d7;
     }
     > button:hover {
-        color: #000;
+        * {
+            color: #000;
+        }
     }
     > button:hover::before {
         color: #000;
@@ -65,14 +76,19 @@ html {
         z-index: -1;
     }
 }
+.icon {
+    font-size: clamp(30px, 3vw, 50px);
+    flex: 1;
+}
 .options {
+    display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 20px;
     box-sizing: border-box;
     overflow-y: scroll;
     > * {
-        height: 50px;
+        flex: 1;
     }
 }
 .checkbox {
@@ -92,21 +108,6 @@ html {
     }
     > label:not(.togglebutton) {
         flex: 2;
-    }
-}
-#inputbox {
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    background-color: #242424;
-    > h1 {
-        flex: 2;
-    }
-    > .options {
-        flex: 10;
-    }
-    > #back {
-        flex: 1;
     }
 }
 
@@ -134,7 +135,7 @@ html {
     height: 100%;
     border-radius: 50%;
     box-shadow: 0 0 5px rgb(0 0 0 / 20%);
-    background-color: #fff;
+    background-color: #f1f3f4;
     content: "";
     transition: left 0.4s;
 }
@@ -147,49 +148,16 @@ html {
     display: none;
 }
 
-.combbox {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    box-sizing: border-box;
-    > label {
-        flex: 1;
-    }
-    > select {
-        flex: 3;
-        border: 0px;
-        height: 25px;
-        border-radius: 2px;
-        background-color: #242424;
-        border-bottom: 2px #cccccc solid;
-    }
-    > div {
-        flex: 3;
-        > select {
-            border: 1px #232323;
-            height: 25px;
-            border-radius: 2px;
-            background-color: #242424;
-            border-bottom: 2px #cccccc solid;
-        }
-    }
-}
 label {
-    color: #fff;
+    color: #f1f3f4;
 }
 select {
-    color: #fff;
+    color: #f1f3f4;
 }
 
 a {
     color: chartreuse;
 }
 h2 {
-    color: #fff;
+    color: #f1f3f4;
 }
-button {
-    color: #fff;
-}
-

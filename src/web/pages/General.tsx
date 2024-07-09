@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
-import { JSONType } from "../../JsonType";
+import { JSONType } from "../../VFTypes";
 import { useRecoilState } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
 export const General = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Path = useRef<HTMLLabelElement>(null);
-    const Gen_pre = () => {
+    const Gen_pre: () => JSONType = () => {
         const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
         return gened_pre;
     };
@@ -63,27 +63,21 @@ export const General = () => {
                 <div id="path">
                     <label
                         onClick={(event) => {
-                            navigator.clipboard.writeText(
-                                event.currentTarget.innerHTML
-                            );
-                            console.log("Path Copied");
+                            if (!(config.dir == "null"))
+                                window.api.Open_dir(config.dir);
                         }}
                         ref={Path}
                     >
-                        {
-                            config.dir ?
-                                config.dir :
-                                "PATH"
-                        }
+                        {config.dir ? config.dir : "PATH"}
                     </label>
                     <button
                         onClick={(event) => {
                             window.api.ResPath((path: string) => {
                                 if (Path.current && path) {
                                     Path.current.innerText = path;
-                                    const pre = Gen_pre();
-                                    pre.dir = path;
-                                    SetConfig(pre);
+                                    SetConfig(
+                                        Object.assign(Gen_pre(), { dir: path })
+                                    );
                                 }
                             });
                             window.api.ReqPath();

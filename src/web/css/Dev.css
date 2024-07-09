@@ -1,12 +1,21 @@
-#dev{
+#dev {
     color: black;
     display: flex;
     flex-direction: column;
-    >button{
+    > button {
         color: black;
         border: 0px;
     }
-    >button:hover{
+    > button:hover {
         background-color: cadetblue;
+    }
+    > * {
+        flex: 1;
+    }
+}
+#tabs {
+    overflow-y: scroll;
+    > * {
+        height: 350px;
     }
 }
