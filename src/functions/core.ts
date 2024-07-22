@@ -274,13 +274,7 @@ export default class YTDlpWrap {
         ytDlpProcess.on("close", (code) => {
             if (code === 0 || ytDlpProcess.killed)
                 execEventEmitter.emit("close", code);
-            else
-                execEventEmitter.emit(
-                    "error",
-                    YTDlpWrap.createError(code, processError, stderrData)
-                );
-
-            console.log("Errror");
+            else console.log(code, processError, stderrData);
         });
         return execEventEmitter;
     }
@@ -299,8 +293,7 @@ export default class YTDlpWrap {
                     ytDlpArguments,
                     options,
                     (error, stdout, stderr) => {
-                        if (error)
-                            reject(YTDlpWrap.createError(error, null, stderr));
+                        if (error) reject(console.log(error, null, stderr));
                         resolve(stdout);
                     }
                 );
@@ -341,13 +334,8 @@ export default class YTDlpWrap {
                 readStream.destroy();
                 readStream.emit("end");
             } else {
-                const error = YTDlpWrap.createError(
-                    code,
-                    processError,
-                    stderrData
-                );
-                readStream.emit("error", error);
-                readStream.destroy(error);
+                console.log(code, processError, stderrData);
+                readStream.destroy();
             }
         });
         return readStream;
@@ -430,12 +418,12 @@ export default class YTDlpWrap {
         code: number | ExecFileException | null,
         processError: Error | null,
         stderrData: string
-    ): Error {
+    ): void {
         let errorMessage = "\nError code: " + code;
         if (processError) errorMessage += "\n\nProcess error:\n" + processError;
         if (stderrData) errorMessage += "\n\nStderr:\n" + stderrData;
         console.log(errorMessage);
-        return new Error(errorMessage);
+        return;
     }
 
     static emitYoutubeDlEvents(

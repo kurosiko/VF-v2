@@ -10,5 +10,7 @@ ffmpeg.exe
 *.png
 *.jpeg
 *.jpg
+python/**
 output/**
 temp/**
+src/functions/
