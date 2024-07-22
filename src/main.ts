@@ -2,6 +2,7 @@ import path from "path";
 import {
     BrowserWindow,
     Notification,
+    Notification,
     app,
     dialog,
     ipcMain,
@@ -135,7 +136,14 @@ app.whenReady().then(() => {
 /*
 function createWindow() {
     const win_state: WinState = load(targetList("window"));
+    const win_state: WinState = load(targetList("window"));
     const mainWindow = new BrowserWindow({
+        x: win_state.x,
+        y: win_state.y,
+        height: win_state.height,
+        width: win_state.width,
+        minHeight: 300,
+        minWidth: 500,
         x: win_state.x,
         y: win_state.y,
         height: win_state.height,
@@ -161,6 +169,9 @@ function createWindow() {
     ipcMain.handle("download", (_, opts: string[]) => {
         download(opts, mainWindow);
     });
+    ipcMain.handle("download", (_, opts: string[]) => {
+        download(opts, mainWindow);
+    });
     ipcMain.handle("ReqConfig", () => {
         mainWindow.webContents.send("ResConfig", config);
     });
@@ -171,6 +182,8 @@ function createWindow() {
     });
     ipcMain.handle("ResConfig_Save", (_, args: JSONType) => {
         mainWindow.removeAllListeners("close");
+        if (args.dir != "null") {
+        }
         if (args.dir != "null") {
         }
         app.quit();
@@ -194,11 +207,53 @@ function createWindow() {
             mainWindow.webContents.send("add", add_obj, target, list, add);
         }
     );
+    ipcMain.handle("open_dir", (_, args) => {
+        const _path = path.isAbsolute(args) ? args : path.resolve(args);
+        console.log(path.isAbsolute(args));
+        console.log(`[IsAbsolute:${_path}]`);
+        shell.openPath(_path);
+    });
+    ipcMain.handle(
+        "ReqAdd",
+        (
+            _,
+            add_obj: {},
+            target: "audio" | "video",
+            list: "codecList" | "qualityList" | "defaultList",
+            add: boolean
+        ) => {
+            console.log(target);
+            mainWindow.webContents.send("add", add_obj, target, list, add);
+        }
+    );
     return mainWindow;
 }
 const config: JSONType = load(targetList("config"));
 console.log(config);
+const config: JSONType = load(targetList("config"));
+console.log(config);
 app.whenReady().then(() => {
+    const mainWindow = createWindow();
+    mainWindow.webContents.on("did-stop-loading", async () => {
+        console.log("[Setup]");
+        console.log(
+            `current:\n[yt-dlp:${config.ytdlp_v},ffmpeg:${config.ffmpeg}]`
+        );
+        mainWindow.webContents.removeAllListeners("did-stop-loading");
+        if (config.other.update) {
+            config.ytdlp_v = await setup(config.ytdlp_v);
+        }
+        if (!config.ffmpeg) {
+            config.ffmpeg = await ffdl(mainWindow);
+            mainWindow.webContents
+                .executeJavaScript("window.location.hash='#'")
+                .then(() => {
+                    mainWindow.webContents.send("ResConfig", config);
+                });
+        }
+    });
+});
+*/
     const mainWindow = createWindow();
     mainWindow.webContents.on("did-stop-loading", async () => {
         console.log("[Setup]");

@@ -28,6 +28,6 @@ export type WinState = {
     y: number;
 };
 export type DL_Type = {
-    yt_dlp: string[],
-    custom:{[key:string]:boolean}
-}
+    yt_dlp: string[];
+    custom: { [key: string]: boolean };
+};

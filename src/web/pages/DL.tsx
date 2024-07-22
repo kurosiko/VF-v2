@@ -14,7 +14,12 @@ export const DL = () => {
     });
     if (!url) return;
     function download(url: string) {
-        window.api.download(Gen_opts(url, config));
+        window.api.download(Gen_opts(url, config), {
+            audioOnly: config.general.only,
+            codec: config[config.general.only ? "audio" : "video"].codecList[
+                config[config.general.only ? "audio" : "video"].string.codec
+            ],
+        });
     }
     function load_progress() {
         const queue = progress.map((item: Progress): JSX.Element => {

@@ -1,5 +1,6 @@
 import { atom } from "recoil";
 import { JSONType } from "../../VFTypes";
+import { JSONType } from "../../VFTypes";
 import { Progress } from "../../Progress";
 export const CONFIG = atom<JSONType>({
     key: "config",

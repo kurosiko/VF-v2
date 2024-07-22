@@ -14,9 +14,27 @@ export interface AppAPI {
     SaveConfig: (config: JSONType) => void;
     Exit_Req: (f: () => void) => void;
     Exit_Res: (config: JSONType) => void;
+    Exit_Req: (f: () => void) => void;
+    Exit_Res: (config: JSONType) => void;
     ReceiveBase: (f: (base_data: Progress) => void) => void;
     Refresh: (f: (state: Progress) => void) => void;
     Kill: (f: (pid: number) => void) => void;
+    Open_dir: (path: string) => void;
+    Progress: (f: (percent: number) => void) => void;
+    AddConfig: (
+        f: (
+            add_obj: {},
+            target: "audio" | "video",
+            list: "codecList" | "qualityList" | "defaultList",
+            add: boolean
+        ) => void
+    ) => void;
+    ReqAddConfig: (
+        add_obj: {},
+        target: "audio" | "video",
+        list: "codecList" | "qualityList" | "defaultList",
+        add: boolean
+    ) => void;
     Open_dir: (path: string) => void;
     Progress: (f: (percent: number) => void) => void;
     AddConfig: (
