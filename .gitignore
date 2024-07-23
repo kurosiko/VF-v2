@@ -13,4 +13,3 @@ ffmpeg.exe
 python/**
 output/**
 temp/**
-src/functions/
