@@ -13,3 +13,4 @@ ffmpeg.exe
 python/**
 output/**
 temp/**
+log/**

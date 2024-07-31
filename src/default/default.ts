@@ -67,6 +67,11 @@ export const def_cfg: JSONType = {
             best: "best",
         },
     },
+    custom: {
+        lyric: false,
+        ytmImage: false,
+        multiProcess: false,
+    },
     other: {
         notification: true,
         update: true,

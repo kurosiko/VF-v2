@@ -24,7 +24,7 @@ export const IPCRegister = () => {
             obj: {},
             target: "video" | "audio",
             list: "codecList" | "qualityList" | "defaultList",
-            add: boolean
+            add: booleantwitter.com
         ) => {
             console.log(obj);
             console.log(target);

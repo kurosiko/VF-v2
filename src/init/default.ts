@@ -75,6 +75,7 @@ export const def_cfg: JSONType = {
     custom: {
         lyric: false,
         ytmImage: false,
+        multiProcess: false,
     },
     ytdlp_v: "null",
     ffmpeg: false,
@@ -86,4 +87,8 @@ export const def_win: WinState = {
     x: 50,
     y: 50,
 };
-export const def_path = "config/config.json";
+export const def_path = {
+    config: "config/config.json",
+    window: "config/window.json",
+    log: "log",
+};

@@ -25,7 +25,6 @@ import { ipcRenderer } from "electron";
 export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
-    const [progress, SetProgress] = useRecoilState(PROGRESS);
     const Gen_pre = () => {
         const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
         return gened_pre;
@@ -41,8 +40,7 @@ export const App = () => {
 
         SetConfig(pre);
     }
-    
-    
+
     IPCRegister();
     if (config.dir == "null") window.api.ReqConfig();
     return (

@@ -1,21 +1,16 @@
 import YTMusic from "ytmusic-api";
-import fs from "fs"
+import fs from "fs";
+import imageSize from "image-size";
 //Media dataを渡す
-class YTM extends YTMusic{
-    title = ""
-    artist = ""
-    url = ""
-    constructor(data: any) {
+export class YTM extends YTMusic {
+    title = "";
+    artist = "";
+    id = "";
+    constructor() {
         super();
-        this.initialize()
-        
+        this.initialize();
     }
-    getThumbnail() {
-        this.getSong(this.url)
-    }
-    async Info_Json() {
-        
-    }
+    async Info_Json() {}
     async Lyric() {
         const url = `https://lyrics-api.boidu.dev//getLyrics?s=${this.title}\u0026a=${this.artist}`;
         const res = await fetch(encodeURI(url), { method: "GET" });
@@ -46,5 +41,17 @@ class YTM extends YTMusic{
         }
         const text = lyric_list.join("\n");
         fs.writeFileSync(`${this.title}.lrc`, text);
+    }
+    async getThumbnail(id:string) {
+        const json_data = await this.getSong(id);
+        const image_url = json_data["thumbnails"].at(-1)?.url;
+        if (!image_url) return;
+        const image_data = imageSize(
+            new Uint8Array(
+                await (await (await fetch(image_url)).blob()).arrayBuffer()
+            )
+        );
+        if (!(image_data.height == image_data.width)) return;
+        return image_url;
     }
 }

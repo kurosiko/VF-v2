@@ -2,14 +2,16 @@ import path from "path-browserify";
 import { JSONType } from "../VFTypes";
 interface Config_Type {
     genOutput: () => string;
-    genFormat: () => string;
-    embed: () => string;
+    genFormat: () => string[];
+    embed: () => string[];
     custom: () => { [key: string]: boolean };
 }
-class Config implements Config_Type {
+export class Config implements Config_Type {
     config: JSONType;
-    constructor(config: JSONType) {
+    url: string;
+    constructor(url: string, config: JSONType) {
         this.config = config;
+        this.url = url;
     }
     genOutput() {
         const baseDir = this.config.dir;
@@ -33,8 +35,6 @@ class Config implements Config_Type {
                 this.config[type].defaultList[this.config[type].string.default];
             const quality_val =
                 this.config[type].qualityList[this.config[type].string.quality];
-            console.log(default_val);
-            console.log(quality_val);
             if (default_val) return `${quality_val}/${default_val}`;
             else if (quality_val) return quality_val;
             else return "";
@@ -55,9 +55,8 @@ class Config implements Config_Type {
             if (getForce("video")) {
                 preset.push("--merge-output-format", getFormat("video"));
             }
-            preset.push("video");
         }
-        return preset.join(" ");
+        return preset
     }
     embed() {
         let option: string[] = [];
@@ -73,32 +72,29 @@ class Config implements Config_Type {
                 option.push("--embed-thumbnail");
         }
         if (!this.config.general.list) option.push("--no-playlist");
-        return option.join(" ");
+        return option
     }
     custom() {
         return {
             lyric: this.config.custom.lyric,
             ytmImage: this.config.custom.ytmImage,
+            multiProcess: this.config.custom.multiProcess,
+        };
+    }
+    Gen_opts() {
+        return {
+            yt_dlp: [
+                this.url,
+                "-i",
+                "--no-post-overwrites",
+                "--no-warn",
+                ...this.embed(),
+                "-o",
+                this.genOutput(),
+                "-f",
+                ...this.genFormat(),
+            ],
+            custom: this.custom(),
         };
     }
 }
-export const Gen_opts = (
-    url: string,
-    config: JSONType
-): { yt_dlp: string[]; custom: { [key: string]: boolean } } => {
-    const cfg = new Config(config);
-    return {
-        yt_dlp: [
-            url,
-            "-i",
-            "--no-post-overwrites",
-            "--no-warn",
-            cfg.embed(),
-            "-o",
-            cfg.genOutput(),
-            "-f",
-            cfg.genFormat(),
-        ],
-        custom: cfg.custom(),
-    };
-};

@@ -4,16 +4,83 @@ import os from "os";
 import fs from "fs";
 import { Progress } from "../Progress";
 import YTDlpWrap, { YTDlpEventEmitter } from "./core";
+import { yt_dlp } from "./yt_dlp";
+import { Args } from "./yt_dlp.type";
+import { Logger } from "./Logger";
+import { YTM } from "./YTMusic/YTMusic";
 import { embed } from "./embed";
-import { imageSize } from "image-size";
-import YTMusic from "ytmusic-api";
-import { DL_Type } from "../VFTypes";
 
+//Objects
+//+YTM Functions
+//+
+class Download extends yt_dlp {
+    private mainWindow: Electron.BrowserWindow;
+    private closed = false;
+    private pid = 0;
+    constructor(args: Args, mainWindow: Electron.BrowserWindow) {
+        super(args);
+        this.mainWindow = mainWindow;
+    }
+    escapeStr(str: string) {
+        return str.replace(/&/g, "&amp;");
+    }
+    async run() {
+        const tasks = await this.analyze();
+        if (!tasks) return;
+        const [threads, info, customThreads] = tasks;
+        if (!customThreads) {
+            customThreads 
+        }
+        Promise.all(threads).then(() => {
+            this.mainWindow.webContents.send("close");
+        });
+        for (const thread of threads) {
+            const basic_data = {
+                pid: Math.floor(Math.random() * 999999),
+                title: this.escapeStr(info.title) || "ERROR",
+                uploader: this.escapeStr(info.uploader) || "ERROR",
+                thumbnail: this.escapeStr(info.thumbnail) || "ERROR",
+            };
+            this.mainWindow.webContents.send("progress", {
+                basic_data,
+            });
+            thread.on("progress", (progress) => {
+                this.mainWindow.webContents.send("progress", {
+                    pid: basic_data.pid,
+                    percent: progress.percent,
+                });
+            });
+            thread.on("error", (error) => {
+                Logger(error.message, this.args);
+                this.mainWindow.webContents.send("error");
+            });
+            thread.on("close", () => {
+                if (threads.length == 1) {
+                    this.mainWindow.webContents.send("close");
+                }
+            });
+        }
+        /*
+        if (customThreads?.ytmImage) {
+            const ytMusic = new YTM()
+            customThreads.ytmImage.forEach((thread) => {
+                thread.on("stdout", async (stdout: any) => {
+                    embed()
+                    ytMusic.getThumbnail(stdout.id)
+                });
+            });
+        }
+        */
+        
+    }
+}
+
+/*
 export const download = async (
     opts: DL_Type,
     mainWindow: Electron.BrowserWindow
 ) => {
-    class Download extends YTDlpWrap {
+    class Download2 extends YTDlpWrap {
         closed: boolean;
         has_error: boolean;
         Rate_ms: number;
@@ -62,7 +129,6 @@ export const download = async (
                     this.mainWindow.webContents.send("close", this.pid);
                 })
                 .on("ytDlpEvent", (_, res) => console.log(_, res));
-
             this.pid =
                 yt_dlp.ytDlpProcess?.pid || Math.floor(Math.random() * 999999);
             const info = await this.getVideoInfo(this.opts[0]);
@@ -92,7 +158,7 @@ export const download = async (
                     base_url: this.opts[0],
                     thumbnail: "https://wallpapercave.com/wp/wp9414308.png",
                 });
-                */
+
             }
         }
         async EmbedReady() {
@@ -179,14 +245,6 @@ export const download = async (
             const image_data = await fetch(notification_data.thumbnail);
             //const file_name = `./thumbnail.${(await image_data.blob()).type}`;
             const image_path = path.resolve("./thumbnail.jpeg");
-            fs.writeFileSync(
-                image_path,
-                Buffer.from(
-                    await (
-                        await fetch(notification_data.thumbnail)
-                    ).arrayBuffer()
-                )
-            );
 
             const xml = `
     <toast activationType="protocol" launch="${notification_data.output}">
@@ -228,3 +286,4 @@ export const download = async (
     ).run();
     console.log(opts);
 };
+*/

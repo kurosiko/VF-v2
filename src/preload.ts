@@ -3,10 +3,11 @@ import { JSONType } from "./VFTypes";
 const error_logger = (text: string) => {
     console.log(text);
 };
-import { JSONType } from "./VFTypes";
 const error_logger = (text: string) => {
     console.log(text);
 };
+import { JSONType } from "./VFTypes";
+
 contextBridge.exposeInMainWorld("api", {
     download: (opts: string[]) => {
         ipcRenderer.invoke("download", opts).catch(error_logger);
