@@ -1,6 +1,6 @@
 import path from "path";
 import os from "os";
-import { JSONType, WinState } from "../VFTypes";
+import { JSONType, WinState } from "../functions/VFTypes";
 export const def_cfg: JSONType = {
     dir: path.join(os.homedir(), "Desktop"),
     general: {

@@ -1,5 +1,5 @@
 import fs from "fs";
-import { def_Type } from "./Types/AllowType";
+import { def_Type } from "./AllowType";
 
 export const load = ({
     def_opts,

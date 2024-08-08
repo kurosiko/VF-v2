@@ -1,4 +1,4 @@
-import { def_Type, target_Type } from "./Types/AllowType";
+import { def_Type, target_Type } from "./AllowType";
 import { def_cfg, def_win } from "../init/default";
 export const targetList = (target: target_Type) => {
     const dict: dict_Type<target_Type> = {

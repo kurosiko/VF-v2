@@ -2,7 +2,7 @@ import { Notification } from "electron";
 import path from "path";
 import os from "os";
 import fs from "fs";
-import { Progress } from "../Progress";
+import { Progress } from "./Progress";
 import YTDlpWrap, { YTDlpEventEmitter } from "./core";
 import { yt_dlp } from "./yt_dlp";
 import { Args } from "./yt_dlp.type";
@@ -13,7 +13,7 @@ import { embed } from "./embed";
 //Objects
 //+YTM Functions
 //+
-class Download extends yt_dlp {
+export class Download extends yt_dlp {
     private mainWindow: Electron.BrowserWindow;
     private closed = false;
     private pid = 0;
@@ -28,9 +28,7 @@ class Download extends yt_dlp {
         const tasks = await this.analyze();
         if (!tasks) return;
         const [threads, info, customThreads] = tasks;
-        if (!customThreads) {
-            customThreads 
-        }
+        console.log(threads, info, customThreads);
         Promise.all(threads).then(() => {
             this.mainWindow.webContents.send("close");
         });
@@ -60,6 +58,8 @@ class Download extends yt_dlp {
                 }
             });
         }
+        if (!customThreads) return;
+
         /*
         if (customThreads?.ytmImage) {
             const ytMusic = new YTM()
@@ -71,7 +71,6 @@ class Download extends yt_dlp {
             });
         }
         */
-        
     }
 }
 

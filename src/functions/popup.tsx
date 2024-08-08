@@ -1,29 +1,31 @@
 import React, { LegacyRef, useCallback, useEffect, useRef } from "react";
 import "../web/css/Popup.css";
-import { JSONType } from "../VFTypes";
-import { dictKeys } from "./Types/AllowType";
+import { JSONType } from "./VFTypes";
+import { dictKeys } from "./AllowType";
 import { dialog } from "electron";
 export const Popup = (
     config: JSONType,
     target: dictKeys,
     from: "video" | "audio"
 ) => {
+    return <></>
     //if (!Object.hasOwn(config, from)) return;
     /*
     const dialog = useCallback((node:LegacyRef<HTMLDialogElement>) => {
         if (!node) return
     },[])
     */
-    
+
+    /*
     const dialog = useRef(null);
 
     const useDialog = (dialog_ref: React.RefObject<HTMLDialogElement>) => {
         return {
             open: () => {
-                dialog_ref.current?.showModal()
+                dialog_ref.current?.showModal();
             },
             close: () => {
-                console.log(dialog_ref.current?.returnValue)
+                console.log(dialog_ref.current?.returnValue);
                 dialog_ref.current?.removeAttribute("open");
             },
         };

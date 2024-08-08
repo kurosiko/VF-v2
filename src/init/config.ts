@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { JSONType } from "../VFTypes";
+import { JSONType } from "../functions/VFTypes";
 import { def_cfg } from "./default";
 export const load = () => {
     const JsonPath = path.resolve("./config/config.json");

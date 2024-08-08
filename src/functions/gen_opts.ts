@@ -1,5 +1,5 @@
 import path from "path-browserify";
-import { JSONType } from "../VFTypes";
+import { JSONType } from "./VFTypes";
 interface Config_Type {
     genOutput: () => string;
     genFormat: () => string[];
@@ -56,7 +56,7 @@ export class Config implements Config_Type {
                 preset.push("--merge-output-format", getFormat("video"));
             }
         }
-        return preset
+        return preset;
     }
     embed() {
         let option: string[] = [];
@@ -72,7 +72,7 @@ export class Config implements Config_Type {
                 option.push("--embed-thumbnail");
         }
         if (!this.config.general.list) option.push("--no-playlist");
-        return option
+        return option;
     }
     custom() {
         return {

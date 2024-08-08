@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { JSONType } from "../VFTypes";
+import { JSONType } from "./VFTypes";
 export const Logger = (str: string, options?: JSONType | string[] | string) => {
     const data = new Date();
     const y = data.getFullYear();

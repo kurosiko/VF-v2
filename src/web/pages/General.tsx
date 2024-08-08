@@ -1,25 +1,12 @@
 import React, { useRef } from "react";
-import { JSONType } from "../../VFTypes";
-import { useRecoilState } from "recoil";
+import { JSONType } from "../../functions/VFTypes";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { CONFIG } from "../Atoms/Atoms";
+import { Reload } from "../../functions/RendererHook";
 export const General = () => {
-    const [config, SetConfig] = useRecoilState(CONFIG);
+    const config = useRecoilValue(CONFIG);
     const Path = useRef<HTMLLabelElement>(null);
-    const Gen_pre: () => JSONType = () => {
-        const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
-        return gened_pre;
-    };
-    function Reload(
-        event: React.ChangeEvent<HTMLInputElement>,
-        option: string
-    ) {
-        const pre = Gen_pre();
-        pre.general[`${option}`] = event.target.checked;
-        SetConfig(pre);
-    }
-    if (!Path) {
-        return;
-    }
+    if (!Path.current) return;
     return (
         <>
             <h1 className="header">General</h1>
@@ -29,8 +16,11 @@ export const General = () => {
                         <input
                             type="checkbox"
                             checked={config.general.dl}
-                            onChange={(e) => {
-                                Reload(e, "dl");
+                            onChange={(event) => {
+                                Reload(
+                                    ["general", "dl"],
+                                    event.currentTarget.checked
+                                );
                             }}
                         />
                     </label>
@@ -41,8 +31,11 @@ export const General = () => {
                         <input
                             type="checkbox"
                             checked={config.general.uploader}
-                            onChange={(e) => {
-                                Reload(e, "uploader");
+                            onChange={(event) => {
+                                Reload(
+                                    ["general", "uploader"],
+                                    event.currentTarget.checked
+                                );
                             }}
                         />
                     </label>
@@ -53,8 +46,11 @@ export const General = () => {
                         <input
                             type="checkbox"
                             checked={config.general.playlist}
-                            onChange={(e) => {
-                                Reload(e, "playlist");
+                            onChange={(event) => {
+                                Reload(
+                                    ["general", "playlist"],
+                                    event.currentTarget.checked
+                                );
                             }}
                         />
                     </label>
@@ -62,25 +58,22 @@ export const General = () => {
                 </div>
                 <div id="path">
                     <label
-                        onClick={(event) => {
-                            if (!(config.dir == "null"))
-                                window.api.Open_dir(config.dir);
+                        onClick={() => {
+                            if (config.dir != "null")
+                                window.api.explorer(config.dir);
                         }}
                         ref={Path}
                     >
                         {config.dir ? config.dir : "PATH"}
                     </label>
                     <button
-                        onClick={(event) => {
-                            window.api.ResPath((path: string) => {
-                                if (Path.current && path) {
-                                    Path.current.innerText = path;
-                                    SetConfig(
-                                        Object.assign(Gen_pre(), { dir: path })
-                                    );
+                        onClick={() => {
+                            window.api.path().then((new_path: string) => {
+                                if (Path.current && new_path) {
+                                    Path.current.innerText = new_path;
+                                    Reload(["dir"], new_path);
                                 }
                             });
-                            window.api.ReqPath();
                         }}
                     >
                         Browse

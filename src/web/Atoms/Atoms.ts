@@ -1,6 +1,6 @@
 import { atom } from "recoil";
-import { JSONType } from "../../VFTypes";
-import { Progress } from "../../Progress";
+import { JSONType } from "../../functions/VFTypes";
+import { Progress } from "../../functions/Progress";
 export const CONFIG = atom<JSONType>({
     key: "config",
     default: {

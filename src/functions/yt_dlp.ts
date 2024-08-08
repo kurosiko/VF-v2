@@ -1,7 +1,8 @@
 import YTDlpWrap, { YTDlpEventEmitter } from "./core";
-import path from "path";
+import path, { resolve } from "path";
 import { Args } from "./yt_dlp.type";
-import { Lyric } from "./Lyric";
+import { list } from "postcss";
+import { rejects } from "assert";
 
 export class yt_dlp extends YTDlpWrap {
     private url: string;
@@ -41,6 +42,7 @@ export class yt_dlp extends YTDlpWrap {
         }
         return [func_exec(args)];
     }
+
     async analyze(): Promise<
         | void
         | [
@@ -49,23 +51,24 @@ export class yt_dlp extends YTDlpWrap {
                   title: string;
                   uploader: string;
                   thumbnail: string;
-            },
-              YTDlpEventEmitter[]?
+              },
+              any
           ]
-        > {
-        
+    > {
         const info = await this.getInfo();
         if (typeof info._type == undefined) {
             return;
         }
         const playlist_count = info.playlist_count;
+        const test = {}
+        //not availible
         if (info._type == "video") {
-            return [[this.download(this.args)], info];
+            return [[this.download(this.args)], info, test];
         } else {
             return [
-                await this.multiProcess(this.args, true, playlist_count,),
+                await this.multiProcess(this.args, true, playlist_count),
                 info,
-                await this.multiProcess([...this.args,"-J"],false,playlist_count)
+                test,
             ];
         }
     }

@@ -1,68 +1,27 @@
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../web/Atoms/Atoms";
-import { JSONType } from "../VFTypes";
-import { Progress } from "../Progress";
+import { JSONType } from "./VFTypes";
+import { Progress } from "./Progress";
+import { produce } from "immer";
 
 export const IPCRegister = () => {
-    const [config, SetConfig] = useRecoilState(CONFIG);
-    const [progress, SetProgress] = useRecoilState(PROGRESS);
-
-    const PreConfig: () => JSONType = () => {
-        return structuredClone(config)
-    };
-    //exit
-    window.api.Exit_Req(() => {
-        window.api.Exit_Res(config)
-    })
-    //Config
-    window.api.ResConfig((config: JSONType) => {
-        SetConfig(config);
-    });
-    /*
-    window.api.AddConfig(
-        (
-            obj: {},
-            target: "video" | "audio",
-            list: "codecList" | "qualityList" | "defaultList",
-            add: booleantwitter.com
-        ) => {
-            console.log(obj);
-            console.log(target);
-            console.log(list);
-            console.log(add);
-            const pre = PreConfig();
-            if (add) {
-                Object.assign(pre[target][list], obj);
-            } else {
-                delete pre[target][list][Object.keys(obj)[0]];
-            }
-            SetConfig(pre);
-        }
-    );
-    */
-    //Progress
-    window.api.ReceiveBase((base_data) => {
-        console.log(base_data)
-        SetProgress([base_data, ...progress]);
-    });
-    window.api.Refresh((thread: Progress) => {
-        console.log(thread)
-        if (thread == undefined) return;
-        const target = progress.map((item: Progress) => {
-            if (item.pid != thread.pid) return item;
-            return Object.assign(structuredClone(item), thread);
+    return;
+};
+function updateObject<T>(data: T, path: string[], newValue: any): T {
+    return produce(data, (draft) => {
+        let current = draft as any;
+        path.slice(0, -1).forEach((key) => {
+            current = current[key];
         });
-        SetProgress(target);
+        current[path[path.length - 1]] = newValue;
     });
-    window.api.Kill((pid: number) => {
-        SetProgress(
-            progress.filter((item) => {
-                return item.pid != pid;
-            })
-        );
-    });
-    //General
-    window.api.ResPath((path: string) => {
-        if (path) SetConfig(Object.assign(PreConfig(), { dir: path }));
+}
+export const Reload = <T extends string | number | boolean>(
+    path: string[],
+    new_val: T
+): void => {
+    const [config, SetConfig] = useRecoilState(CONFIG);
+    SetConfig((curr_val) => {
+        return updateObject<JSONType>(curr_val, path, new_val);
     });
 };

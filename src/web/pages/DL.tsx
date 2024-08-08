@@ -2,20 +2,14 @@ import React, { useRef } from "react";
 import "../css/ProgressBar.css";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "../Atoms/Atoms";
-import { JSONType } from "../../VFTypes";
-import { Progress } from "../../Progress";
+import { JSONType } from "../../functions/VFTypes";
+import { Progress } from "../../functions/Progress";
 export const DL = () => {
     const url = useRef<HTMLInputElement>(null);
     const [config, SetConfig] = useRecoilState(CONFIG);
     const [progress, SetProgress] = useRecoilState(PROGRESS);
-    window.api.ResConfig((res: JSONType) => {
-        SetConfig(res);
-    });
     if (!url) return;
-    window.api.ReceiveBase((base_data) => {
-        console.log(base_data);
-        SetProgress([base_data, ...progress]);
-    });
+    window.api.progress((callback)=>{})
     function download(url: string) {
         //download
     }

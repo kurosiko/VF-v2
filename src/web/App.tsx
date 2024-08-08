@@ -13,36 +13,23 @@ import { Audio } from "./pages/Audio";
 import { Other } from "./pages/Other";
 import { Log } from "./pages/Log";
 import { Dev } from "./pages/Dev";
-import { JSONType } from "../VFTypes";
+import { JSONType } from "../functions/VFTypes";
 import { useRecoilState } from "recoil";
 import { CONFIG, PROGRESS } from "./Atoms/Atoms";
-import { Progress } from "../Progress";
+import { Progress } from "../functions/Progress";
 import { useTransitionNavigate } from "./pages/Tran_nav";
 import { ProgressBar } from "./pages/Progress";
-import { IPCRegister } from "../functions/RendererHook";
+import { IPCRegister, Reload } from "../functions/RendererHook";
 import { ipcRenderer } from "electron";
 
 export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
-    const Gen_pre = () => {
-        const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
-        return gened_pre;
-    };
-
-    function Reload(
-        event: React.ChangeEvent<HTMLInputElement>,
-        option: string
-    ) {
-        console.log(option);
-        const pre = Gen_pre();
-        pre.general[`${option}`] = event.target.checked;
-
-        SetConfig(pre);
-    }
-
     IPCRegister();
-    if (config.dir == "null") window.api.ReqConfig();
+    if (config.dir == "null")
+        window.api.config().then((config: JSONType) => {
+            SetConfig(config);
+        });
     return (
         <>
             <div
@@ -135,8 +122,11 @@ export const App = () => {
                                 <input
                                     type="checkbox"
                                     checked={config.general.list}
-                                    onChange={(e) => {
-                                        Reload(e, "list");
+                                    onChange={(event) => {
+                                        Reload(
+                                            ["general", "list"],
+                                            event.currentTarget.checked
+                                        );
                                     }}
                                 />
                             </label>
@@ -149,8 +139,11 @@ export const App = () => {
                                 <input
                                     type="checkbox"
                                     checked={config.general.only}
-                                    onChange={(e) => {
-                                        Reload(e, "only");
+                                    onChange={(event) => {
+                                        Reload(
+                                            ["general", "only"],
+                                            event.currentTarget.checked
+                                        );
                                     }}
                                 />
                             </label>

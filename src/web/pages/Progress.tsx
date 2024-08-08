@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../css/Progress.css"
 export const ProgressBar = () => {
+    /*
     const [progress,SetProgress] = useState(0)
     window.api.Progress((percent:number) => {
         SetProgress(percent)
@@ -15,4 +16,6 @@ export const ProgressBar = () => {
             <label>Downloading...</label>
         </>
     );
+    */
+    return <></>
 };

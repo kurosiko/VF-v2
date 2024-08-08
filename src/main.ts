@@ -2,7 +2,6 @@ import path from "path";
 import {
     BrowserWindow,
     Notification,
-    Notification,
     app,
     dialog,
     ipcMain,
@@ -10,15 +9,15 @@ import {
 } from "electron";
 
 import { load, save } from "./functions/json_io";
-import { DL_Type, JSONType, WinState } from "./VFTypes";
+import { DL_Type, JSONType, WinState } from "./functions/VFTypes";
 import { setup } from "./init/setup";
-import { download } from "./functions/download";
 import { ffdl } from "./functions/ffdl";
 import { targetList } from "./functions/List";
 import { def_cfg, def_win } from "./init/default";
+import { IcpMainRegister } from "./functions/Main/IpcMain";
 app.setAppUserModelId("VideoFetcher");
 
-class VF_Window {
+class VF_Window2 {
     win_state: WinState;
     config: JSONType;
     mainWindow: BrowserWindow;
@@ -80,7 +79,7 @@ class VF_Window {
             console.log("blocked");
             this.mainWindow.webContents.send("exit_req");
         });
-        ipcMain.handle("exit_res", (_, args: JSONType) => {
+        ipcMain.handle("exitHandler", (_, args: JSONType) => {
             const [x, y] = this.mainWindow.getPosition();
             const [width, height] = this.mainWindow.getSize();
             console.log(x, y, height, width);
@@ -103,158 +102,72 @@ class VF_Window {
             );
         });
         ipcMain.handle("download", (_, opts: DL_Type) => {
-            download(opts, this.mainWindow);
+            //download(opts, this.mainWindow);
         });
         ipcMain.handle("open_dir", (_, args) => {
             shell.openPath(path.isAbsolute(args) ? args : path.resolve(args));
         });
-        ipcMain.handle(
-            "ReqAdd",
-            (
-                _,
-                add_obj: {},
-                target: "audio" | "video",
-                list: "codecList" | "qualityList" | "defaultList",
-                add: boolean
-            ) => {
-                this.mainWindow.webContents.send(
-                    "add",
-                    add_obj,
-                    target,
-                    list,
-                    add
-                );
-            }
-        );
     }
 }
-app.whenReady().then(() => {
-    new VF_Window();
-});
-/**/
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-/*
-function createWindow() {
-    const win_state: WinState = load(targetList("window"));
-    const win_state: WinState = load(targetList("window"));
-    const mainWindow = new BrowserWindow({
-        x: win_state.x,
-        y: win_state.y,
-        height: win_state.height,
-        width: win_state.width,
-        minHeight: 300,
-        minWidth: 500,
-        x: win_state.x,
-        y: win_state.y,
-        height: win_state.height,
-        width: win_state.width,
-        minHeight: 300,
-        minWidth: 500,
-        alwaysOnTop: true,
-        webPreferences: {
-            preload: path.resolve(__dirname, "preload.js"),
-            contextIsolation: true,
-            nodeIntegration: false,
-        },
-    });
-    mainWindow.loadFile("dist/index.html").then(() => {
-        mainWindow.webContents.send("ResConfig", config);
-    });
-    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-        if (url.startsWith("http")) {
-            shell.openExternal(url);
-        }
-        return { action: "deny" };
-    });
-    ipcMain.handle("download", (_, opts: string[]) => {
-        download(opts, mainWindow);
-    });
-    ipcMain.handle("download", (_, opts: string[]) => {
-        download(opts, mainWindow);
-    });
-    ipcMain.handle("ReqConfig", () => {
-        mainWindow.webContents.send("ResConfig", config);
-    });
-    mainWindow.on("close", (event) => {
-        console.log("blocked");
-        event.preventDefault();
-        mainWindow.webContents.send("ReqConfig_Save");
-    });
-    ipcMain.handle("ResConfig_Save", (_, args: JSONType) => {
-        mainWindow.removeAllListeners("close");
-        if (args.dir != "null") {
-        }
-        if (args.dir != "null") {
-        }
-        app.quit();
-    });
-    ipcMain.handle("open_dir", (_, args) => {
-        const _path = path.isAbsolute(args) ? args : path.resolve(args);
-        console.log(path.isAbsolute(args));
-        console.log(`[IsAbsolute:${_path}]`);
-        shell.openPath(_path);
-    });
-    ipcMain.handle(
-        "ReqAdd",
-        (
-            _,
-            add_obj: {},
-            target: "audio" | "video",
-            list: "codecList" | "qualityList" | "defaultList",
-            add: boolean
-        ) => {
-            console.log(target);
-            mainWindow.webContents.send("add", add_obj, target, list, add);
-        }
-    );
-    ipcMain.handle("open_dir", (_, args) => {
-        const _path = path.isAbsolute(args) ? args : path.resolve(args);
-        console.log(path.isAbsolute(args));
-        console.log(`[IsAbsolute:${_path}]`);
-        shell.openPath(_path);
-    });
-    ipcMain.handle(
-        "ReqAdd",
-        (
-            _,
-            add_obj: {},
-            target: "audio" | "video",
-            list: "codecList" | "qualityList" | "defaultList",
-            add: boolean
-        ) => {
-            console.log(target);
-            mainWindow.webContents.send("add", add_obj, target, list, add);
-        }
-    );
-    return mainWindow;
-}
-const config: JSONType = load(targetList("config"));
-console.log(config);
-const config: JSONType = load(targetList("config"));
-console.log(config);
-app.whenReady().then(() => {
-    const mainWindow = createWindow();
-    mainWindow.webContents.on("did-stop-loading", async () => {
-        console.log("[Setup]");
-        console.log(
-            `current:\n[yt-dlp:${config.ytdlp_v},ffmpeg:${config.ffmpeg}]`
+type Boot = {
+    win_state: WinState;
+    config: JSONType;
+};
+export class VF_Window extends BrowserWindow {
+    config: JSONType;
+    constructor(
+        options: Electron.BrowserWindowConstructorOptions,
+        BootConfig: Boot
+    ) {
+        super(options);
+        this.config = BootConfig.config;
+        this.loadFile("dist/index.html");
+        this.on("close", (event) => {
+            event.preventDefault();
+            this.webContents.send("MainExit");
+        });
+        IcpMainRegister(this);
+    }
+    async exit(_: Electron.IpcMainInvokeEvent, config: JSONType) {
+        const [x, y] = this.getPosition();
+        const [width, height] = this.getSize();
+        await save(config, targetList("config"));
+        await save(
+            { x: x, y: y, height: height, width: width },
+            targetList("window")
         );
-        mainWindow.webContents.removeAllListeners("did-stop-loading");
-        if (config.other.update) {
-            config.ytdlp_v = await setup(config.ytdlp_v);
+        if (config.dir != "null") {
+            this.destroy();
+            app.exit();
         }
-        if (!config.ffmpeg) {
-            config.ffmpeg = await ffdl(mainWindow);
-            mainWindow.webContents
-                .executeJavaScript("window.location.hash='#'")
-                .then(() => {
-                    mainWindow.webContents.send("ResConfig", config);
-                });
-        }
-    });
+    }
+}
+
+app.whenReady().then(() => {
+    const bootConfig: Boot = {
+        win_state: load(targetList("window")) || def_win,
+        config: load(targetList("config")) || def_cfg,
+    };
+    const mainWindow = new VF_Window(
+        {
+            x: bootConfig.win_state.x,
+            y: bootConfig.win_state.y,
+            height: bootConfig.win_state.height,
+            width: bootConfig.win_state.width,
+            minHeight: 300,
+            minWidth: 500,
+            alwaysOnTop: true,
+            webPreferences: {
+                preload: path.resolve(__dirname, "preload.js"),
+                contextIsolation: true,
+                nodeIntegration: false,
+            },
+        },
+        bootConfig
+    );
 });
-*/
-    const mainWindow = createWindow();
+/*
+    const mainWindow = app.createWindow();
     mainWindow.webContents.on("did-stop-loading", async () => {
         console.log("[Setup]");
         console.log(
