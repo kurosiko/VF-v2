@@ -1,6 +1,6 @@
-import { DL_Type, JSONType } from "./functions/VFTypes";
-import { Progress } from "./functions/Progress";
-import { Args } from "./functions/yt_dlp.type";
+import { DL_Type, JSONType } from "./Types/VFTypes";
+import { Progress } from "./Types/Progress";
+import { Args } from "./Types/yt_dlp.type";
 declare global {
     interface Window {
         api: AppAPI;

@@ -1,4 +1,3 @@
-import path from "path";
 import {
     BrowserWindow,
     Notification,
@@ -7,14 +6,15 @@ import {
     ipcMain,
     shell,
 } from "electron";
+import path from "path";
 
-import { load, save } from "./functions/json_io";
-import { DL_Type, JSONType, WinState } from "./functions/VFTypes";
-import { setup } from "./init/setup";
-import { ffdl } from "./functions/ffdl";
-import { targetList } from "./functions/List";
-import { def_cfg, def_win } from "./init/default";
-import { IcpMainRegister } from "./functions/Main/IpcMain";
+import { ffdl } from "./main/functions/ffdl";
+import { IcpMainRegister } from "./main/functions/IpcMain";
+import { load, save } from "./main/functions/json_io";
+import { targetList } from "./main/functions/TargetList";
+import { def_cfg, def_win } from "./main/init/default";
+import { setup } from "./main/init/setup";
+import { DL_Type, JSONType, WinState } from "./Types/VFTypes";
 app.setAppUserModelId("VideoFetcher");
 
 class VF_Window2 {

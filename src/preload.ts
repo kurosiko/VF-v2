@@ -2,17 +2,19 @@ import { contextBridge, ipcRenderer, shell } from "electron";
 const error_logger = (text: string) => {
     console.log(text);
 };
-import { Logger } from "./functions/Logger";
-import { JSONType } from "./functions/VFTypes";
-import { Download } from "./functions/download";
-import { Progress } from "./functions/Progress";
+import { Logger } from "./main/functions/Logger";
+import { JSONType } from "./Types/VFTypes";
+import { Download } from "./main/functions/download";
+import { Progress } from "./Types/Progress";
 
 const ApiFunctions = {
     donwload: () => ipcRenderer.invoke("download"),
     path: () => ipcRenderer.invoke("path"),
     explorer: (path: string) => shell.showItemInFolder(path),
     config: () => ipcRenderer.invoke("config"),
-    progress: (callback:(callback:Progress) =>{})=>ipcRenderer.on("progress",(_event,callback))
+    progress: (callback: (progress_data: Progress) => void) =>
+        ipcRenderer.on("progress", (_event, data) => callback(data)),
+    close: (callback: (content_data: Progress) => void) =>
+        ipcRenderer.on("close", (_event, data) => callback(data)),
 };
 contextBridge.exposeInMainWorld("api", ApiFunctions);
-
