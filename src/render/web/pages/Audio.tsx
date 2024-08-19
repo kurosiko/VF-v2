@@ -1,6 +1,6 @@
 import React from "react";
 import { useRecoilState } from "recoil";
-import { CONFIG } from "../../Atoms/Atoms";
+import { CONFIG } from "../Atoms/Atoms";
 export const Audio = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Gen_pre = () => {
@@ -52,7 +52,7 @@ export const Audio = () => {
     };
     return (
         <>
-            <h1 className="header">audio</h1>
+            <h1 className="header">Audio</h1>
             <div className="options">
                 <div className="combbox">
                     <label>Quality</label>

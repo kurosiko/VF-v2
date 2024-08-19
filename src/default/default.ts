@@ -17,9 +17,9 @@ export const def_cfg: JSONType = {
             metadata: true,
         },
         string: {
-            codec: "mp4",
-            quality: "highest",
-            default: "ba+bv",
+            codecList: "mp4",
+            qualityList: "highest",
+            defaultList: "ba+bv",
         },
         qualityList: {
             highest: "bestvideo+bestaudio",
@@ -46,9 +46,9 @@ export const def_cfg: JSONType = {
             metadata: false,
         },
         string: {
-            codec: "mp3",
-            quality: "highest",
-            default: "ba",
+            codecList: "mp3",
+            qualityList: "highest",
+            defaultList: "ba",
         },
         qualityList: {
             highest: "bestaudio",

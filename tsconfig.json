@@ -1,21 +1,21 @@
 {
-  "compilerOptions": {
-    "types": ["./src/preload.d.ts","node"],
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "lib": ["DOM", "ESNext"],
-    "jsx": "react-jsx",
-    "strict": true,
-    "allowJs": true
-  },
-  "include": ["src"],
-  "ts-node": {
     "compilerOptions": {
-      "module": "CommonJS"
+        "types": ["./src/preload.d.ts", "node"],
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "lib": ["DOM", "ESNext"],
+        "jsx": "react-jsx",
+        "strict": true,
+        "allowJs": true
+    },
+    "include": ["src", "src/render/web/pages/UI.tsx"],
+    "ts-node": {
+        "compilerOptions": {
+            "module": "CommonJS"
+        }
     }
-  }
 }

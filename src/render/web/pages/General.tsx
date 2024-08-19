@@ -1,8 +1,9 @@
 import { useRef } from "react";
 import { useRecoilState } from "recoil";
-import { CONFIG } from "../../Atoms/Atoms";
-import { Reload } from "../../Atoms/CustomHooks";
-import { Config } from "../../../functions/gen_opts";
+import { Config } from "../../functions/gen_opts";
+import { CONFIG } from "../Atoms/Atoms";
+import { Reload } from "../Atoms/CustomHooks";
+
 export const General = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Path = useRef<HTMLLabelElement>(null);

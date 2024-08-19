@@ -1,7 +1,7 @@
-import React from "react";
 import { useRecoilState } from "recoil";
-import { CONFIG } from "../../Atoms/Atoms";
-import { JSONType } from "../../../../Types/VFTypes";
+import { JSONType } from "../../../Types/VFTypes";
+import { CONFIG } from "../Atoms/Atoms";
+
 export const Other = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Gen_pre = () => {

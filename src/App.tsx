@@ -1,25 +1,32 @@
 import { Route, Routes } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import "./App.css";
+import { CONFIG } from "./render/web/Atoms/Atoms";
 import "./render/web/css/Back.css";
 import "./render/web/css/DL.css";
 import "./render/web/css/General.css";
 import "./render/web/css/Toast.css";
-import { CONFIG } from "./render/web/Atoms/Atoms";
-import { Reload } from "./render/web/Atoms/CustomHooks";
-import { DL } from "./render/web/pages/DL";
 import { Error } from "./render/web/pages/Error";
 import { Log } from "./render/web/pages/Log";
 import { ProgressBar } from "./render/web/pages/Progress";
 import { useTransitionNavigate } from "./render/web/pages/Tran_nav";
+import { Setting } from "./render/web/pages/UI";
 import { JSONType } from "./Types/VFTypes";
-import { Setting } from "./render/web/pages/Setting";
+import { Reload } from "./render/web/Atoms/CustomHooks";
 export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
+    const Reload = (callback: (dupe: JSONType) => JSONType):void => {
+        const altered = callback(structuredClone(config));
+        SetConfig(altered);
+    };
+    const Link = (path: string) => {
+        transitionNavigate(path, Reload);
+    };
     if (config.dir == "null")
         window.api.config().then((config: JSONType) => {
             SetConfig(config);
+            console.log("Req");
         });
     return (
         <>
@@ -43,7 +50,7 @@ export const App = () => {
                     ) : (
                         <button
                             onClick={() => {
-                                transitionNavigate(".");
+                                Link("");
                             }}
                         >
                             <span className="material-symbols-outlined icon">
@@ -55,7 +62,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("./setting/general");
+                            Link("general");
                         }}
                     >
                         <span className="material-symbols-outlined icon">
@@ -66,7 +73,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("video");
+                            Link("video");
                         }}
                     >
                         <span className="material-symbols-outlined icon">
@@ -77,7 +84,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("audio");
+                            Link("audio");
                         }}
                     >
                         <span className="material-symbols-outlined icon">
@@ -88,7 +95,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("other");
+                            Link("other");
                         }}
                     >
                         <span className="material-symbols-outlined icon">
@@ -99,7 +106,7 @@ export const App = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            transitionNavigate("log");
+                            Link("log");
                         }}
                     >
                         <span className="material-symbols-outlined icon">
@@ -112,12 +119,13 @@ export const App = () => {
                             <label className="togglebutton">
                                 <input
                                     type="checkbox"
-                                    checked={config.general.list}
+                                    checked={config.general.playlist}
                                     onChange={(event) => {
-                                        Reload(
-                                            ["general", "list"],
-                                            event.currentTarget.checked
-                                        );
+                                        Reload((dupe) => {
+                                            dupe.general.playlist =
+                                                event.currentTarget.checked;
+                                            return dupe;
+                                        });
                                     }}
                                 />
                             </label>
@@ -129,12 +137,13 @@ export const App = () => {
                             <label className="togglebutton">
                                 <input
                                     type="checkbox"
-                                    checked={config.general.only}
+                                    checked={config.general.list}
                                     onChange={(event) => {
-                                        Reload(
-                                            ["general", "only"],
-                                            event.currentTarget.checked
-                                        );
+                                        Reload((dupe) => {
+                                            dupe.general.list =
+                                                event.currentTarget.checked;
+                                            return dupe;
+                                        });
                                     }}
                                 />
                             </label>
@@ -144,7 +153,7 @@ export const App = () => {
                     {config.other.dev && (
                         <button
                             onClick={() => {
-                                transitionNavigate("Dev");
+                                Link("Dev");
                             }}
                         >
                             <span className="material-symbols-outlined icon">
@@ -156,9 +165,8 @@ export const App = () => {
                 </div>
                 <div id="inputbox">
                     <Routes>
-                        <Route path="/" element={<DL />} />
+                        <Route path="/*" element={<Setting />} />
                         <Route path="/progress" element={<ProgressBar />} />
-                        <Route path="/setting/*" element={<Setting />} />
                         <Route path="/log" element={<Log />} />
                         <Route path="*" element={<Error />} />
                     </Routes>

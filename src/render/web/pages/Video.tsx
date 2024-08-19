@@ -1,49 +1,38 @@
 import React, { useState } from "react";
-import { useRecoilState } from "recoil";
-import { CONFIG } from "../../Atoms/Atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { CONFIG } from "../Atoms/Atoms";
+import { useLocation } from "react-router-dom";
+import { JSONType } from "../../../Types/VFTypes";
+import { config } from "process";
+import { Reload } from "../Atoms/CustomHooks";
+
 export const Video = () => {
-    const [config, SetConfig] = useRecoilState(CONFIG);
-    const [open, SetOpen] = useState(false);
-    const Gen_pre = () => {
-        return JSON.parse(JSON.stringify(config));
-    };
-    function Reload(
-        event: React.ChangeEvent<HTMLInputElement>,
-        option: string
-    ) {
-        const pre = Gen_pre();
-        pre.video.boolean[option] = event.target.checked;
-        SetConfig(pre);
-    }
+    const config = useRecoilValue(CONFIG);
+    const location = useLocation();
+    const Reload = location.state as (
+        callback: (dupe: JSONType) => JSONType
+    ) => void;
     const LoadList = (target: "codecList" | "qualityList" | "defaultList") => {
-        const pre: React.ReactElement[] = [];
-        const lists = config.video[target];
-        const match: { [key: string]: string } = {
-            codecList: "codec",
-            qualityList: "quality",
-            defaultList: "default",
-        };
-        let default_value;
-        for (const key of Object.keys(lists)) {
-            pre.push(
+        const options = Object.keys(config.video[target]).map((key: string) => {
+            return (
                 <option key={key} value={config.video[target][key]}>
                     {key}:{config.video[target][key]}
                 </option>
             );
-            if (config.video.string[match[target]] == config.video[target][key])
-                default_value = config.video.string[match[target]];
-        }
+        });
+        const default_value = config.video.string[target];
         return (
             <>
                 <select
                     value={default_value}
                     onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                        const pre = Gen_pre();
-                        pre.video.string[match[target]] = event.target.value;
-                        SetConfig(pre);
+                        Reload((dupe) => {
+                            dupe.video.string[target];
+                            return dupe;
+                        });
                     }}
                 >
-                    {[...pre]}
+                    {...options}
                 </select>
                 <button className="edit" onClick={(event) => {}}>
                     Edit
@@ -67,15 +56,19 @@ export const Video = () => {
                     <label>Default</label>
                     {LoadList("defaultList")}
                 </div>
-                {["force", "thumbnail", "metadata"].map((option) => {
+                {["force", "thumbnail", "metadata"].map((option: string) => {
                     return (
                         <div className="checkbox" key={option}>
                             <label className="togglebutton">
                                 <input
                                     type="checkbox"
                                     checked={config.video.boolean[option]}
-                                    onChange={(e) => {
-                                        Reload(e, option);
+                                    onChange={(event) => {
+                                        Reload((dupe) => {
+                                            dupe.video.boolean[option] =
+                                                event.currentTarget.checked;
+                                            return dupe;
+                                        });
                                     }}
                                 ></input>
                             </label>

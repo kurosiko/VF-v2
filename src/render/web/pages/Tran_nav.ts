@@ -6,12 +6,14 @@ export const useTransitionNavigate = () => {
     const transitionNavigate = useCallback(
         async (
             newRoute: string,
+            statusFunction:Function,
             transitionClass:
                 | "slide-to-left"
                 | "slide-to-right" = "slide-to-left"
         ) => {
+            if (window.location.hash == `#/${newRoute}`) return;
             if (!document.startViewTransition) {
-                return navigate(newRoute);
+                return navigate(newRoute, { state: {func:statusFunction} });
             }
             document.documentElement.classList.add(transitionClass);
             const transition = document.startViewTransition(() => {
