@@ -12,5 +12,6 @@ export interface AppAPI {
     explorer: (path: string) => void;
     config: () => Promise<JSONType>;
     progress: (callback: (callback: Progress) => void) => void;
-    setup: (callback:(msg:string)=>void)=>void
+    setup: (callback: (msg: string) => void) => void;
+    mainExit: (callbakc: () => JSONType) => void;
 }

@@ -12,6 +12,7 @@ import { Init } from "./render/web/pages/Init";
 import { useTransitionNavigate } from "./render/web/pages/Tran_nav";
 import { Setting } from "./render/web/pages/UI";
 import { JSONType } from "./Types/VFTypes";
+import { useEffect } from "react";
 
 export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
@@ -24,9 +25,20 @@ export const App = () => {
     const Link = (path: string, state?: any) => {
         transitionNavigate(path, state);
     };
-    window.api.setup((_:string) => {
-        Link("init");
-    });
+    useEffect(() => {
+        window.api.mainExit(() => {
+            return config;
+        });
+        window.api.setup((_: string) => {
+            if (_) {
+                Link("");
+                window.api
+                    .config()
+                    .then((config: JSONType) => SetConfig(config));
+            }
+            Link("init");
+        });
+    }, []);
 
     if (config.dir == "null")
         window.api.config().then((config: JSONType) => SetConfig(config));

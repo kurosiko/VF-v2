@@ -10,9 +10,7 @@ export const setup = async (config: JSONType) => {
     console.log(`yt-dlp:[exist:${exist},version:${version}]`);
     if (!exist || version != config.ytdlp_v)
         await YTDlpWrap.downloadFromGithub(Path_yt);
-    const ytdl = new YTDlpWrap(Path_yt);
-    const current = (await ytdl.getVersion()).replace("\r\n", "");
-    console.log(`current:${current}`);
-    config.ytdlp_v = current;
+    console.log(`current:${version}`);
+    config.ytdlp_v = version;
     return config;
 };

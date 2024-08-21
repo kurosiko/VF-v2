@@ -5,12 +5,10 @@ import { Link, useLocation } from "react-router-dom";
 import { stat } from "fs";
 import { removeAllListeners } from "process";
 export const Init = () => {
-    const [state, SetState] = useState("")
+    const [state, SetState] = useState("");
     window.api.setup((msg: string) => {
-        removeAllListeners("setup")
-        SetState(msg)
+        removeAllListeners("setup");
     });
-
     return (
         <>
             <h1 className="header">Setup</h1>

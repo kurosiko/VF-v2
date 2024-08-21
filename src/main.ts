@@ -8,7 +8,7 @@ import {
 } from "electron";
 import path, { resolve } from "path";
 
-import { ffdl } from "./main/functions/ffdl";
+import { ffdl } from "./main/init/ffdl";
 import { IcpMainRegister } from "./main/functions/IpcMain";
 import { load, save } from "./main/functions/json_io";
 import { targetList } from "./main/functions/TargetList";
@@ -31,43 +31,36 @@ export class VF_Window extends BrowserWindow {
         this.config = BootConfig.config;
         this.loadFile("dist/index.html");
         this.on("close", (event) => {
-            event.preventDefault();
             this.webContents.send("MainExit");
+            event.preventDefault();
         });
         IcpMainRegister(this);
+        
         this.on("ready-to-show", () => {
-            this.webContents.send("setup","");
+            if (!(this.config.ytdlp_v == "null") || this.config.ffmpeg) return;
+            this.webContents.send("setup", "Link(init)");
             Promise.all([
-                new Promise(async (resolve, reject) =>
-                    resolve(await setup(this.config))
-                ),
-                new Promise(async (resolve, reject) =>
-                    resolve(await ffdl(this.config))
-                ),
+                new Promise(async (resolve, reject) => {
+                    this.config = await setup(this.config);
+                    resolve(this.config);
+                }),
+                new Promise(async (resolve, reject) => {
+                    this.config = await ffdl(this.config);
+                    resolve(this.config);
+                }),
             ])
                 .then(() => this.webContents.send("setup", "succsess"))
                 .catch((err) => {
-                    this.webContents.send("setup", `failed:${err}`); 
-                }).finally(() => {
-
-                    console.log("SetupEnded")
+                    this.webContents.send("setup", `failed:${err}`);
+                })
+                .finally(() => {
+                    console.log("SetupEnded");
+                    this.webContents.send("setup", "");
                 });
-            console.log("Setup")
+            console.log("Setup");
         });
     }
-    async exit(_: Electron.IpcMainInvokeEvent, config: JSONType) {
-        const [x, y] = this.getPosition();
-        const [width, height] = this.getSize();
-        await save(config, targetList("config"));
-        await save(
-            { x: x, y: y, height: height, width: width },
-            targetList("window")
-        );
-        if (config.dir != "null") {
-            this.destroy();
-            app.exit();
-        }
-    }
+    
 }
 
 app.whenReady().then(() => {
@@ -75,7 +68,7 @@ app.whenReady().then(() => {
         win_state: load(targetList("window")) || def_win,
         config: load(targetList("config")) || def_cfg,
     };
-    bootConfig.config.ffmpeg = false
+    bootConfig.config.ffmpeg = false;
     const mainWindow = new VF_Window(
         {
             x: bootConfig.win_state.x,
