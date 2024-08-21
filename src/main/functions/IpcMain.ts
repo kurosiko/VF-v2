@@ -1,9 +1,7 @@
-import { ipcMain, shell, dialog } from "electron";
-import { VF_Window } from "../../main";
-import { DL_Type, JSONType } from "../../Types/VFTypes";
-import { Download } from "./download";
-import { Args } from "../../Types/yt_dlp.type";
+import { dialog, ipcMain, shell } from "electron";
 import path from "path";
+import { VF_Window } from "../../main";
+import { Args } from "../../Types/yt_dlp.type";
 import YTDlpWrap from "./core";
 export const IcpMainRegister = (mainwindow: VF_Window) => {
     ipcMain.handle("MainExit", mainwindow.exit);

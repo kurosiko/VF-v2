@@ -2,11 +2,17 @@ import { useRef } from "react";
 import { useRecoilState } from "recoil";
 import { Config } from "../../functions/gen_opts";
 import { CONFIG } from "../Atoms/Atoms";
-import { Reload } from "../Atoms/CustomHooks";
+import { useLocation } from "react-router-dom";
+import { JSONType } from "../../../Types/VFTypes";
 
 export const General = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
     const Path = useRef<HTMLLabelElement>(null);
+    const Reload = (callback: (dupe: JSONType) => JSONType): void => {
+        const dupe = structuredClone(config);
+        const altered = callback(dupe);
+        SetConfig(altered);
+    };
     return (
         <>
             <h1 className="header">General</h1>
@@ -17,10 +23,11 @@ export const General = () => {
                             type="checkbox"
                             checked={config.general.dl}
                             onChange={(event) => {
-                                Reload(
-                                    ["general", "dl"],
-                                    event.currentTarget.checked
-                                );
+                                Reload((dupe) => {
+                                    dupe.general.dl =
+                                        event.currentTarget.checked;
+                                    return dupe;
+                                });
                             }}
                         />
                     </label>
@@ -32,10 +39,11 @@ export const General = () => {
                             type="checkbox"
                             checked={config.general.uploader}
                             onChange={(event) => {
-                                Reload(
-                                    ["general", "uploader"],
-                                    event.currentTarget.checked
-                                );
+                                Reload((dupe) => {
+                                    dupe.general.uploader =
+                                        event.currentTarget.checked;
+                                    return dupe;
+                                });
                             }}
                         />
                     </label>
@@ -47,10 +55,11 @@ export const General = () => {
                             type="checkbox"
                             checked={config.general.playlist}
                             onChange={(event) => {
-                                Reload(
-                                    ["general", "playlist"],
-                                    event.currentTarget.checked
-                                );
+                                Reload((dupe) => {
+                                    dupe.general.playlist =
+                                        event.currentTarget.checked;
+                                    return dupe;
+                                });
                             }}
                         />
                     </label>
@@ -69,10 +78,13 @@ export const General = () => {
                     </label>
                     <button
                         onClick={() => {
-                            window.api.path().then((new_path: string) => {
-                                if (Path.current && new_path) {
-                                    Path.current.innerText = new_path;
-                                    Reload(["dir"], new_path);
+                            window.api.path().then((new_path: string[]) => {
+                                if (Path.current && new_path[0]) {
+                                    Path.current.innerText = new_path[0];
+                                    Reload((dupe) => {
+                                        dupe.dir = new_path[0];
+                                        return dupe;
+                                    });
                                 }
                             });
                         }}

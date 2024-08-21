@@ -21,6 +21,7 @@ export const def_cfg: JSONType = {
             qualityList: "highest",
             defaultList: "ba+bv",
         },
+
         qualityList: {
             highest: "bestvideo+bestaudio",
             NoAudio: "bestvideo",

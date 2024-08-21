@@ -4,59 +4,54 @@ import { CONFIG } from "../Atoms/Atoms";
 
 export const Other = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
-    const Gen_pre = () => {
-        const gened_pre: JSONType = JSON.parse(JSON.stringify(config));
-        return gened_pre;
+    const Reload = (callback: (dupe: JSONType) => JSONType): void => {
+        const dupe = structuredClone(config);
+        const altered = callback(dupe);
+        SetConfig(altered);
     };
-    function Reload(
-        event: React.ChangeEvent<HTMLInputElement>,
-        option: string
-    ) {
-        const pre = Gen_pre();
-        pre.other[`${option}`] = event.target.checked;
-        SetConfig(pre);
-    }
+    const Boolean_List = () => {
+        const NameList = {
+            notification: "notification",
+            update: "check updates",
+            dev: "Developer",
+        };
+        type ValUnion = keyof typeof NameList;
+        const DOMList = Object.entries(NameList).map(([value, description]) => {
+            return (
+                <div className="checkbox">
+                    <label className="togglebutton">
+                        <input
+                            type="checkbox"
+                            checked={config.other[value]}
+                            onChange={(event) => {
+                                Reload((dupe) => {
+                                    dupe.other[value] =
+                                        event.currentTarget.checked;
+                                    return dupe;
+                                });
+                            }}
+                        />
+                    </label>
+                    <label>
+                        {description
+                            .split(" ")
+                            .map((str: string) => {
+                                return (
+                                    str.charAt(0).toUpperCase() + str.slice(1)
+                                );
+                            })
+                            .join(" ")}
+                    </label>
+                </div>
+            );
+        });
+        return DOMList;
+    };
+
     return (
         <>
             <h1 className="header">Other</h1>
-            <div className="options">
-                <div className="checkbox">
-                    <label className="togglebutton">
-                        <input
-                            type="checkbox"
-                            checked={config.other.notification}
-                            onChange={(e) => {
-                                Reload(e, "notification");
-                            }}
-                        />
-                    </label>
-                    <label>Notification</label>
-                </div>
-                <div className="checkbox">
-                    <label className="togglebutton">
-                        <input
-                            type="checkbox"
-                            checked={config.other.update}
-                            onChange={(e) => {
-                                Reload(e, "update");
-                            }}
-                        />
-                    </label>
-                    <label>Check updates</label>
-                </div>
-                <div className="checkbox">
-                    <label className="togglebutton">
-                        <input
-                            type="checkbox"
-                            checked={config.other.dev}
-                            onChange={(e) => {
-                                Reload(e, "dev");
-                            }}
-                        />
-                    </label>
-                    <label>Developer Mode</label>
-                </div>
-            </div>
+            <div className="options">{Boolean_List()}</div>
         </>
     );
 };

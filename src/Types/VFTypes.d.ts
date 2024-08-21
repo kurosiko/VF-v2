@@ -7,7 +7,7 @@ export type JSONType = {
     audio: Media;
     custom: Boolen_Dict;
     other: Boolen_Dict;
-}
+};
 export type Media = {
     boolean: Boolen_Dict;
     string: Str_Dict;

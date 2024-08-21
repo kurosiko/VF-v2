@@ -1,15 +1,12 @@
-import { Routes, Route } from "react-router-dom";
-import { useRecoilState } from "recoil";
-import { CONFIG } from "../Atoms/Atoms";
+import { Route, Routes } from "react-router-dom";
 import { Dev } from "./Dev";
 import { General } from "./General";
 import { Log } from "./Log";
 import { Other } from "./Other";
-import { Video } from "./Video";
 import { Audio } from "./Audio";
 import { DL } from "./DL";
+import { Video } from "./Video";
 export const Setting = () => {
-    const [config, SetConfig] = useRecoilState(CONFIG);
     return (
         <>
             <Routes>

@@ -1,17 +1,15 @@
-import React, { useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { CONFIG } from "../Atoms/Atoms";
-import { useLocation } from "react-router-dom";
+import React from "react";
+import { useRecoilState } from "recoil";
 import { JSONType } from "../../../Types/VFTypes";
-import { config } from "process";
-import { Reload } from "../Atoms/CustomHooks";
+import { CONFIG } from "../Atoms/Atoms";
 
 export const Video = () => {
-    const config = useRecoilValue(CONFIG);
-    const location = useLocation();
-    const Reload = location.state as (
-        callback: (dupe: JSONType) => JSONType
-    ) => void;
+    const [config, SetConfig] = useRecoilState(CONFIG);
+    const Reload = (callback: (dupe: JSONType) => JSONType): void => {
+        const dupe = structuredClone(config);
+        const altered = callback(dupe);
+        SetConfig(altered);
+    };
     const LoadList = (target: "codecList" | "qualityList" | "defaultList") => {
         const options = Object.keys(config.video[target]).map((key: string) => {
             return (
@@ -27,7 +25,8 @@ export const Video = () => {
                     value={default_value}
                     onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                         Reload((dupe) => {
-                            dupe.video.string[target];
+                            dupe.video.string[target] =
+                                event.currentTarget.value;
                             return dupe;
                         });
                     }}
@@ -40,6 +39,45 @@ export const Video = () => {
             </>
         );
     };
+    const Boolean_List = () => {
+        const NameList = {
+            force: "force convert",
+            thumbnail: "embed thumbnail",
+            metadata: "embed metadata",
+        };
+        type ValUnion = keyof typeof NameList;
+        const DOMList = Object.entries(NameList).map(([value, description]) => {
+            return (
+                <div className="checkbox">
+                    <label className="togglebutton">
+                        <input
+                            type="checkbox"
+                            checked={config.other[value]}
+                            onChange={(event) => {
+                                Reload((dupe) => {
+                                    dupe.other[value] =
+                                        event.currentTarget.checked;
+                                    return dupe;
+                                });
+                            }}
+                        />
+                    </label>
+                    <label>
+                        {description
+                            .split(" ")
+                            .map((str: string) => {
+                                return (
+                                    str.charAt(0).toUpperCase() + str.slice(1)
+                                );
+                            })
+                            .join(" ")}
+                    </label>
+                </div>
+            );
+        });
+        return DOMList;
+    };
+
     return (
         <>
             <h1 className="header">Video</h1>
@@ -56,29 +94,7 @@ export const Video = () => {
                     <label>Default</label>
                     {LoadList("defaultList")}
                 </div>
-                {["force", "thumbnail", "metadata"].map((option: string) => {
-                    return (
-                        <div className="checkbox" key={option}>
-                            <label className="togglebutton">
-                                <input
-                                    type="checkbox"
-                                    checked={config.video.boolean[option]}
-                                    onChange={(event) => {
-                                        Reload((dupe) => {
-                                            dupe.video.boolean[option] =
-                                                event.currentTarget.checked;
-                                            return dupe;
-                                        });
-                                    }}
-                                ></input>
-                            </label>
-                            <label>
-                                {option.charAt(0).toUpperCase() +
-                                    option.slice(1)}
-                            </label>
-                        </div>
-                    );
-                })}
+                {Boolean_List()}
             </div>
         </>
     );

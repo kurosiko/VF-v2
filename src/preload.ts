@@ -16,5 +16,7 @@ const ApiFunctions = {
         ipcRenderer.on("progress", (_event, data) => callback(data)),
     close: (callback: (content_data: Progress) => void) =>
         ipcRenderer.on("close", (_event, data) => callback(data)),
+    setup: (callback: (msg:string) => void) =>
+        ipcRenderer.once("setup", (_event,msg) => callback(msg)),
 };
 contextBridge.exposeInMainWorld("api", ApiFunctions);

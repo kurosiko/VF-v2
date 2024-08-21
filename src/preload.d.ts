@@ -8,8 +8,9 @@ declare global {
 }
 export interface AppAPI {
     download: (options: Args) => void;
-    path: () => Promise<string>;
+    path: () => Promise<string[]>;
     explorer: (path: string) => void;
     config: () => Promise<JSONType>;
     progress: (callback: (callback: Progress) => void) => void;
+    setup: (callback:(msg:string)=>void)=>void
 }

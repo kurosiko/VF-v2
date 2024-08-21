@@ -8,26 +8,28 @@ import "./render/web/css/General.css";
 import "./render/web/css/Toast.css";
 import { Error } from "./render/web/pages/Error";
 import { Log } from "./render/web/pages/Log";
-import { ProgressBar } from "./render/web/pages/Progress";
+import { Init } from "./render/web/pages/Init";
 import { useTransitionNavigate } from "./render/web/pages/Tran_nav";
 import { Setting } from "./render/web/pages/UI";
 import { JSONType } from "./Types/VFTypes";
-import { Reload } from "./render/web/Atoms/CustomHooks";
+
 export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
     const [config, SetConfig] = useRecoilState(CONFIG);
-    const Reload = (callback: (dupe: JSONType) => JSONType):void => {
-        const altered = callback(structuredClone(config));
+    const Reload = (callback: (dupe: JSONType) => JSONType): void => {
+        const dupe = structuredClone(config);
+        const altered = callback(dupe);
         SetConfig(altered);
     };
-    const Link = (path: string) => {
-        transitionNavigate(path, Reload);
+    const Link = (path: string, state?: any) => {
+        transitionNavigate(path, state);
     };
+    window.api.setup((_:string) => {
+        Link("init");
+    });
+
     if (config.dir == "null")
-        window.api.config().then((config: JSONType) => {
-            SetConfig(config);
-            console.log("Req");
-        });
+        window.api.config().then((config: JSONType) => SetConfig(config));
     return (
         <>
             <div
@@ -119,10 +121,10 @@ export const App = () => {
                             <label className="togglebutton">
                                 <input
                                     type="checkbox"
-                                    checked={config.general.playlist}
+                                    checked={config.general.list}
                                     onChange={(event) => {
                                         Reload((dupe) => {
-                                            dupe.general.playlist =
+                                            dupe.general.list =
                                                 event.currentTarget.checked;
                                             return dupe;
                                         });
@@ -137,10 +139,10 @@ export const App = () => {
                             <label className="togglebutton">
                                 <input
                                     type="checkbox"
-                                    checked={config.general.list}
+                                    checked={config.general.only}
                                     onChange={(event) => {
                                         Reload((dupe) => {
-                                            dupe.general.list =
+                                            dupe.general.only =
                                                 event.currentTarget.checked;
                                             return dupe;
                                         });
@@ -166,7 +168,7 @@ export const App = () => {
                 <div id="inputbox">
                     <Routes>
                         <Route path="/*" element={<Setting />} />
-                        <Route path="/progress" element={<ProgressBar />} />
+                        <Route path="/init" element={<Init />} />
                         <Route path="/log" element={<Log />} />
                         <Route path="*" element={<Error />} />
                     </Routes>
