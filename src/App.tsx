@@ -7,12 +7,11 @@ import "./render/web/css/DL.css";
 import "./render/web/css/General.css";
 import "./render/web/css/Toast.css";
 import { Error } from "./render/web/pages/Error";
-import { Log } from "./render/web/pages/Log";
 import { Init } from "./render/web/pages/Init";
+import { Log } from "./render/web/pages/Log";
 import { useTransitionNavigate } from "./render/web/pages/Tran_nav";
 import { Setting } from "./render/web/pages/UI";
 import { JSONType } from "./Types/VFTypes";
-import { useEffect } from "react";
 
 export const App = () => {
     const { transitionNavigate } = useTransitionNavigate();
@@ -25,23 +24,26 @@ export const App = () => {
     const Link = (path: string, state?: any) => {
         transitionNavigate(path, state);
     };
-    useEffect(() => {
-        window.api.mainExit(() => {
-            return config;
-        });
-        window.api.setup((_: string) => {
-            if (_) {
-                Link("");
-                window.api
-                    .config()
-                    .then((config: JSONType) => SetConfig(config));
-            }
-            Link("init");
-        });
-    }, []);
 
-    if (config.dir == "null")
-        window.api.config().then((config: JSONType) => SetConfig(config));
+    window.api.mainExit(() => {
+        if (config.ytdlp_v != "null") window.api.renderExit(config);
+    });
+    window.api.setup((_: string) => {
+        console.log(_);
+        if (_) {
+            Link("init");
+        } else {
+            Link("");
+            window.api.config().then((config: JSONType) => {
+                SetConfig(config);
+            });
+        }
+    });
+    if (config.dir == "null") {
+        window.api.config().then((config: JSONType) => {
+            SetConfig(config);
+        });
+    }
     return (
         <>
             <div

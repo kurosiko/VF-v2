@@ -3,4 +3,5 @@ export interface Progress {
     title?: string;
     thumbnail?: string;
     percent?: number;
+    has_error?: boolean;
 }

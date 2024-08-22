@@ -52,10 +52,10 @@ export const Video = () => {
                     <label className="togglebutton">
                         <input
                             type="checkbox"
-                            checked={config.other[value]}
+                            checked={config.video.boolean[value]}
                             onChange={(event) => {
                                 Reload((dupe) => {
-                                    dupe.other[value] =
+                                    dupe.video.boolean[value] =
                                         event.currentTarget.checked;
                                     return dupe;
                                 });

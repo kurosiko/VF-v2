@@ -7,7 +7,7 @@ import {
     shell,
 } from "electron";
 import path, { resolve } from "path";
-
+import os from "os";
 import { ffdl } from "./main/init/ffdl";
 import { IcpMainRegister } from "./main/functions/IpcMain";
 import { load, save } from "./main/functions/json_io";
@@ -35,9 +35,9 @@ export class VF_Window extends BrowserWindow {
             event.preventDefault();
         });
         IcpMainRegister(this);
-        
+
         this.on("ready-to-show", () => {
-            if (!(this.config.ytdlp_v == "null") || this.config.ffmpeg) return;
+            if (!(this.config.ytdlp_v == "null") && this.config.ffmpeg) return;
             this.webContents.send("setup", "Link(init)");
             Promise.all([
                 new Promise(async (resolve, reject) => {
@@ -60,7 +60,6 @@ export class VF_Window extends BrowserWindow {
             console.log("Setup");
         });
     }
-    
 }
 
 app.whenReady().then(() => {
@@ -68,7 +67,6 @@ app.whenReady().then(() => {
         win_state: load(targetList("window")) || def_win,
         config: load(targetList("config")) || def_cfg,
     };
-    bootConfig.config.ffmpeg = false;
     const mainWindow = new VF_Window(
         {
             x: bootConfig.win_state.x,

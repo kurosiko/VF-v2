@@ -1,38 +1,46 @@
 import { contextBridge, ipcRenderer, shell } from "electron";
-const error_logger = (text: string) => {
-    console.log(text);
-};
-import { Logger } from "./main/functions/Logger";
-import { JSONType } from "./Types/VFTypes";
-import { Download } from "./main/functions/download";
 import { Progress } from "./Types/Progress";
-import { removeAllListeners } from "process";
+import { JSONType } from "./Types/VFTypes";
+import { Args } from "./Types/yt_dlp.type";
 
 const ApiFunctions = {
-    donwload: () => ipcRenderer.invoke("download"),
+    donwload: (whole_arg:Args) => ipcRenderer.invoke("download",whole_arg),
     path: () => ipcRenderer.invoke("path"),
     explorer: (path: string) => shell.showItemInFolder(path),
     config: () => ipcRenderer.invoke("config"),
-    progress: (callback: (progress_data: Progress) => void) =>
-        ipcRenderer.on("progress", (_event, data) => {
-            ipcRenderer.removeAllListeners("progress");
-            callback(data)
-        }),
-    close: (callback: (content_data: Progress) => void) =>
-        ipcRenderer.on("close", (_event, data) => {
-            ipcRenderer.removeAllListeners("close");
+    progress: (callback: (progress_data: Progress) => void) => {
+        ipcRenderer.removeAllListeners("progress");
+        ipcRenderer.once("progress", (_event, data) => {
             callback(data);
-        }),
-    setup: (callback: (msg: string) => void) =>
-        ipcRenderer.on("setup", (_event, msg) => {
-            callback(msg);
-            //if(!msg) removeAllListeners("setup")
-        }),
-    mainExit: (callback: () => JSONType) => {
-        ipcRenderer.once("MainExit", (event) => {
-            //removeAllListeners("setup");
-            event.sender.invoke("MainExit", callback());
         });
     },
+
+    close: (callback: (pid: number) => void) => {
+        ipcRenderer.removeAllListeners("close");
+        ipcRenderer.once("close", (_event, pid) => {
+            callback(pid);
+        });
+    },
+    error: (callback: (pid: number) => void) => {
+        ipcRenderer.removeAllListeners("error");
+        ipcRenderer.once("error", (_event, pid) => {
+            callback(pid);
+        });
+    },
+    setup: (callback: (msg: string) => void) => {
+        ipcRenderer.removeAllListeners("setup");
+        ipcRenderer.on("setup", (_event, msg) => {
+            callback(msg);
+        });
+    },
+    mainExit: (callback: () => void) => {
+        ipcRenderer.once("MainExit", (event) => {
+            ipcRenderer.removeAllListeners("MainExit");
+            callback()
+        });
+    },
+    renderExit: (config: JSONType) => {
+        ipcRenderer.invoke("MainExit",config)
+    }
 };
 contextBridge.exposeInMainWorld("api", ApiFunctions);

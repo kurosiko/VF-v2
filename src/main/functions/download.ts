@@ -39,7 +39,7 @@ export class Download extends yt_dlp {
             });
             thread.on("error", (error) => {
                 Logger(error.message, this.args);
-                this.mainWindow.webContents.send("error");
+                this.mainWindow.webContents.send("error", basic_data.pid);
             });
             thread.on("close", () => {
                 if (threads.length == 1) {

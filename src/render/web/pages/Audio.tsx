@@ -52,10 +52,10 @@ export const Audio = () => {
                     <label className="togglebutton">
                         <input
                             type="checkbox"
-                            checked={config.other[value]}
+                            checked={config.audio.boolean[value]}
                             onChange={(event) => {
                                 Reload((dupe) => {
-                                    dupe.other[value] =
+                                    dupe.audio.boolean[value] =
                                         event.currentTarget.checked;
                                     return dupe;
                                 });
@@ -80,7 +80,7 @@ export const Audio = () => {
 
     return (
         <>
-            <h1 className="header">Video</h1>
+            <h1 className="header">Audio</h1>
             <div className="options">
                 <div className="combbox">
                     <label>Quality</label>
