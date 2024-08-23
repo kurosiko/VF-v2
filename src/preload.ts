@@ -4,13 +4,13 @@ import { JSONType } from "./Types/VFTypes";
 import { Args } from "./Types/yt_dlp.type";
 
 const ApiFunctions = {
-    donwload: (whole_arg:Args) => ipcRenderer.invoke("download",whole_arg),
+    donwload: (whole_arg: Args) => ipcRenderer.invoke("download", whole_arg),
     path: () => ipcRenderer.invoke("path"),
     explorer: (path: string) => shell.showItemInFolder(path),
     config: () => ipcRenderer.invoke("config"),
     progress: (callback: (progress_data: Progress) => void) => {
         ipcRenderer.removeAllListeners("progress");
-        ipcRenderer.once("progress", (_event, data) => {
+        ipcRenderer.on("progress", (_event, data) => {
             callback(data);
         });
     },
@@ -36,11 +36,14 @@ const ApiFunctions = {
     mainExit: (callback: () => void) => {
         ipcRenderer.once("MainExit", (event) => {
             ipcRenderer.removeAllListeners("MainExit");
-            callback()
+            callback();
         });
     },
     renderExit: (config: JSONType) => {
-        ipcRenderer.invoke("MainExit",config)
-    }
+        ipcRenderer.invoke("MainExit", config);
+    },
+    download: (whole_arg: Args) => {
+        ipcRenderer.invoke("download", whole_arg);
+    },
 };
 contextBridge.exposeInMainWorld("api", ApiFunctions);

@@ -17,19 +17,23 @@ export class Download extends yt_dlp {
         const tasks = await this.analyze();
         if (!tasks) return;
         const [threads, info, customThreads] = tasks;
-        console.log(threads, info, customThreads);
         Promise.all(threads).then(() => {
             this.mainWindow.webContents.send("close");
         });
         for (const thread of threads) {
             const basic_data = {
-                pid: Math.floor(Math.random() * 999999),
-                title: this.escapeStr(info.title) || "ERROR",
-                uploader: this.escapeStr(info.uploader) || "ERROR",
-                thumbnail: this.escapeStr(info.thumbnail) || "ERROR",
+                pid:
+                    thread.ytDlpProcess?.pid ||
+                    Math.floor(Math.random() * 999999),
+                title: info.title || "ERROR",
+                uploader: info.uploader || "ERROR",
+                thumbnail:
+                    info.thumbnail ||
+                    "https://i.scdn.co/image/ab67616d00001e02e27ec71c111b88de91a51600",
             };
             this.mainWindow.webContents.send("progress", {
-                basic_data,
+                ...basic_data,
+                base: true,
             });
             thread.on("progress", (progress) => {
                 this.mainWindow.webContents.send("progress", {
@@ -42,12 +46,10 @@ export class Download extends yt_dlp {
                 this.mainWindow.webContents.send("error", basic_data.pid);
             });
             thread.on("close", () => {
-                if (threads.length == 1) {
-                    this.mainWindow.webContents.send("close");
-                }
+                this.mainWindow.webContents.send("close", basic_data.pid);
             });
         }
-        if (!customThreads) return;
+        //if (!customThreads) return;
 
         /*
         if (customThreads?.ytmImage) {

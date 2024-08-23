@@ -20,7 +20,11 @@ export class Config implements Config_Type {
             this.config.general.playlist && this.config.general.list
                 ? "%(playlist|)s"
                 : "";
-        const uploaderDir = this.config.general.uploader ? "%(uploader)s" : "";
+        const uploaderDir =
+            !(this.config.general.playlist && this.config.general.list) &&
+            this.config.general.uploader
+                ? "%(uploader)s"
+                : "";
         return path.join(
             baseDir,
             subDir,

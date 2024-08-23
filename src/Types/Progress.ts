@@ -4,4 +4,5 @@ export interface Progress {
     thumbnail?: string;
     percent?: number;
     has_error?: boolean;
+    base?: boolean;
 }

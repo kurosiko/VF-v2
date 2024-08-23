@@ -5,14 +5,12 @@ import { CONFIG, PROGRESS } from "../Atoms/Atoms";
 import "../css/ProgressBar.css";
 import { Config } from "../../functions/gen_opts";
 import { Download } from "../../../main/functions/download";
+import { config } from "process";
 export const DL = () => {
     const url = useRef<HTMLInputElement>(null);
     const [config, SetConfig] = useRecoilState(CONFIG);
     const [progress, SetProgress] = useRecoilState(PROGRESS);
     if (!url) return;
-    window.api.progress((data) => {
-        SetProgress([data, ...progress]);
-    });
     window.api.close((pid) => {
         SetProgress(
             progress.filter((item) => {
@@ -22,14 +20,27 @@ export const DL = () => {
     });
     window.api.error((pid) => {
         SetProgress(
-            progress.filter((item) => {
+            progress.map((item) => {
                 if (item.pid == pid) item.has_error = true;
                 return item;
             })
         );
     });
-    window.api.progress((data) => {
-        SetProgress([data, ...progress]);
+    window.api.progress((thread: Progress) => {
+        if (!thread) return;
+        if (thread.base) {
+            console.log("SetBase");
+            SetProgress([thread, ...progress]);
+            return;
+        }
+        SetProgress(
+            progress.map((item) => {
+                if (item.pid != thread.pid) return item;
+                const dupe = structuredClone(item);
+                dupe.percent = thread.percent;
+                return dupe;
+            })
+        );
     });
     function download(url: string) {
         window.api.download(new Config(url, config).Gen_opts());
@@ -39,7 +50,11 @@ export const DL = () => {
             return (
                 <div
                     className="progress"
-                    style={{ background: "rgb(163, 52, 52,0.5)" }}
+                    style={
+                        item.has_error
+                            ? { background: "rgb(163, 52, 52,0.5)" }
+                            : {}
+                    }
                     key={item.pid}
                 >
                     <div className="thumbnail">
@@ -88,7 +103,7 @@ export const DL = () => {
                         if (URL.canParse(text)) {
                             download(text);
                         } else {
-                            console.log("Error Toast"); //create a error toast message
+                            console.log("not URL"); //create a error toast message
                         }
                     });
                 }}

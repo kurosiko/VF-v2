@@ -1,9 +1,6 @@
 import YTDlpWrap, { YTDlpEventEmitter } from "./core";
 import path, { resolve } from "path";
 import { Args } from "../../Types/yt_dlp.type";
-import { list } from "postcss";
-import { rejects } from "assert";
-
 export class yt_dlp extends YTDlpWrap {
     private url: string;
     private process_queue: number = 10;
@@ -18,29 +15,40 @@ export class yt_dlp extends YTDlpWrap {
         console.log(this.args.join(" "));
     }
     async multiProcess(
-        args: string[],
         download: boolean,
         count: number = 0
     ): Promise<YTDlpEventEmitter[]> {
-        const func_exec = download ? this.download : this.exec;
         if (count > this.use_multiproess) {
             const range =
-                count - (count % this.process_queue) / this.process_queue;
+                (count - (count % this.process_queue)) / this.process_queue;
             let cache: number = 0;
             const queue: YTDlpEventEmitter[] = [];
+            console.log({
+                total: count,
+                range: range,
+            });
             for (
                 let index: number = 1;
-                index <= this.process_queue + 1 || index * range <= count;
+                index <= this.process_queue+1 || index * range <= count;
                 index++
             ) {
+                console.log({
+                    index: index,
+                    cache: cache + 1,
+                    range: `${cache + 1}:${index * range}`,
+                });
                 queue.push(
-                    func_exec([...args, "-I", `${cache + 1}:${index * range}`])
+                    this.exec([
+                        ...this.args,
+                        "-I",
+                        `${cache + 1}:${index * range}`,
+                    ])
                 );
                 cache = index * range;
             }
             return queue;
         }
-        return [func_exec(args)];
+        return [this.exec(this.args)];
     }
 
     async analyze(): Promise<
@@ -62,18 +70,18 @@ export class yt_dlp extends YTDlpWrap {
         const playlist_count = info.playlist_count;
         const test = {};
         //not availible
+        console.log({
+            type: info._type,
+            cout: info.playlist_count,
+        });
         if (info._type == "video") {
-            return [[this.download(this.args)], info, test];
+            return [[this.download()], info, test];
         } else {
-            return [
-                await this.multiProcess(this.args, true, playlist_count),
-                info,
-                test,
-            ];
+            return [await this.multiProcess(true, playlist_count), info, test];
         }
     }
-    download(args: string[]) {
-        return this.exec(args);
+    download() {
+        return this.exec(this.args);
     }
     private async getInfo() {
         return await this.getVideoInfo(this.url);
@@ -83,3 +91,4 @@ export class yt_dlp extends YTDlpWrap {
         return await this.exec([...this.args, "-J", "-I", "1"]);
     }
 }
+
