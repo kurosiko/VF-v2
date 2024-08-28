@@ -1,11 +1,11 @@
 import YTDlpWrap, { YTDlpEventEmitter } from "./core";
-import path, { resolve } from "path";
+import path, { join, resolve } from "path";
 import { Args } from "../../Types/yt_dlp.type";
 export class yt_dlp extends YTDlpWrap {
     private url: string;
     private process_queue: number = 10;
     private use_multiproess: number = 20;
-    private customArg: Args["custom"];
+    customArg: Args["custom"];
     args: string[];
     constructor(whole_args: Args) {
         super(path.resolve("yt-dlp.exe"));
@@ -14,10 +14,7 @@ export class yt_dlp extends YTDlpWrap {
         this.customArg = whole_args.custom;
         console.log(this.args.join(" "));
     }
-    async multiProcess(
-        download: boolean,
-        count: number = 0
-    ): Promise<YTDlpEventEmitter[]> {
+    async multiProcess(count: number = 0): Promise<YTDlpEventEmitter[]> {
         if (count > this.use_multiproess) {
             const range =
                 (count - (count % this.process_queue)) / this.process_queue;
@@ -29,7 +26,7 @@ export class yt_dlp extends YTDlpWrap {
             });
             for (
                 let index: number = 1;
-                index <= this.process_queue+1 || index * range <= count;
+                index <= this.process_queue + 1 || index * range <= count;
                 index++
             ) {
                 console.log({
@@ -59,25 +56,39 @@ export class yt_dlp extends YTDlpWrap {
                   title: string;
                   uploader: string;
                   thumbnail: string;
+                  id: string[];
               },
-              any
+              Args["custom"]
           ]
     > {
-        const info = await this.getInfo();
-        if (typeof info._type == undefined) {
+        const info_json = await this.getInfo();
+        if (typeof info_json._type == undefined) {
             return;
         }
-        const playlist_count = info.playlist_count;
-        const test = {};
-        //not availible
         console.log({
-            type: info._type,
-            cout: info.playlist_count,
+            type: info_json._type,
+            cout: info_json.playlist_count,
         });
-        if (info._type == "video") {
-            return [[this.download()], info, test];
+        const is_playlist = info_json._type == "playlist";
+        const info = {
+            title: info_json.title || "ERROR",
+            uploader: info_json.uploader || "ERROR",
+            thumbnail:
+                info_json.thumbnail ||
+                info_json.thumbnails[0].url ||
+                "https://i.scdn.co/image/ab67616d00001e02e27ec71c111b88de91a51600",
+            id: is_playlist
+                ? Array.from(info_json.entries).map((item: any) => item.id)
+                : [info_json.id],
+        };
+        if (is_playlist) {
+            return [
+                await this.multiProcess(info_json.playlist_count),
+                info,
+                this.customArg,
+            ];
         } else {
-            return [await this.multiProcess(true, playlist_count), info, test];
+            return [[this.download()], info, this.customArg];
         }
     }
     download() {
@@ -87,8 +98,6 @@ export class yt_dlp extends YTDlpWrap {
         return await this.getVideoInfo(this.url);
     }
     async printInfo() {
-        //for testing of ytdl
         return await this.exec([...this.args, "-J", "-I", "1"]);
     }
 }
-

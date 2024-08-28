@@ -3,16 +3,12 @@ import fs from "fs";
 import imageSize from "image-size";
 //Media dataを渡す
 export class YTM extends YTMusic {
-    title = "";
-    artist = "";
-    id = "";
     constructor() {
         super();
-        this.initialize();
     }
     async Info_Json() {}
-    async Lyric() {
-        const url = `https://lyrics-api.boidu.dev//getLyrics?s=${this.title}\u0026a=${this.artist}`;
+    async Lyric(title: string, artist: string) {
+        const url = `https://lyrics-api.boidu.dev//getLyrics?s=${title}\u0026a=${artist}`;
         const res = await fetch(encodeURI(url), { method: "GET" });
         if (res.status != 200) {
             return new Error("Fetch Error");
@@ -40,9 +36,10 @@ export class YTM extends YTMusic {
             );
         }
         const text = lyric_list.join("\n");
-        fs.writeFileSync(`${this.title}.lrc`, text);
+        fs.writeFileSync(`${title}.lrc`, text);
     }
-    async getThumbnail(id:string) {
+    async getThumbnail(id: string) {
+        await this.initialize();
         const json_data = await this.getSong(id);
         const image_url = json_data["thumbnails"].at(-1)?.url;
         if (!image_url) return;

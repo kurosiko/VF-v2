@@ -53,7 +53,6 @@ export class Config implements Config_Type {
             if (getForce("audio")) {
                 preset.push("-x", "--audio-format", getFormat("audio"));
             }
-            preset.push("audio");
         } else {
             preset.push(getFromList("video"));
             if (getForce("video")) {

@@ -1,14 +1,17 @@
+import { YTM } from "../../render/functions/YTMusic";
 import { Args } from "../../Types/yt_dlp.type";
+import { YTDlpEventEmitter } from "./core";
+import { embed } from "./embed";
 import { Logger } from "./Logger";
 import { yt_dlp } from "./yt_dlp";
 
 export class Download extends yt_dlp {
     private mainWindow: Electron.BrowserWindow;
-    private closed = false;
-    private pid = 0;
+    private yt_dlp_arg: Args["yt_dlp"];
     constructor(args: Args, mainWindow: Electron.BrowserWindow) {
         super(args);
         this.mainWindow = mainWindow;
+        this.yt_dlp_arg = args.yt_dlp;
     }
     escapeStr(str: string) {
         return str.replace(/&/g, "&amp;");
@@ -17,19 +20,15 @@ export class Download extends yt_dlp {
         const tasks = await this.analyze();
         if (!tasks) return;
         const [threads, info, customThreads] = tasks;
-        Promise.all(threads).then(() => {
-            this.mainWindow.webContents.send("close");
-        });
         for (const thread of threads) {
+            console.log(thread.ytDlpProcess?.spawnargs);
             const basic_data = {
                 pid:
                     thread.ytDlpProcess?.pid ||
                     Math.floor(Math.random() * 999999),
-                title: info.title || "ERROR",
-                uploader: info.uploader || "ERROR",
-                thumbnail:
-                    info.thumbnail ||
-                    "https://i.scdn.co/image/ab67616d00001e02e27ec71c111b88de91a51600",
+                title: info.title,
+                uploader: info.uploader,
+                thumbnail: info.thumbnail,
             };
             this.mainWindow.webContents.send("progress", {
                 ...basic_data,
@@ -45,235 +44,63 @@ export class Download extends yt_dlp {
                 Logger(error.message, this.args);
                 this.mainWindow.webContents.send("error", basic_data.pid);
             });
-            thread.on("close", () => {
-                this.mainWindow.webContents.send("close", basic_data.pid);
+            thread.on("close", async () => {
+                if (Object.values(customThreads).some((bol) => bol)) {
+                    Promise.all(
+                        await this.customFunc(customThreads, thread)
+                    ).then(() => {
+                        this.mainWindow.webContents.send(
+                            "close",
+                            basic_data.pid
+                        );
+                    });
+                } else {
+                    this.mainWindow.webContents.send("close", basic_data.pid);
+                }
             });
         }
-        //if (!customThreads) return;
-
+    }
+    async customFunc(customThreads: Args["custom"], thread: YTDlpEventEmitter) {
+        const ytMuisc = new YTM();
+        await ytMuisc.initialize();
+        const yt_dlp_arg_base = thread.ytDlpProcess?.spawnargs;
+        yt_dlp_arg_base?.shift();
+        const customArgs = [...(yt_dlp_arg_base || this.yt_dlp_arg)];
+        let promise_list = [];
+        if (customThreads.ytmImage) {
+            customArgs.push(
+                ...["--print", "id", "--print", "after_move:filepath"]
+            );
+            let image_cache = [];
+            promise_list.push(
+                this.exec(customArgs).on("stdout", async (stdout: string) => {
+                    console.log(stdout);
+                    /*
+                    image_cache.push(stdout.replace(/\n/g, ""));
+                    if (image_cache.length == 2) {
+                        const [id, path] = image_cache;
+                        const image_url = await ytMuisc.getThumbnail(id);
+                        if (!image_url) return;
+                        embed(path, image_url);
+                    }
+                    */
+                })
+            );
+        }
         /*
-        if (customThreads?.ytmImage) {
-            const ytMusic = new YTM()
-            customThreads.ytmImage.forEach((thread) => {
-                thread.on("stdout", async (stdout: any) => {
-                    embed()
-                    ytMusic.getThumbnail(stdout.id)
-                });
-            });
-        }
-        */
+        if (customThreads.lyric) {
+            customArgs.concat(["--print", "title", "--print", "artist"]);
+            let lyric_cache = [];
+            promise_list.push(
+                this.exec(customArgs).on("stdout", (stdout: string) => {
+                    lyric_cache.push(stdout.replace(/\n/g, ""));
+                    if (lyric_cache.length == 2) {
+                        const [title, artist] = lyric_cache;
+                        ytMuisc.Lyric(title, artist);
+                    }
+                })
+            );
+        }*/
+        return promise_list;
     }
 }
-
-/*
-export const download = async (
-    opts: DL_Type,
-    mainWindow: Electron.BrowserWindow
-) => {
-    class Download2 extends YTDlpWrap {
-        closed: boolean;
-        has_error: boolean;
-        Rate_ms: number;
-        Rate_state: "ready" | "reset" | "wait";
-        mainWindow: Electron.BrowserWindow;
-        opts: string[];
-        only: boolean;
-        pid: number;
-        embed: boolean;
-        constructor(
-            mainWindow: Electron.BrowserWindow,
-            opts: string[],
-            audioOnly: boolean,
-            embed: boolean
-        ) {
-            super();
-            this.closed = false;
-            this.has_error = false;
-            this.pid = 0;
-            this.Rate_ms = 250;
-            this.Rate_state = "ready";
-            this.mainWindow = mainWindow;
-            this.opts = opts;
-            this.only = audioOnly;
-            this.embed = embed;
-            this.setBinaryPath(path.resolve("yt-dlp.exe"));
-        }
-        async run() {
-            const yt_dlp = this.exec(this.opts)
-                .on("progress", (event) => {
-                    if (this.Rate_state == "ready") {
-                        this.mainWindow.webContents.send("progress", {
-                            pid: this.pid,
-                            percent: event.percent,
-                        });
-                        this.Rate_state = "reset";
-                    } else if (this.Rate_state == "reset") {
-                        setTimeout(() => {
-                            this.Rate_state = "ready";
-                        }, this.Rate_ms);
-                        this.Rate_state = "wait";
-                    }
-                })
-                .on("close", () => {
-                    this.closed = true;
-                    this.mainWindow.webContents.send("close", this.pid);
-                })
-                .on("ytDlpEvent", (_, res) => console.log(_, res));
-            this.pid =
-                yt_dlp.ytDlpProcess?.pid || Math.floor(Math.random() * 999999);
-            const info = await this.getVideoInfo(this.opts[0]);
-            console.log(info);
-            const base_data: Progress = {
-                pid: this.pid,
-                title: info.title,
-                thumbnail:
-                    info._type == "playlist"
-                        ? info.entries[0].thumbnail
-                        : info.thumbnail,
-                percent: 0,
-            };
-            if (!this.closed)
-                mainWindow.webContents.send("sendBase", base_data);
-            if (!this.has_error && !this.closed) {
-                this.waitClose(() => {
-                    this.notification();
-                    console.log(`Audio:${this.only}`);
-                    if (this.only) this.EmbedReady(); //ex
-                }, 100);
-            } else {
-                /*
-                this.notification({
-                    title: "ERROR",
-                    uploader: "ERROR",
-                    base_url: this.opts[0],
-                    thumbnail: "https://wallpapercave.com/wp/wp9414308.png",
-                });
-
-            }
-        }
-        async EmbedReady() {
-            console.log("[Embed]");
-            let entrieList: string[] = [];
-            const ytMusic = new YTMusic();
-            await ytMusic.initialize();
-            this.exec([
-                ...this.opts,
-                "--print",
-                "after_move:filepath",
-                "--print",
-                "id",
-            ])
-                .on("stdout", (event) => {
-                    entrieList.push(event.replace(/\n/g, ""));
-                    if (entrieList.length % 2 == 0) {
-                        console.log(entrieList);
-                        ytMusic.getSong(entrieList[0]).then(async (json) => {
-                            const image_url = json["thumbnails"].at(-1)?.url;
-                            if (!image_url) return;
-                            const image_data = imageSize(
-                                new Uint8Array(
-                                    await (
-                                        await (await fetch(image_url)).blob()
-                                    ).arrayBuffer()
-                                )
-                            );
-                            if (image_data.height == image_data.width)
-                                embed(entrieList[1], image_url);
-                            else console.log("!skip!");
-                            entrieList = [];
-                        });
-                    }
-                })
-                .on("close", () => {
-                    console.log("Finish");
-                });
-        }
-        escapeStr(str: string) {
-            return str.replace(/&/g, "&amp;");
-        }
-        waitClose(resolve: Function, interval: number) {
-            console.log("noti wait");
-            if (this.closed) {
-                console.log("noti return");
-                resolve();
-                return;
-            }
-            const intervalID = setInterval(() => {
-                if (!this.closed) {
-                    return;
-                }
-                clearInterval(intervalID);
-                resolve();
-                console.log("noti return");
-            }, interval);
-        }
-        async notification() {
-            const info = await this.getVideoInfo([this.opts[0], "-I", "1"]);
-            const notification_data = {
-                title: this.escapeStr(info.title) || "ERROR",
-                uploader: this.escapeStr(info.uploader) || "ERROR",
-                base_url: this.escapeStr(this.opts[0]) || "ERROR",
-                thumbnail:
-                    this.escapeStr(
-                        info._type == "video"
-                            ? info.thumbnail
-                            : info.entries[0].thumbnail
-                    ) || "https://wallpapercave.com/wp/wp9414308.png",
-                output: this.escapeStr(
-                    (
-                        await this.execPromise([
-                            ...this.opts[0],
-                            "--print",
-                            "after_move:filepath",
-                            "-I",
-                            "1",
-                        ])
-                    ).replace(/\n/g, "") || path.join(os.homedir(), "Desktop")
-                ),
-            };
-            //console.log(noti_data);
-            const image_data = await fetch(notification_data.thumbnail);
-            //const file_name = `./thumbnail.${(await image_data.blob()).type}`;
-            const image_path = path.resolve("./thumbnail.jpeg");
-
-            const xml = `
-    <toast activationType="protocol" launch="${notification_data.output}">
-        <visual>
-            <binding template="ToastGeneric">
-                <image placement="hero" src="${image_path}"/>
-                <text>${notification_data.title}</text>
-                <text>${notification_data.uploader}</text>
-            </binding>
-        </visual>
-        <actions>
-            <action
-                content="PlayNow"
-                activationType="protocol"
-                arguments="${notification_data.output}"/>    
-            <action
-                content="Open Folder"
-                activationType="protocol"
-                arguments="${path.dirname(notification_data.output)}"/>
-            <action
-                content="Open URL"
-                activationType="protocol"
-                arguments="${notification_data.base_url.replace(
-                    /&/,
-                    "&amp;"
-                )}"/>
-        </actions>
-    </toast>`;
-            new Notification({
-                toastXml: xml,
-            }).show();
-        }
-    }
-    new Download(
-        mainWindow,
-        opts.yt_dlp.slice(0, -1),
-        opts.yt_dlp.at(-1) == "audio",
-        true
-    ).run();
-    console.log(opts);
-};
-*/

@@ -1,4 +1,3 @@
-//プログラムがエラーを吐いたときに止まらないようにしたい
 import { EventEmitter } from "events";
 import {
     ChildProcess,
@@ -263,7 +262,10 @@ export default class YTDlpWrap {
         let stderrData = "";
         let processError: Error;
         ytDlpProcess.stdout.on("data", (data) => {
-            YTDlpWrap.emitYoutubeDlEvents(data.toString(), execEventEmitter);
+            YTDlpWrap.emitYoutubeDlEvents(
+                data.toString(),
+                execEventEmitter
+            );
         });
         ytDlpProcess.stderr.on(
             "data",
@@ -433,7 +435,9 @@ export default class YTDlpWrap {
         let outputLines = stringData.split(/\r|\n/g).filter(Boolean);
         for (let outputLine of outputLines) {
             (emitter as YTDlpEventEmitter).emit("stdout", outputLine);
-            //console.log(`[###]${outputLine}`);
+            console.log(
+                `[###]${outputLine}`
+            );
             if (outputLine[0] == "[") {
                 let progressMatch = outputLine.match(progressRegex);
                 if (progressMatch) {
