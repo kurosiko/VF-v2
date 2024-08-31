@@ -9,42 +9,45 @@ export const Other = () => {
         const altered = callback(dupe);
         SetConfig(altered);
     };
+    type UnionKey = keyof JSONType["other"];
     const Boolean_List = () => {
         const NameList = {
             notification: "notification",
             update: "check updates",
             dev: "Developer",
         };
-        type ValUnion = keyof typeof NameList;
-        const DOMList = Object.entries(NameList).map(([value, description]) => {
-            return (
-                <div className="checkbox">
-                    <label className="togglebutton">
-                        <input
-                            type="checkbox"
-                            checked={config.other[value]}
-                            onChange={(event) => {
-                                Reload((dupe) => {
-                                    dupe.other[value] =
-                                        event.currentTarget.checked;
-                                    return dupe;
-                                });
-                            }}
-                        />
-                    </label>
-                    <label>
-                        {description
-                            .split(" ")
-                            .map((str: string) => {
-                                return (
-                                    str.charAt(0).toUpperCase() + str.slice(1)
-                                );
-                            })
-                            .join(" ")}
-                    </label>
-                </div>
-            );
-        });
+        const DOMList = (Object.entries(NameList) as [UnionKey, string][]).map(
+            ([value, description]) => {
+                return (
+                    <div className="checkbox">
+                        <label className="togglebutton">
+                            <input
+                                type="checkbox"
+                                checked={config.other[value]}
+                                onChange={(event) => {
+                                    Reload((dupe) => {
+                                        dupe.other[value] =
+                                            event.currentTarget.checked;
+                                        return dupe;
+                                    });
+                                }}
+                            />
+                        </label>
+                        <label>
+                            {description
+                                .split(" ")
+                                .map((str: string) => {
+                                    return (
+                                        str.charAt(0).toUpperCase() +
+                                        str.slice(1)
+                                    );
+                                })
+                                .join(" ")}
+                        </label>
+                    </div>
+                );
+            }
+        );
         return DOMList;
     };
 

@@ -1,6 +1,6 @@
 import path from "path";
 import os from "os";
-import { JSONType,WinState } from "../../Types/VFTypes";
+import { JSONType, WinState } from "../../Types/VFTypes";
 export const def_cfg: JSONType = {
     dir: path.join(os.homedir(), "Desktop"),
     general: {
@@ -17,9 +17,9 @@ export const def_cfg: JSONType = {
             metadata: true,
         },
         string: {
-            codec: "mp4",
-            quality: "highest",
-            default: "ba_bv",
+            codecList: "mp4",
+            qualityList: "highest",
+            defaultList: "ba_bv",
         },
         qualityList: {
             highest: "bestvideo+bestaudio",
@@ -46,9 +46,9 @@ export const def_cfg: JSONType = {
             metadata: false,
         },
         string: {
-            codec: "mp3",
-            quality: "highest",
-            default: "ba",
+            codecList: "mp3",
+            qualityList: "highest",
+            defaultList: "ba",
         },
         qualityList: {
             highest: "bestaudio",
@@ -75,7 +75,11 @@ export const def_cfg: JSONType = {
     custom: {
         lyric: false,
         ytmImage: false,
-        multiProcess: false,
+        multiprocess: {
+            multiprocess: true,
+            use_limit_until: 20,
+            process_queue: 10,
+        },
     },
     ytdlp_v: "null",
     ffmpeg: false,

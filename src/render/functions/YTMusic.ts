@@ -41,6 +41,7 @@ export class YTM extends YTMusic {
     async getThumbnail(id: string) {
         await this.initialize();
         const json_data = await this.getSong(id);
+        if (!json_data) return;
         const image_url = json_data["thumbnails"].at(-1)?.url;
         if (!image_url) return;
         const image_data = imageSize(

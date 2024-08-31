@@ -12,7 +12,8 @@ export class yt_dlp extends YTDlpWrap {
         this.url = whole_args.yt_dlp[0];
         this.args = whole_args.yt_dlp;
         this.customArg = whole_args.custom;
-        console.log(this.args.join(" "));
+        this.process_queue = whole_args.custom.multiprocess.process_queue;
+        this.use_multiproess = whole_args.custom.multiprocess.use_limit_until;
     }
     async multiProcess(count: number = 0): Promise<YTDlpEventEmitter[]> {
         if (count > this.use_multiproess) {
@@ -81,7 +82,7 @@ export class yt_dlp extends YTDlpWrap {
                 ? Array.from(info_json.entries).map((item: any) => item.id)
                 : [info_json.id],
         };
-        if (is_playlist) {
+        if (is_playlist && this.customArg.multiprocess.multiprocess) {
             return [
                 await this.multiProcess(info_json.playlist_count),
                 info,

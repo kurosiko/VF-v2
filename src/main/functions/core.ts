@@ -14,7 +14,7 @@ import https from "https";
 import os from "os";
 import { Readable } from "stream";
 import { IncomingMessage } from "http";
-import { stdout } from "process";
+import iconv from "iconv-lite";
 
 const executableName = "yt-dlp";
 const progressRegex =
@@ -263,7 +263,7 @@ export default class YTDlpWrap {
         let processError: Error;
         ytDlpProcess.stdout.on("data", (data) => {
             YTDlpWrap.emitYoutubeDlEvents(
-                data.toString(),
+                iconv.decode(data, "Shift_JIS"),
                 execEventEmitter
             );
         });
@@ -435,9 +435,7 @@ export default class YTDlpWrap {
         let outputLines = stringData.split(/\r|\n/g).filter(Boolean);
         for (let outputLine of outputLines) {
             (emitter as YTDlpEventEmitter).emit("stdout", outputLine);
-            console.log(
-                `[###]${outputLine}`
-            );
+            //console.log(`[###]${outputLine}`);
             if (outputLine[0] == "[") {
                 let progressMatch = outputLine.match(progressRegex);
                 if (progressMatch) {

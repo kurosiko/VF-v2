@@ -63,6 +63,11 @@ export const CONFIG = atom<JSONType>({
         custom: {
             lyric: false,
             ytmImage: false,
+            multiprocess: {
+                multiprocess: true,
+                use_limit_until: 20,
+                process_queue: 10,
+            },
         },
         ytdlp_v: "null",
         ffmpeg: false,

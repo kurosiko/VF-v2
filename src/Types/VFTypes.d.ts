@@ -1,25 +1,45 @@
 export type JSONType = {
-    ytdlp_v: string;
-    ffmpeg: boolean;
     dir: string;
-    general: Boolen_Dict;
+    general: {
+        dl: boolean;
+        uploader: boolean;
+        playlist: boolean;
+        only: boolean;
+        list: boolean;
+    };
     video: Media;
     audio: Media;
-    custom: Boolen_Dict;
-    other: Boolen_Dict;
+    custom: {
+        lyric: boolean;
+        ytmImage: boolean;
+        multiprocess: {
+            multiprocess: boolean;
+            use_limit_until: number;
+            process_queue: number;
+        };
+    };
+    other: {
+        notification: boolean;
+        update: boolean;
+        dev: boolean;
+    };
+    ytdlp_v: string;
+    ffmpeg: boolean;
 };
 export type Media = {
-    boolean: Boolen_Dict;
-    string: Str_Dict;
+    boolean: {
+        force: boolean;
+        thumbnail: boolean;
+        metadata: boolean;
+    };
+    string: {
+        codecList: string;
+        qualityList: string;
+        defaultList: string;
+    };
     qualityList: Str_Dict;
     codecList: Str_Dict;
     defaultList: Str_Dict;
-};
-export type Boolen_Dict = {
-    [key: string]: boolean;
-};
-export type Str_Dict = {
-    [key: string]: string;
 };
 export type WinState = {
     height: number;
@@ -27,6 +47,13 @@ export type WinState = {
     x: number;
     y: number;
 };
+export type Boolen_Dict = {
+    [key: string]: boolean;
+};
+export type Str_Dict = {
+    [key: string]: string;
+};
+
 export type DL_Type = {
     yt_dlp: string[];
     custom: { [key: string]: boolean };

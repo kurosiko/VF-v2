@@ -2,6 +2,7 @@ import React from "react";
 import { useRecoilState } from "recoil";
 import { JSONType } from "../../../Types/VFTypes";
 import { CONFIG } from "../Atoms/Atoms";
+import { config } from "process";
 
 export const Video = () => {
     const [config, SetConfig] = useRecoilState(CONFIG);
@@ -10,7 +11,9 @@ export const Video = () => {
         const altered = callback(dupe);
         SetConfig(altered);
     };
-    const LoadList = (target: "codecList" | "qualityList" | "defaultList") => {
+    type targetKey = "codecList" | "qualityList" | "defaultList";
+    type UnionKey = keyof JSONType["video"]["boolean"];
+    const LoadList = (target: targetKey) => {
         const options = Object.keys(config.video[target]).map((key: string) => {
             return (
                 <option key={key} value={config.video[target][key]}>
@@ -40,41 +43,45 @@ export const Video = () => {
         );
     };
     const Boolean_List = () => {
-        const NameList = {
+        const NameList: {
+            [key in UnionKey]: string;
+        } = {
             force: "force convert",
             thumbnail: "embed thumbnail",
             metadata: "embed metadata",
         };
-        type ValUnion = keyof typeof NameList;
-        const DOMList = Object.entries(NameList).map(([value, description]) => {
-            return (
-                <div className="checkbox">
-                    <label className="togglebutton">
-                        <input
-                            type="checkbox"
-                            checked={config.video.boolean[value]}
-                            onChange={(event) => {
-                                Reload((dupe) => {
-                                    dupe.video.boolean[value] =
-                                        event.currentTarget.checked;
-                                    return dupe;
-                                });
-                            }}
-                        />
-                    </label>
-                    <label>
-                        {description
-                            .split(" ")
-                            .map((str: string) => {
-                                return (
-                                    str.charAt(0).toUpperCase() + str.slice(1)
-                                );
-                            })
-                            .join(" ")}
-                    </label>
-                </div>
-            );
-        });
+        const DOMList = (Object.entries(NameList) as [UnionKey, string][]).map(
+            ([value, description]) => {
+                return (
+                    <div className="checkbox">
+                        <label className="togglebutton">
+                            <input
+                                type="checkbox"
+                                checked={config.video.boolean[value]}
+                                onChange={(event) => {
+                                    Reload((dupe) => {
+                                        dupe.video.boolean[value] =
+                                            event.currentTarget.checked;
+                                        return dupe;
+                                    });
+                                }}
+                            />
+                        </label>
+                        <label>
+                            {description
+                                .split(" ")
+                                .map((str: string) => {
+                                    return (
+                                        str.charAt(0).toUpperCase() +
+                                        str.slice(1)
+                                    );
+                                })
+                                .join(" ")}
+                        </label>
+                    </div>
+                );
+            }
+        );
         return DOMList;
     };
 

@@ -1,10 +1,8 @@
+import { JSONType } from "./VFTypes";
+
 type Args = {
     yt_dlp: string[];
-    custom: custom;
-};
-type custom = {
-    lyric: boolean;
-    ytmImage: boolean;
+    custom: JSONType["custom"];
 };
 
 export { Args };

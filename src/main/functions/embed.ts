@@ -20,8 +20,6 @@ export const embed = (input: string, image: string) => {
         .basename(input)
         .split(".")
         .slice(0, -1)}_temp${exts}`;
-    console.log(exts);
-    console.log(temp);
     if (exts == ".mp3") {
         preset.push(
             "-write_id3v1",
@@ -50,10 +48,8 @@ export const embed = (input: string, image: string) => {
         preset.push("-disposition:1", "attached_pic");
     }
     preset.push(`"${temp}"`);
-    console.log("[!!!]" + preset.join(" "));
     execSync(preset.join(" "));
     fs.rmSync(input);
     fs.renameSync(temp, input);
-    console.log("!!![Embed Finished]!!!");
-    return
+    return;
 };

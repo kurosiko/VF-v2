@@ -67,7 +67,7 @@ export const DL = () => {
                             <label
                                 className="pid"
                                 style={{
-                                    display: config.other.div
+                                    display: config.other.dev
                                         ? "block"
                                         : "none",
                                 }}

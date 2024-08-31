@@ -45,36 +45,39 @@ export const Audio = () => {
             thumbnail: "embed thumbnail",
             metadata: "embed metadata",
         };
-        type ValUnion = keyof typeof NameList;
-        const DOMList = Object.entries(NameList).map(([value, description]) => {
-            return (
-                <div className="checkbox">
-                    <label className="togglebutton">
-                        <input
-                            type="checkbox"
-                            checked={config.audio.boolean[value]}
-                            onChange={(event) => {
-                                Reload((dupe) => {
-                                    dupe.audio.boolean[value] =
-                                        event.currentTarget.checked;
-                                    return dupe;
-                                });
-                            }}
-                        />
-                    </label>
-                    <label>
-                        {description
-                            .split(" ")
-                            .map((str: string) => {
-                                return (
-                                    str.charAt(0).toUpperCase() + str.slice(1)
-                                );
-                            })
-                            .join(" ")}
-                    </label>
-                </div>
-            );
-        });
+        type UnionKey = keyof JSONType["audio"]["boolean"];
+        const DOMList = (Object.entries(NameList) as [UnionKey, string][]).map(
+            ([value, description]) => {
+                return (
+                    <div className="checkbox">
+                        <label className="togglebutton">
+                            <input
+                                type="checkbox"
+                                checked={config.audio.boolean[value]}
+                                onChange={(event) => {
+                                    Reload((dupe) => {
+                                        dupe.audio.boolean[value] =
+                                            event.currentTarget.checked;
+                                        return dupe;
+                                    });
+                                }}
+                            />
+                        </label>
+                        <label>
+                            {description
+                                .split(" ")
+                                .map((str: string) => {
+                                    return (
+                                        str.charAt(0).toUpperCase() +
+                                        str.slice(1)
+                                    );
+                                })
+                                .join(" ")}
+                        </label>
+                    </div>
+                );
+            }
+        );
         return DOMList;
     };
 

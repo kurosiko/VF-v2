@@ -4,7 +4,7 @@ interface Config_Type {
     genOutput: () => string;
     genFormat: () => string[];
     embed: () => string[];
-    custom: () => { [key: string]: boolean };
+    custom: () => JSONType["custom"];
 }
 export class Config implements Config_Type {
     config: JSONType;
@@ -36,9 +36,13 @@ export class Config implements Config_Type {
     genFormat() {
         const getFromList = (type: "audio" | "video") => {
             const default_val =
-                this.config[type].defaultList[this.config[type].string.default];
+                this.config[type].defaultList[
+                    this.config[type].string.defaultList
+                ];
             const quality_val =
-                this.config[type].qualityList[this.config[type].string.quality];
+                this.config[type].qualityList[
+                    this.config[type].string.qualityList
+                ];
             if (default_val) return `${quality_val}/${default_val}`;
             else if (quality_val) return quality_val;
             else return "";
@@ -46,7 +50,7 @@ export class Config implements Config_Type {
         const getForce = (type: "audio" | "video") =>
             this.config[type].boolean.force;
         const getFormat = (type: "audio" | "video") =>
-            this.config[type].codecList[this.config[type].string.codec];
+            this.config[type].codecList[this.config[type].string.codecList];
         let preset: string[] = [];
         if (this.config.general.only) {
             preset.push(getFromList("audio"));
@@ -81,7 +85,7 @@ export class Config implements Config_Type {
         return {
             lyric: this.config.custom.lyric,
             ytmImage: this.config.custom.ytmImage,
-            multiProcess: this.config.custom.multiProcess,
+            multiprocess: this.config.custom.multiprocess,
         };
     }
     Gen_opts() {
