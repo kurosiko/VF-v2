@@ -10,8 +10,7 @@ import path, { resolve } from "path";
 import os from "os";
 import { ffdl } from "./main/init/ffdl";
 import { IcpMainRegister } from "./main/functions/IpcMain";
-import { load, save } from "./main/functions/json_io";
-import { targetList } from "./main/functions/TargetList";
+import { loadConfig, saveConfig } from "./main/functions/json_io";
 import { def_cfg, def_win } from "./main/init/default";
 import { setup } from "./main/init/setup";
 import { DL_Type, JSONType, WinState } from "./Types/VFTypes";
@@ -64,8 +63,8 @@ export class VF_Window extends BrowserWindow {
 
 app.whenReady().then(() => {
     const bootConfig: Boot = {
-        win_state: load(targetList("window")) || def_win,
-        config: load(targetList("config")) || def_cfg,
+        win_state: loadConfig("window") || def_win,
+        config: loadConfig("config") || def_cfg,
     };
     const mainWindow = new VF_Window(
         {
