@@ -2,8 +2,7 @@ import { app, dialog, ipcMain, shell } from "electron";
 import path from "path";
 import { VF_Window } from "../../main";
 import { Args } from "../../Types/yt_dlp.type";
-import { save } from "./json_io";
-import { targetList } from "./TargetList";
+import { saveConfig } from "./json_io";
 import { Download } from "./download";
 export const IcpMainRegister = (mainwindow: VF_Window) => {
     ipcMain.handle("download", (_, options: Args) => {
@@ -28,10 +27,10 @@ export const IcpMainRegister = (mainwindow: VF_Window) => {
             console.log(config);
             const [x, y] = mainwindow.getPosition();
             const [width, height] = mainwindow.getSize();
-            await save(config, targetList("config"));
-            await save(
+            saveConfig("config", config);
+            saveConfig(
+                "window",
                 { x: x, y: y, height: height, width: width },
-                targetList("window")
             );
         }
         if (config.dir != "null") {
